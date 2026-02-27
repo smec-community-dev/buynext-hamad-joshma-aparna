@@ -5,19 +5,36 @@ from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.urls import reverse_lazy
 
 
+
+def _dashboard_for_user(user):
+
+
+    if user.is_staff:
+        return reverse_lazy("admin_dashboard")
+
+    if user.is_seller:
+           status = user.seller_profile.verification_status
+           if status =="VERIFIED":
+               return reverse_lazy("seller_dashboard")
+          
+           return reverse_lazy("verification_bridge")
+
+    return reverse_lazy("home")
+
+
 # ==============================================================================
-# SELLER DECORATOR
+# SELLER REQUIRED DECORATOR
 # ==============================================================================
 
 def seller_required(view_func=None, skip_verification=False, login_url=None):
     """
     Allows only users who have a SellerProfile.
 
-    Checks in order:
+    Checks:
     1. user.is_authenticated
     2. user.is_active
-    3. user.is_seller
-    4. user.is_verified_seller (unless skip_verification=True)
+    3. user has SellerProfile
+    4. seller_profile.is_verified (unless skip_verification=True)
 
     Usage:
         @seller_required
@@ -42,18 +59,18 @@ def seller_required(view_func=None, skip_verification=False, login_url=None):
                     f"{login_url}?{REDIRECT_FIELD_NAME}={request.get_full_path()}"
                 )
 
-            # 2️⃣ Account deactivated
+            # 2️⃣ Account disabled
             if not user.is_active:
                 messages.error(request, "Your account has been deactivated.")
                 return redirect(login_url)
 
             # 3️⃣ Not a seller
-            if not user.is_seller:
+            if not hasattr(user, "seller_profile"):
                 messages.info(request, "You need a seller account to access this page.")
                 return redirect(apply_url)
 
-            # 4️⃣ Seller exists but not verified
-            if not skip_verification and not user.is_verified_seller:
+            # 4️⃣ Seller not verified
+            if not skip_verification and not user.seller_profile.is_verified:
                 messages.warning(
                     request,
                     "Your seller account is pending admin verification."
@@ -70,21 +87,17 @@ def seller_required(view_func=None, skip_verification=False, login_url=None):
 
 
 # ==============================================================================
-# ADMIN DECORATOR
+# ADMIN REQUIRED DECORATOR
 # ==============================================================================
 
 def admin_required(view_func=None, login_url=None):
     """
-    Allows only staff/superuser accounts (is_staff=True).
+    Allows only staff users (Admin).
 
     Checks:
     1. user.is_authenticated
     2. user.is_active
     3. user.is_staff
-
-    Usage:
-        @admin_required
-        def admin_dashboard(request): ...
     """
 
     login_url = login_url or reverse_lazy("login")
@@ -100,14 +113,17 @@ def admin_required(view_func=None, login_url=None):
                     f"{login_url}?{REDIRECT_FIELD_NAME}={request.get_full_path()}"
                 )
 
-            # 2️⃣ Account deactivated
+            # 2️⃣ Account disabled
             if not user.is_active:
                 messages.error(request, "Your account has been deactivated.")
                 return redirect(login_url)
 
             # 3️⃣ Not admin
             if not user.is_staff:
-                messages.error(request, "You do not have permission to access this page.")
+                messages.error(
+                    request,
+                    "You do not have permission to access this page."
+                )
                 return redirect(_dashboard_for_user(user))
 
             return view_func(request, *args, **kwargs)
@@ -120,24 +136,50 @@ def admin_required(view_func=None, login_url=None):
 
 
 # ==============================================================================
-# INTERNAL HELPER
+# CUSTOMER REQUIRED DECORATOR
 # ==============================================================================
 
-def _dashboard_for_user(user):
+def customer_required(view_func=None, login_url=None):
     """
-    Returns the correct dashboard based on role.
+    Allows customers and sellers.
+    Blocks admins.
 
-    Priority:
-    admin > verified seller > pending seller > customer
+    Checks:
+    1. user.is_authenticated
+    2. user.is_active
+    3. user is NOT admin
     """
 
-    if user.is_staff:
-        return reverse_lazy("admin_dashboard")
+    login_url = login_url or reverse_lazy("login")
 
-    if user.is_verified_seller:
-        return reverse_lazy("seller_dashboard")
+    def decorator(view_func):
+        @wraps(view_func)
+        def wrapper(request, *args, **kwargs):
+            user = request.user
 
-    if user.is_seller:
-        return reverse_lazy("seller_pending")
+            # 1️⃣ Not logged in
+            if not user.is_authenticated:
+                return redirect(
+                    f"{login_url}?{REDIRECT_FIELD_NAME}={request.get_full_path()}"
+                )
 
-    return reverse_lazy("customer_dashboard")
+            # 2️⃣ Account disabled
+            if not user.is_active:
+                messages.error(request, "Your account has been deactivated.")
+                return redirect(login_url)
+
+            # 3️⃣ Admin trying to access storefront
+            if user.is_staff:
+                messages.warning(
+                    request,
+                    "Admins cannot access customer pages."
+                )
+                return redirect(_dashboard_for_user(user))
+
+            return view_func(request, *args, **kwargs)
+
+        return wrapper
+
+    if view_func:
+        return decorator(view_func)
+    return decorator

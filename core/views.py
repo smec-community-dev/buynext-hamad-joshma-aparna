@@ -1,9 +1,9 @@
-from urllib import request
 from django.shortcuts import render,redirect
 from .models import User
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from .decorator import _dashboard_for_user
 # Create your views here.
 
 def login_view(request):
@@ -15,10 +15,10 @@ def login_view(request):
             username=user_obj.username
         except User.DoesNotExist:
             username=username_or_email
-        data = authenticate(request,username=username,password=password)
-        if data is not None:
-            login(request,data)
-            return redirect('/')
+        user = authenticate(request,username=username,password=password)
+        if user is not None:
+            login(request,user)
+            return redirect(_dashboard_for_user(request.user))
         else:
             messages.error(request, "Invalid username or password")
     return render(request,"core/login.html")

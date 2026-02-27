@@ -100,6 +100,16 @@
                 <h2 class="text-3xl font-extrabold text-gray-900">Seller Onboarding</h2>
                 <p class="text-gray-500 mt-2 font-medium">Register your account and business profile</p>
             </div>
+            <div class="mb-8 bg-brand-sand/20 border-l-4 border-brand-olive p-5 rounded-r-2xl">
+                <h4 class="font-bold text-gray-800 text-sm uppercase tracking-wider mb-1">
+                    Admin Verification Required
+                </h4>
+                <p class="text-sm text-gray-600 font-medium leading-relaxed">
+                    To maintain a secure marketplace, all new seller accounts require approval from the
+                    <span class="text-brand-olive font-bold">BuyNext</span> admin team. Please allow
+                    24-48 hours after submission for account activation.
+                </p>
+            </div>
 
             <form id="registrationForm" action="" method="POST" enctype="multipart/form-data" class="space-y-10">
                 {% csrf_token %}
@@ -135,13 +145,13 @@
                                 <label class="block text-xs font-bold text-gray-700 ml-1">First Name</label>
                                 <input type="text" name="first_name" placeholder="enter your first name"
                                     value="{% if request.user.is_authenticated %}{{ request.user.first_name }}{% endif %}"
-                                    class="w-full bg-inputBg border-transparent focus:border-brand-olive focus:bg-white rounded-xl px-4 py-3 text-sm transition-all outline-none">
+                                    class="w-full bg-inputBg border-transparent focus:ring-2 focus:ring-brand-olive focus:border-brand-olive rounded-xl px-4 py-3 text-sm transition-all outline-none">
                             </div>
                             <div class="space-y-2">
                                 <label class="block text-xs font-bold text-gray-700 ml-1">Last Name</label>
                                 <input type="text" name="last_name" placeholder="enter your last name "
                                     value="{% if request.user.is_authenticated %}{{ request.user.last_name }}{% endif %}"
-                                    class="w-full bg-inputBg border-transparent focus:border-brand-olive focus:bg-white rounded-xl px-4 py-3 text-sm transition-all outline-none">
+                                    class="w-full bg-inputBg border-transparent focus:ring-2 focus:ring-brand-olive focus:border-brand-olive rounded-xl px-4 py-3 text-sm transition-all outline-none">
                             </div>
                         </div>
 
@@ -149,9 +159,10 @@
                             <div class="space-y-2">
                                 <label class="block text-xs font-bold text-gray-700 ml-1">Account Username</label>
                                 <input type="text" name="username" placeholder="enter your username" 
-                                {% if not request.user.is_authenticated %}required{% endif %} 
-                                    {% if request.user.is_authenticated %} value="{{ request.user.username }}" readonly {% endif %}
-                                     class="w-full bg-inputBg border-transparent focus:border-brand-olive focus:bg-white rounded-xl px-4 py-3 text-sm transition-all outline-none {% if request.user.is_authenticated %}cursor-not-allowed opacity-80{% endif %}">
+                                   {% if not request.user.is_authenticated %}required{% endif %}
+                                   {% if  request.user.is_authenticated %} value="{{ request.user.username }}" readonly 
+                                   {% endif %}
+                                    class="w-full bg-inputBg border-transparent focus:ring-2 focus:ring-brand-olive focus:border-brand-olive rounded-xl px-4 py-3 text-sm transition-all outline-none {% if request.user.is_authenticated %}cursor-not-allowed opacity-80{% endif %}">
                             </div>
                         </div>
                     </div>
@@ -159,17 +170,23 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                         <div class="space-y-2">
                             <label class="block text-xs font-bold text-gray-700 ml-1">Work Email</label>
-                            <input type="email" name="email" placeholder="enter your email address" {% if notrequest.user.is_authenticated %}required{% endif %} {% if request.user.is_authenticated %}value="{{ request.user.email }}" readonly{% endif %}
-                                class="w-full bg-inputBg border-transparent focus:border-brand-olive focus:bg-white rounded-xl px-4 py-3 text-sm transition-all outline-none {% if request.user.is_authenticated %}cursor-not-allowed opacity-80{% endif %}">
+                            <input type="email" name="email" placeholder="enter your email address" 
+                            {% if not request.user.is_authenticated %}
+                                required
+                                {% endif %}
+                                 {% if request.user.is_authenticated %}
+                                value="{{ request.user.email }}" readonly
+                                {% endif %}
+                                class="w-full bg-inputBg border-transparent focus:ring-2 focus:ring-brand-olive focus:border-brand-olive rounded-xl px-4 py-3 text-sm transition-all outline-none {% if request.user.is_authenticated %}cursor-not-allowed opacity-80{% endif %}">
                         </div>
 
                         <div class="space-y-2">
                             <label class="block text-xs font-bold text-gray-700 ml-1">Buisness pnone Number</label>
-                            <input id="phone" type="tel" name="phone_display" placeholder="enter your phone number" 
-                            {% if not request.user.is_authenticated %}required{% endif %} 
-                                {% if request.user.is_authenticated %} value="{{ request.user.phone_number }}" readonly 
-                                {% endif %}
-                                class="w-full bg-inputBg border-transparent focus:border-brand-olive focus:bg-white rounded-xl px-4 py-3 text-sm transition-all outline-none {% if request.user.is_authenticated %}cursor-not-allowed opacity-80{% endif %}">
+                            <input id="phone" type="tel" name="phone_display" placeholder="enter your phone number"
+                                {% if not request.user.is_authenticated %}required{% endif %}
+                                 {% if request.user.is_authenticated %} value="{{ request.user.phone_number }}" readonly
+                                 {% endif %}
+                                class="w-full bg-inputBg border-transparent focus:ring-2 focus:ring-brand-olive focus:border-brand-olive rounded-xl px-4 py-3 text-sm transition-all outline-none {% if request.user.is_authenticated %}cursor-not-allowed opacity-80{% endif %}">
                         </div>
                     </div>
 
@@ -179,7 +196,7 @@
                             <label class="block text-xs font-bold text-gray-700 ml-1">Password</label>
                             <div class="relative">
                                 <input type="password" name="password" id="password" required placeholder="••••••••"
-                                    class="w-full bg-inputBg border-transparent focus:border-brand-olive focus:bg-white rounded-xl px-4 py-3 text-sm transition-all outline-none">
+                                    class="w-full bg-inputBg border-transparent focus:ring-2 focus:ring-brand-olive focus:border-brand-olive rounded-xl px-4 py-3 text-sm transition-all outline-none">
                                 <button type="button" onclick="togglePassword('password','icon1')"
                                     class="absolute right-3 top-3 text-gray-400">
                                     <span class="material-icons text-xl" id="icon1">visibility_off</span>
@@ -191,7 +208,7 @@
                             <div class="relative">
                                 <input type="password" name="confirm_password" id="confirm_password" required
                                     placeholder="••••••••"
-                                    class="w-full bg-inputBg border-transparent focus:border-brand-olive focus:bg-white rounded-xl px-4 py-3 text-sm transition-all outline-none">
+                                    class="w-full bg-inputBg border-transparent focus:ring-2 focus:ring-brand-olive focus:border-brand-olive rounded-xl px-4 py-3 text-sm transition-all outline-none">
                                 <button type="button" onclick="togglePassword('confirm_password','icon2')"
                                     class="absolute right-3 top-3 text-gray-400">
                                     <span class="material-icons text-xl" id="icon2">visibility_off</span>
@@ -214,62 +231,85 @@
                         <div class="space-y-2">
                             <label class="block text-xs font-bold text-gray-700 ml-1">Legal Store Name</label>
                             <input type="text" name="store_name" required placeholder="The Artisan Hub"
-                                class="w-full bg-inputBg border-transparent focus:border-brand-olive focus:bg-white rounded-xl px-4 py-3 text-sm transition-all outline-none">
+                                class="w-full bg-inputBg border-transparent focus:ring-2 focus:ring-brand-olive focus:border-brand-olive rounded-xl px-4 py-3 text-sm transition-all outline-none">
                         </div>
                         <div class="space-y-2">
                             <label class="block text-xs font-bold text-gray-700 ml-1">GSTIN / Tax ID</label>
                             <input type="text" name="gst_number" required placeholder="15-digit Alpha-numeric"
-                                class="w-full bg-inputBg border-transparent focus:border-brand-olive focus:bg-white rounded-xl px-4 py-3 text-sm transition-all outline-none uppercase font-mono tracking-wider">
+                                class="w-full bg-inputBg border-transparent focus:ring-2 focus:ring-brand-olive focus:border-brand-olive rounded-xl px-4 py-3 text-sm transition-all outline-none uppercase font-mono tracking-wider">
                         </div>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-xs font-bold text-gray-700 ml-1">
+                            About Your Business
+                        </label>
+
+                        <textarea name="business_description" rows="4" autocomplete="off" required
+                            placeholder="Tell us what products you plan to sell, your sourcing method, brand details, and business experience..."
+                            class="w-full bg-inputBg border-transparent text-gray-800 placeholder:text-gray-500 focus:ring-2 focus:ring-brand-olive focus:border-brand-olive focus:bg-white rounded-xl px-4 py-3 text-sm transition-all outline-none resize-none"></textarea>
+
+                        <p class="text-[10px] text-gray-400 ml-1">
+                            This helps our team review and approve your seller account.
+                        </p>
                     </div>
 
                     <div class="space-y-2">
                         <label class="block text-xs font-bold text-gray-700 ml-1">Store Logo</label>
                         <div class="relative group">
-                            <input type="file" name="logo"
+                            <input type="file" name="logo" id="logoInput"
                                 class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+
                             <div
-                                class="w-full bg-inputBg border-2 border-dashed border-gray-200 group-hover:border-brand-olive group-hover:bg-white rounded-xl px-5 py-6 text-center transition-all">
-                                <span
-                                    class="material-icons-outlined text-gray-400 group-hover:text-brand-olive">add_a_photo</span>
-                                <p class="text-[10px] text-gray-500 font-bold mt-1 uppercase">Upload Brand Identity</p>
+                                class="w-full bg-inputBg border-2 border-dashed border-gray-200 group-hover:border-brand-olive group-hover:bg-white rounded-xl px-5 py-6 text-center transition-all flex flex-col items-center justify-center gap-2">
+
+                                <!-- Preview Image -->
+                                <img id="logoPreview" class="hidden w-20 h-20 object-cover rounded-xl shadow-md">
+
+                                <!-- Upload Icon -->
+                                <span id="uploadIcon"
+                                    class="material-icons-outlined text-gray-400 group-hover:text-brand-olive">
+                                    add_a_photo
+                                </span>
+
+                                <p class="text-[10px] text-gray-500 font-bold uppercase">
+                                    Upload Brand Identity
+                                </p>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="space-y-4 pt-4">
-                    <button type="submit"
-                        class="w-full bg-brand-olive text-white py-4 rounded-xl font-bold text-sm uppercase tracking-widest shadow-xl shadow-brand-olive/20 hover:bg-black transition-all">
-                        Launch My Store
-                    </button>
-
-                    <div class="relative py-4 flex items-center justify-center">
-                        <span class="absolute inset-x-0 h-px bg-gray-100"></span>
-                        <span
-                            class="relative bg-white px-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Or
-                            fast-track with</span>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <button type="button"
-                            class="flex items-center justify-center gap-2 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 transition-all text-sm font-semibold">
-                            <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-4 h-4"
-                                alt="Google"> Google
+                    <div class="space-y-4 pt-4">
+                        <button type="submit"
+                            class="w-full bg-brand-olive text-white py-4 rounded-xl font-bold text-sm uppercase tracking-widest shadow-xl shadow-brand-olive/20 hover:bg-black transition-all">
+                            Launch My Store
                         </button>
-                        <button type="button"
-                            class="flex items-center justify-center gap-2 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 transition-all text-sm font-semibold">
-                            <img src="https://www.svgrepo.com/show/475647/facebook-color.svg" class="w-4 h-4"
-                                alt="Facebook"> Facebook
-                        </button>
-                    </div>
 
-                    <p class="text-center text-[10px] text-gray-400 mt-6 leading-relaxed">
-                        By creating an account, you agree to our <a href="#"
-                            class="text-brand-olive font-bold underline">Seller Terms</a> and <a href="#"
-                            class="text-brand-olive font-bold underline">Privacy Policy</a>.
-                    </p>
-                </div>
+                        <div class="relative py-4 flex items-center justify-center">
+                            <span class="absolute inset-x-0 h-px bg-gray-100"></span>
+                            <span
+                                class="relative bg-white px-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Or
+                                fast-track with</span>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <button type="button"
+                                class="flex items-center justify-center gap-2 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 transition-all text-sm font-semibold">
+                                <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-4 h-4"
+                                    alt="Google"> Google
+                            </button>
+                            <button type="button"
+                                class="flex items-center justify-center gap-2 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 transition-all text-sm font-semibold">
+                                <img src="https://www.svgrepo.com/show/475647/facebook-color.svg" class="w-4 h-4"
+                                    alt="Facebook"> Facebook
+                            </button>
+                        </div>
+
+                        <p class="text-center text-[10px] text-gray-400 mt-6 leading-relaxed">
+                            By creating an account, you agree to our <a href="#"
+                                class="text-brand-olive font-bold underline">Seller Terms</a> and <a href="#"
+                                class="text-brand-olive font-bold underline">Privacy Policy</a>.
+                        </p>
+                    </div>
             </form>
         </div>
 
@@ -338,6 +378,27 @@
                 }
             });
         });
+        const logoInput = document.getElementById("logoInput");
+        const logoPreview = document.getElementById("logoPreview");
+        const uploadIcon = document.getElementById("uploadIcon");
+
+        if (logoInput) {
+            logoInput.addEventListener("change", function () {
+                const file = this.files[0];
+
+                if (file) {
+                    const reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        logoPreview.src = e.target.result;
+                        logoPreview.classList.remove("hidden");
+                        uploadIcon.classList.add("hidden");
+                    };
+
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
     </script>
 </body>
 

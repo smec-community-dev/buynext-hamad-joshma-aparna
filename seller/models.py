@@ -28,7 +28,6 @@ class SellerProfile(models.Model):
     gst_number = models.CharField(max_length=50, unique=True)
     description = models.TextField(blank=True, help_text="Store bio/description shown to customers")
     logo = models.ImageField(upload_to='seller_logos/', null=True, blank=True)
-    is_verified = models.BooleanField(default=False)
     verification_status = models.CharField(
         max_length=20,
         choices=VERIFICATION_STATUS,
@@ -41,7 +40,7 @@ class SellerProfile(models.Model):
     class Meta:
         indexes = [
             models.Index(fields=['store_slug']),
-            models.Index(fields=['is_verified', 'verification_status']),
+            models.Index(fields=[ 'verification_status']),
         ]
 
     def __str__(self):

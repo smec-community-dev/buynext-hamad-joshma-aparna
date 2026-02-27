@@ -5,6 +5,14 @@ from django.utils.text import slugify
 
 
 class User(AbstractUser):
+    @property
+    def is_seller(self):
+        return hasattr(self,"seller_profile")
+    @property
+    def is_verified_seller(self):
+        return(
+            self.is_seller and self.seller_profile.verification_status == "VERIFIED"
+        )
 
     public_id = models.UUIDField(
         default=uuid.uuid4,
@@ -15,7 +23,6 @@ class User(AbstractUser):
     )
     ROLE_CHOICES = (
         ('ADMIN', 'Admin'),
-        ('SELLER', 'Seller'),
         ('CUSTOMER', 'Customer')
     )
     phone_number = models.CharField(max_length=30, unique=True, null=True, blank=True)
