@@ -118,23 +118,34 @@
                             <span class="material-icons-outlined">shopping_bag</span> <span
                                 class="whitespace-nowrap">Orders</span>
                         </button>
-                        <button
-                            class="flex-shrink-0 lg:w-full flex items-center gap-3 p-3 lg:p-4 hover:bg-white/50 rounded-2xl lg:rounded-[1.5rem] font-bold text-sm text-gray-500 transition-all">
-                            <span class="material-icons-outlined">favorite_border</span> <span
-                                class="whitespace-nowrap">Wishlist</span>
-                        </button>
-                        <button onclick="toggleMobileMenu()"
-                            class="lg:hidden flex-shrink-0 flex items-center gap-3 p-3 bg-brand-accent/20 text-brand-primary rounded-2xl font-bold text-sm">
-                            <span class="material-icons-outlined">more_horiz</span> <span>More</span>
-                        </button>
+                      
+                       
 
                         <div class="hidden lg:contents">
-                            <button
-                                class="w-full flex items-center justify-between p-4 hover:bg-white/50 rounded-[1.5rem] font-bold text-sm text-gray-500 group">
-                                <div class="flex items-center gap-4"><span
-                                        class="material-icons-outlined">shopping_cart</span> Cart</div>
-                                <span class="text-[10px] bg-brandBlue text-white px-2 py-0.5 rounded-full">3</span>
-                            </button>
+                             <a href="{% url 'view_wishlist' %}">
+                                <button
+                                    class="w-full flex items-center justify-between p-4 hover:bg-white/50 rounded-[1.5rem] font-bold text-sm text-gray-500 group">
+                                    <div class="flex items-center gap-4">
+                                        <span class="material-icons-outlined">shopping_cart</span> My Wishlist
+                                    </div>
+                                    <span
+                                        class="text-[10px] bg-brandBlue text-white px-2 py-0.5 rounded-full {% if cart_count == 0 %}hidden{% endif %}">
+                                        {{ wishlist_count }}
+                                    </span>
+                                </button>
+                            </a>
+                            <a href="{% url 'view_cart' %}">
+                                <button
+                                    class="w-full flex items-center justify-between p-4 hover:bg-white/50 rounded-[1.5rem] font-bold text-sm text-gray-500 group">
+                                    <div class="flex items-center gap-4">
+                                        <span class="material-icons-outlined">shopping_cart</span> Cart
+                                    </div>
+                                    <span
+                                        class="text-[10px] bg-brandBlue text-white px-2 py-0.5 rounded-full {% if cart_count == 0 %}hidden{% endif %}">
+                                        {{ cart_count }}
+                                    </span>
+                                </button>
+                            </a>
                             <button
                                 class="w-full flex items-center gap-4 p-4 hover:bg-white/50 rounded-[1.5rem] font-bold text-sm text-gray-500">
                                 <span class="material-icons-outlined">confirmation_number</span> My Coupons

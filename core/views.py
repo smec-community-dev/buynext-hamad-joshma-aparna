@@ -1,7 +1,8 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from .models import *
 from seller.models import *
-from customer.models import *
+from customer.models import * 
+from customer.models import WishlistItem
 from django.db.models import Avg, Prefetch,Min,Max
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
@@ -77,6 +78,10 @@ def logout_view(request):
     return redirect("/")
 
 
+from django.shortcuts import render
+from django.db.models import Min
+from django.core.paginator import Paginator
+
 @admin_not_required
 def all_products(request):
 
@@ -93,17 +98,17 @@ def all_products(request):
         approval_status="APPROVED"
     )
 
-  
+   
     if selected_ids:
         products = products.filter(subcategory__category__id__in=selected_ids)
 
- 
+    
     products = products.annotate(
         min_selling_price=Min("variants__selling_price"),
         min_mrp=Min("variants__mrp")
     )
 
- 
+    
     if min_price:
         try:
             products = products.filter(min_selling_price__gte=float(min_price))
@@ -116,11 +121,10 @@ def all_products(request):
         except ValueError:
             pass
 
-  
+    
     if in_stock:
         products = products.filter(variants__stock_quantity__gt=0)
 
- 
     if sort_by == "price_low_high":
         products = products.order_by("min_selling_price")
 
@@ -138,15 +142,27 @@ def all_products(request):
         "gallery"
     ).distinct()
 
- 
     for product in products:
 
+       
         img = product.gallery.filter(is_primary=True).first()
         product.primary_image = img.image if img else None
 
+       
         variant = product.variants.first()
+
+        product.variant_id = variant.id if variant else None
         product.stock_quantity = variant.stock_quantity if variant else 0
-    paginator = Paginator(products, 2)   
+
+        if request.user.is_authenticated and variant:
+            product.is_in_wishlist = WishlistItem.objects.filter(
+                wishlist__user=request.user,
+                variant=variant
+            ).exists()
+        else:
+            product.is_in_wishlist = False
+
+    paginator = Paginator(products, 2)
     page_number = request.GET.get("page")
     products = paginator.get_page(page_number)
 
@@ -223,20 +239,27 @@ def subcategory_view(request, category_slug):
 
  
     for product in products:
-
+        variant = product.variants.first()
         gallery = product.gallery.first()
 
         if gallery:
             product.primary_image = gallery.image
-
         else:
-            variant = product.variants.first()
-
+            
             if variant and variant.images.first():
                 product.primary_image = variant.images.first().image
             else:
                 product.primary_image = None
-    paginator = Paginator(products, 1)  # 12 products per page
+                
+       
+        if request.user.is_authenticated and variant:
+            product.is_in_wishlist = WishlistItem.objects.filter(
+                wishlist__user=request.user,
+                variant=variant
+            ).exists()
+        else:
+            product.is_in_wishlist = False
+    paginator = Paginator(products, 1) 
     page_number = request.GET.get("page")
     products = paginator.get_page(page_number)
 
@@ -275,7 +298,8 @@ def product_detail(request, slug):
         Prefetch(
             "variant_attributes",
             queryset=VariantAttributeBridge.objects.select_related("option__attribute")
-        )
+        ),
+        'wishlist_items'
     )
 
     gallery_images = ProductGallery.objects.filter(product=product)
@@ -284,6 +308,13 @@ def product_detail(request, slug):
 
     if not default_variant:
         default_variant = variants.first()
+
+    if request.user.is_authenticated:
+          default_variant.is_in_wishlist = default_variant.wishlist_items.filter(
+        wishlist__user=request.user
+    ).exists()
+    else:
+        default_variant.is_in_wishlist = False
 
     reviews = Review.objects.filter(
         product=product

@@ -66,6 +66,7 @@ class Wishlist(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='wishlists')
     wishlist_name = models.CharField(max_length=100, default='My Wishlist')
+    is_default = models.BooleanField(default=False)
     is_public = models.BooleanField(default=False, help_text="Allow sharing via link")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

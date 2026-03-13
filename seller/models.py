@@ -112,6 +112,9 @@ class Product(models.Model):
                 counter += 1
             self.slug = slug
         super().save(*args, **kwargs)
+    @property
+    def default_variant(self):
+          return self.variants.filter(is_active=True).order_by("selling_price").first()
 
 class ProductGallery(models.Model):
 
@@ -209,6 +212,7 @@ class ProductVariant(models.Model):
     @property
     def is_in_stock(self):
         return self.stock_quantity > 0
+
 
 
 class ProductImage(models.Model):

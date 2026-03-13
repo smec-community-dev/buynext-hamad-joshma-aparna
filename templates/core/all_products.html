@@ -121,6 +121,9 @@
                         </div>
                     </div>
                 </div>
+                <form style="display:none;">
+    {% csrf_token %}
+</form>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
                     {% for product in products %}
@@ -134,9 +137,10 @@
                                 class="w-full h-full object-contain mix-blend-multiply transform group-hover:scale-105 transition-transform duration-1000">
                             {% endif %}
 
-                            <button onclick="event.preventDefault();"
-                                class="absolute top-2.5 right-2.5 w-7 h-7 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center text-slate-300 hover:text-orange-500 hover:bg-white transition-all shadow-sm opacity-0 group-hover:opacity-100">
-                                <span class="material-icons-outlined text-xs">favorite_border</span>
+                            <button onclick="event.stopPropagation(); toggleWishlistGrid(event, this)"
+                                class="wishlist-btn absolute top-2.5 right-2.5 w-7 h-7 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center shadow-sm opacity-0 group-hover:opacity-100 transition-all hover:bg-white hover:shadow-md {% if product.is_in_wishlist %}text-red-500 scale-110{% else %}text-slate-300 hover:text-red-500{% endif %}"
+                                {% if product.default_variant %} data-variant-id="{{ product.default_variant.id }}"{% endif %}>
+                                <span class="material-icons text-xs {% if product.is_in_wishlist %}drop-shadow-lg{% endif %}">favorite{% if not product.is_in_wishlist %}_border{% endif %}</span>
                             </button>
                         </div>
 
@@ -224,6 +228,15 @@
 
                     </div>
                 </div>
+
+                <!-- Wishlist Toast -->
+                <div id="wishlist-toast-grid"
+                    class="fixed top-24 right-6 bg-white border border-pink-200 shadow-2xl px-5 py-4 rounded-xl flex items-center gap-3 opacity-0 translate-y-4 pointer-events-none transition-all duration-300 z-50 min-w-[260px]">
+                    <span class="material-icons text-pink-600 text-2xl">favorite</span>
+                    <div class="flex flex-col">
+                        <span id="wishlist-msg-grid" class="text-gray-900 font-semibold text-sm"></span>
+                    </div>
+                </div>
             </main>
         </div>
     </div>
@@ -233,6 +246,61 @@
     function updateSort(val) {
         document.getElementById('sortInput').value = val;
         document.getElementById('filterForm').submit();
+    }
+
+    function toggleWishlistGrid(event, button) {
+        event.preventDefault();
+        event.stopPropagation();
+        
+        if (button.disabled) return;
+        button.disabled = true;
+
+        const variantId = button.dataset.variantId;
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        const icon = button.querySelector('span.material-icons');
+
+        fetch(`/wishlist/add/${variantId}/`, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": csrfToken,
+                "X-Requested-With": "XMLHttpRequest"
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "added") {
+                icon.textContent = 'favorite';
+                button.classList.remove('text-slate-300', 'hover:text-red-500');
+                button.classList.add('text-red-500', 'scale-110');
+                icon.classList.add('drop-shadow-lg');
+                showWishlistToastGrid("Added to wishlist ❤️");
+            } else if (data.status === "removed") {
+                icon.textContent = 'favorite_border';
+                button.classList.remove('text-red-500', 'scale-110');
+                button.classList.add('text-slate-300', 'hover:text-red-500');
+                icon.classList.remove('drop-shadow-lg');
+                showWishlistToastGrid("Removed from wishlist");
+            }
+        })
+        .catch(error => {
+            console.error("Wishlist Error:", error);
+            showWishlistToastGrid("Something went wrong");
+        })
+        .finally(() => {
+            button.disabled = false;
+        });
+    }
+
+    function showWishlistToastGrid(message) {
+        const toast = document.getElementById("wishlist-toast-grid");
+        const msg = document.getElementById("wishlist-msg-grid");
+        msg.textContent = message;
+        toast.classList.remove("opacity-0", "translate-y-4", "pointer-events-none");
+        toast.classList.add("opacity-100", "translate-y-0");
+        setTimeout(() => {
+            toast.classList.remove("opacity-100", "translate-y-0");
+            toast.classList.add("opacity-0", "translate-y-4", "pointer-events-none");
+        }, 2500);
     }
 
     document.addEventListener('DOMContentLoaded', function () {

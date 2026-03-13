@@ -1,0 +1,252 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<div class="bg-slate-50 min-h-screen py-8 lg:py-12">
+    <div class="container mx-auto px-4 max-w-7xl">
+        {% if messages %}
+        <div id="alert-container" class="mb-6 space-y-3">
+            {% for message in messages %}
+            <div class="alert-message flex items-center justify-between px-6 py-4 rounded-2xl shadow-md
+        {% if message.tags == 'success' %}
+            bg-emerald-50 text-emerald-700 border border-emerald-200
+        {% elif message.tags == 'error' %}
+            bg-red-50 text-red-700 border border-red-200
+        {% else %}
+            bg-slate-50 text-slate-700 border border-slate-200
+        {% endif %}
+    ">
+
+                <div class="flex items-center gap-3 text-sm font-semibold">
+
+                    {% if message.tags == 'success' %}
+                    <span class="material-icons text-emerald-500">check_circle</span>
+                    {% elif message.tags == 'error' %}
+                    <span class="material-icons text-red-500">error</span>
+                    {% else %}
+                    <span class="material-icons text-slate-500">info</span>
+                    {% endif %}
+
+                    {{ message }}
+
+                </div>
+
+                <button onclick="this.parentElement.remove()" class="text-sm opacity-60 hover:opacity-100">
+                    <span class="material-icons text-sm">close</span>
+                </button>
+
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <div class="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4">
+            <div>
+                <h1 class="text-3xl font-black tracking-tighter uppercase italic text-slate-900">My Wishlist</h1>
+                <p class="text-slate-500 text-sm font-medium mt-1">Organize your favorites into custom collections</p>
+            </div>
+            <button onclick="toggleModal('new-collection-modal')"
+                class="flex items-center justify-center gap-2 bg-slate-950 text-white px-6 py-4 rounded-2xl font-bold text-[10px] uppercase tracking-widest hover:bg-orange-600 transition-all shadow-xl shadow-slate-200">
+                <span class="material-icons text-sm">add</span> Create New Collection
+            </button>
+        </div>
+
+        <div class="flex flex-col lg:flex-row gap-8">
+            <aside class="w-full lg:w-80 flex-shrink-0">
+                <div class="bg-white rounded-[2.5rem] p-6 shadow-sm border border-slate-100 sticky top-24">
+                    <h2 class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-6 px-2">Collections
+                    </h2>
+
+                    <div class="space-y-3">
+                        {% for collection in collections %}
+
+                        <div class="group flex items-center justify-between p-4 rounded-2xl transition-all cursor-pointer
+{% if active_collection and collection.id == active_collection.id %}
+bg-slate-950 text-white shadow-lg shadow-slate-200
+{% else %}
+bg-white hover:bg-slate-50 border border-transparent hover:border-slate-100
+{% endif %}">
+
+
+                            <a href="?collection={{ collection.id }}" class="flex flex-col flex-1">
+                                <span class="text-sm font-bold">{{ collection.wishlist_name }}</span>
+
+                                <span class="text-[10px] font-medium
+        {% if active_collection and collection.id == active_collection.id %}
+        text-slate-400
+        {% else %}
+        text-slate-300
+        {% endif %}
+        uppercase tracking-tighter">
+                                    {{ collection.items.count }} Items
+                                </span>
+                            </a>
+
+                            <div class="flex gap-1">
+
+                                <form method="POST" action="{% url 'set_default_collection' collection.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" {% if collection.is_default %}disabled{% endif %} class="p-1 rounded-md transition-all flex items-center justify-center
+        {% if collection.is_default %}
+            text-orange-500
+        {% else %}
+            text-slate-400 hover:text-orange-500
+        {% endif %}">
+
+                                        <span class="material-icons text-[16px]">
+                                            {% if collection.is_default %}push_pin{% else %}outline_push_pin{% endif %}
+                                        </span>
+
+                                    </button>
+                                </form>
+
+                                <form method="POST" action="{% url 'remove_wishlist_collection' collection.id %}">
+                                    {% csrf_token %}
+                                    <button class="p-1 hover:text-red-500">
+                                        <span class="material-icons-outlined text-sm">delete</span>
+                                    </button>
+                                </form>
+
+                            </div>
+
+                        </div>
+
+                        {% endfor %}
+                    </div>
+                </div>
+            </aside>
+
+            <main class="flex-grow">
+                {% if wishlist_items %}
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {% for item in wishlist_items %}
+                    <a href="{% url 'product_details' item.variant.product.slug %}"
+   class="block bg-white rounded-[2.5rem] p-4 border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-slate-200/40 transition-all group relative overflow-hidden">
+
+                        <div class="aspect-square bg-slate-50 rounded-[2rem] overflow-hidden mb-4 relative">
+                            <img src="{{ item.variant.images.first.image.url }}" alt="{{ item.variant.product.name }}"
+                                class="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform duration-500">
+
+                            <form method="POST" action="{% url 'remove_wishlist_item' item.id %}">
+                                {% csrf_token %}
+                                <button
+                                    class="absolute top-4 right-4 w-10 h-10 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center text-red-500 shadow-sm hover:bg-red-500 hover:text-white transition-all">
+                                    <span class="material-icons text-sm">favorite</span>
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="px-2">
+                            <p class="text-[10px] font-black text-orange-600 uppercase tracking-widest mb-1">
+                                {{item.variant.product.brand }}</p>
+
+                            <h4 class="text-sm font-bold text-slate-800 line-clamp-1 mb-2">
+                                {{ item.variant.product.name}}</h4>
+
+
+                            <div class="flex items-center gap-3 mb-4">
+                                <div
+                                    class="flex items-center bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-lg text-[10px] font-black">
+                                    4.5 <span class="material-icons text-[10px] ml-0.5">star</span>
+                                </div>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
+                                    Seller: {{ item.variant.product.seller.store_name }}
+                                </span>
+                            </div>
+
+                            <div class="flex items-center justify-between pt-4 border-t border-slate-50">
+                                <span class="text-lg font-black text-slate-950">₹{{ item.variant.selling_price }}</span>
+
+
+                            </div>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="bg-white rounded-[3rem] border border-dashed border-slate-200 py-24 text-center">
+                    <div class="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="material-icons text-slate-200 text-4xl">favorite_border</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">Your wishlist is empty</h3>
+                    <p class="text-slate-400 text-sm mb-8">Items added to your wishlist will appear here.</p>
+                    <a href="{% url 'all_products' %}"
+                        class="inline-block bg-slate-950 text-white px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-orange-600 transition-all shadow-xl shadow-slate-200">
+                        Explore Products
+                    </a>
+                </div>
+                {% endif %}
+            </main>
+        </div>
+    </div>
+</div>
+
+<div id="new-collection-modal"
+    class="fixed inset-0 bg-slate-950/40 backdrop-blur-sm z-[100] flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300">
+    <div
+        class="bg-white w-full max-w-md rounded-[2.5rem] p-8 m-4 shadow-2xl translate-y-10 transition-all duration-300 modal-content">
+        <div class="flex justify-between items-center mb-8">
+            <h3 class="text-xl font-black italic uppercase tracking-tighter">New Collection</h3>
+            <button onclick="toggleModal('new-collection-modal')"
+                class="text-slate-300 hover:text-slate-900 transition-colors">
+                <span class="material-icons">close</span>
+            </button>
+        </div>
+
+        <form action="{% url 'add_collection' %}" method="POST" class="space-y-6">
+            {% csrf_token %}
+            <div>
+                <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-3">Collection
+                    Name</label>
+                <input type="text" name="name" required placeholder="e.g. Dream Tech Setup"
+                    class="w-full bg-slate-50 border-none rounded-2xl px-5 py-4 text-sm font-bold focus:ring-2 focus:ring-orange-500 transition-all outline-none">
+            </div>
+
+            <button type="submit"
+                class="w-full bg-slate-950 text-white font-black py-5 rounded-2xl hover:bg-orange-600 transition-all shadow-xl shadow-slate-200 uppercase tracking-[0.2em] text-[10px]">
+                Create Collection
+            </button>
+        </form>
+    </div>
+</div>
+<form style="display:none;">
+    {% csrf_token %}
+</form>
+
+<script>
+    function toggleModal(modalId) {
+        const modal = document.getElementById(modalId);
+        const content = modal.querySelector('.modal-content');
+
+        if (modal.classList.contains('opacity-0')) {
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            content.classList.remove('translate-y-10');
+        } else {
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            content.classList.add('translate-y-10');
+        }
+    }
+
+    // Function placeholders for your backend integration
+    function moveItem(itemId, collId) {
+        console.log(`Moving item ${itemId} to collection ${collId}`);
+    }
+
+    function removeFromWishlist(itemId) {
+        console.log(`Removing item ${itemId} from wishlist`);
+    }
+    // Auto hide Django messages after 2 seconds
+    setTimeout(() => {
+        const alerts = document.querySelectorAll(".alert-message");
+
+        alerts.forEach(alert => {
+            alert.style.transition = "all 0.5s ease";
+            alert.style.opacity = "0";
+            alert.style.transform = "translateY(-10px)";
+
+            setTimeout(() => {
+                alert.remove();
+            }, 500);
+        });
+
+    }, 1000);
+</script>
+{% endblock %}

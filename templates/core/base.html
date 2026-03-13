@@ -120,10 +120,11 @@
                     class="home-btn text-xs font-bold uppercase tracking-widest text-brand-primary hover:opacity-70 transition-all">
                     <span class="material-icons-outlined text-sm"></span>
                     Home
-                </a>                <a href="{% url 'all_products' %}" class="text-xs font-bold uppercase tracking-widest text-brand-primary hover:opacity-70 transition-all flex items-center gap-2">
+                </a> <a href="{% url 'all_products' %}"
+                    class="text-xs font-bold uppercase tracking-widest text-brand-primary hover:opacity-70 transition-all flex items-center gap-2">
                     <span class="material-icons-outlined text-sm">shopping_bag</span>
                     All Products
-                </a>                <a href="#" class="text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+                </a> <a href="#" class="text-xs font-bold uppercase tracking-widest flex items-center gap-2">
                     New Arrivals <span class="w-2 h-2 rounded-full bg-brand-primary"></span>
                 </a>
                 <a href="#" class="text-xs font-bold uppercase tracking-widest text-orange-600 animate-pulse-slow">
@@ -142,18 +143,20 @@
             <div class="flex items-center gap-4 sm:gap-6">
                 {% if request.user.is_authenticated %}
                 <div class="hidden md:flex items-center gap-4">
-                    <a href="#" class="relative group">
+                    <a href="{% url 'view_wishlist' %}" class="relative group">
                         <span
                             class="material-icons-outlined text-2xl group-hover:text-brand-primary transition-colors">favorite_border</span>
                         <span
-                            class="absolute -top-1 -right-1 bg-brand-primary text-white text-[9px] w-4 h-4 flex items-center justify-center rounded-full font-bold border-2 border-brand-bg">3</span>
+                            class="absolute -top-1 -right-1 bg-brand-primary text-white text-[9px] w-4 h-4 flex items-center justify-center rounded-full font-bold border-2 border-brand-bg {% if wishlist_count == 0 %}hidden{% endif %}">{{wishlist_count}}</span>
                     </a>
 
-                    <a href="#" class="relative group">
+                    <a href="{% url 'view_cart' %}" class="relative group">
                         <span
                             class="material-icons-outlined text-2xl group-hover:text-brand-primary transition-colors">shopping_cart</span>
-                        <span
-                            class="absolute -top-1 -right-1 bg-blue-600 text-white text-[9px] w-4 h-4 flex items-center justify-center rounded-full font-bold border-2 border-brand-bg">2</span>
+                        <span id="cart-count"
+                            class="absolute -top-1 -right-1 bg-blue-600 text-white text-[9px] w-4 h-4 flex items-center justify-center rounded-full font-bold border-2 border-brand-bg {% if cart_count == 0 %}hidden{% endif %}">
+                            {{ cart_count }}
+                        </span>
                     </a>
 
                     <button class="relative group">
@@ -198,11 +201,11 @@
                                     <span class="material-icons-outlined text-lg">account_circle</span> Profile
                                 </a>
 
-                                <a href="#"
+                                <a href="{% url 'view_cart' %}"
                                     class="flex items-center gap-3 p-3 text-sm font-bold text-gray-600 hover:bg-brand-bg hover:text-brand-primary rounded-xl transition-colors">
                                     <span class="material-icons-outlined text-lg">shopping_cart</span> My Cart
                                 </a>
-                                <a href="#"
+                                <a href="{% url 'view_wishlist' %}"
                                     class="flex items-center gap-3 p-3 text-sm font-bold text-gray-600 hover:bg-brand-bg hover:text-brand-primary rounded-xl transition-colors">
                                     <span class="material-icons-outlined text-lg">favorite_border</span> My Wishlist
                                 </a>
@@ -308,7 +311,8 @@
 
                 <!-- Authenticated Mobile Menu -->
                 <a href="{% url 'home' %}" class="py-3 px-4 rounded-xl hover:bg-brand-bg font-bold">Home</a>
-                <a href="{% url 'all_products' %}" class="py-3 px-4 rounded-xl hover:bg-brand-bg font-bold flex items-center gap-2">
+                <a href="{% url 'all_products' %}"
+                    class="py-3 px-4 rounded-xl hover:bg-brand-bg font-bold flex items-center gap-2">
                     <span class="material-icons-outlined text-sm"></span>
                     All Products
                 </a>
@@ -358,71 +362,71 @@
     <footer class="bg-brand-bg pt-20 pb-10">
         <div class="container mx-auto px-6">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
-                    <div class="col-span-1 md:col-span-1">
-                        <div class="flex items-center gap-3 mb-6">
-                            <div class="w-10 h-10 rounded-xl bg-white shadow-md flex items-center justify-center">
-                                <span class="material-icons-outlined text-brand-primary text-xl">shopping_bag</span>
-                            </div>
+                <div class="col-span-1 md:col-span-1">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-10 h-10 rounded-xl bg-white shadow-md flex items-center justify-center">
+                            <span class="material-icons-outlined text-brand-primary text-xl">shopping_bag</span>
+                        </div>
 
-                            <span class="text-2xl font-extrabold tracking-tight hidden sm:block">
-                                <span class="text-blue-600">Buy</span><span class="text-orange-500">Next</span>
-                            </span>
-                            <span class="text-lg font-extrabold sm:hidden">
-                                <span class="text-blue-600">Buy</span><span class="text-orange-500">Next</span>
-                            </span>
+                        <span class="text-2xl font-extrabold tracking-tight hidden sm:block">
+                            <span class="text-blue-600">Buy</span><span class="text-orange-500">Next</span>
+                        </span>
+                        <span class="text-lg font-extrabold sm:hidden">
+                            <span class="text-blue-600">Buy</span><span class="text-orange-500">Next</span>
+                        </span>
+                    </div>
+                    <p class="text-sm text-gray-500 leading-relaxed mb-6">The definitive marketplace for luxury
+                        items
+                        and independent creators.</p>
+                    <div class="flex gap-4">
+                        <div
+                            class="w-10 h-10 bg-brand-accent rounded-full flex items-center justify-center cursor-pointer hover:bg-brand-primary hover:text-white transition-colors">
+                            <span class="material-icons-outlined text-sm">camera</span>
                         </div>
-                        <p class="text-sm text-gray-500 leading-relaxed mb-6">The definitive marketplace for luxury
-                            items
-                            and independent creators.</p>
-                        <div class="flex gap-4">
-                            <div
-                                class="w-10 h-10 bg-brand-accent rounded-full flex items-center justify-center cursor-pointer hover:bg-brand-primary hover:text-white transition-colors">
-                                <span class="material-icons-outlined text-sm">camera</span>
-                            </div>
-                            <div
-                                class="w-10 h-10 bg-brand-accent rounded-full flex items-center justify-center cursor-pointer hover:bg-brand-primary hover:text-white transition-colors">
-                                <span class="material-icons-outlined text-sm">alternate_email</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <h4 class="font-bold uppercase tracking-widest text-xs mb-6">Marketplace</h4>
-                        <ul class="space-y-4 text-sm text-gray-500">
-                            <li><a href="#" class="hover:text-brand-primary">Become a Seller</a></li>
-                            <li><a href="#" class="hover:text-brand-primary">Authenticity Policy</a></li>
-                            <li><a href="#" class="hover:text-brand-primary">Affiliate Program</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 class="font-bold uppercase tracking-widest text-xs mb-6">Help</h4>
-                        <ul class="space-y-4 text-sm text-gray-500">
-                            <li><a href="#" class="hover:text-brand-primary">Shipping & Returns</a></li>
-                            <li><a href="#" class="hover:text-brand-primary">Track Order</a></li>
-                            <li><a href="#" class="hover:text-brand-primary">Contact Support</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 class="font-bold uppercase tracking-widest text-xs mb-6">Journal</h4>
-                        <p class="text-sm text-gray-500 mb-4">Sign up for early access to drops.</p>
-                        <div class="flex gap-2">
-                            <input type="email" placeholder="Email"
-                                class="w-full bg-white border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-brand-primary shadow-sm">
-                            <button class="bg-brand-primary text-white p-2 rounded-xl px-4 hover:opacity-90"><span
-                                    class="material-icons-outlined text-sm">east</span></button>
+                        <div
+                            class="w-10 h-10 bg-brand-accent rounded-full flex items-center justify-center cursor-pointer hover:bg-brand-primary hover:text-white transition-colors">
+                            <span class="material-icons-outlined text-sm">alternate_email</span>
                         </div>
                     </div>
                 </div>
-                <div
-                    class="pt-8 border-t border-gray-300 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-gray-400">
-                    <p>&copy; 2026 BuyNext Marketplace.</p>
-                    <div class="flex gap-6">
-                        <a href="#" class="hover:text-brand-primary">Privacy</a>
-                        <a href="#" class="hover:text-brand-primary">Terms</a>
-                        <a href="#" class="hover:text-brand-primary">Cookies</a>
+                <div>
+                    <h4 class="font-bold uppercase tracking-widest text-xs mb-6">Marketplace</h4>
+                    <ul class="space-y-4 text-sm text-gray-500">
+                        <li><a href="#" class="hover:text-brand-primary">Become a Seller</a></li>
+                        <li><a href="#" class="hover:text-brand-primary">Authenticity Policy</a></li>
+                        <li><a href="#" class="hover:text-brand-primary">Affiliate Program</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold uppercase tracking-widest text-xs mb-6">Help</h4>
+                    <ul class="space-y-4 text-sm text-gray-500">
+                        <li><a href="#" class="hover:text-brand-primary">Shipping & Returns</a></li>
+                        <li><a href="#" class="hover:text-brand-primary">Track Order</a></li>
+                        <li><a href="#" class="hover:text-brand-primary">Contact Support</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold uppercase tracking-widest text-xs mb-6">Journal</h4>
+                    <p class="text-sm text-gray-500 mb-4">Sign up for early access to drops.</p>
+                    <div class="flex gap-2">
+                        <input type="email" placeholder="Email"
+                            class="w-full bg-white border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-brand-primary shadow-sm">
+                        <button class="bg-brand-primary text-white p-2 rounded-xl px-4 hover:opacity-90"><span
+                                class="material-icons-outlined text-sm">east</span></button>
                     </div>
                 </div>
             </div>
-        </footer>
+            <div
+                class="pt-8 border-t border-gray-300 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                <p>&copy; 2026 BuyNext Marketplace.</p>
+                <div class="flex gap-6">
+                    <a href="#" class="hover:text-brand-primary">Privacy</a>
+                    <a href="#" class="hover:text-brand-primary">Terms</a>
+                    <a href="#" class="hover:text-brand-primary">Cookies</a>
+                </div>
+            </div>
+        </div>
+    </footer>
 
 
     <script>
