@@ -2,6 +2,9 @@ from django.urls import path
 from . import views
 urlpatterns = [
           path("profile/",views.user_profile_view,name="profile"),
+          path("address/save/", views.save_address, name="save_address"),         
+          path("address/setdefault/<uuid:address_id>", views.set_default_address, name="set_default"),         
+          path("address/delete/<uuid:address_id>", views.delete_address, name="delete_address"),         
           path("product/addcart/<uuid:variant_id>/",views.add_cart,name="add_cart"),
           path("home/cart/",views.view_cart,name="view_cart"),
           path("cart/delete/<uuid:cart_item_id>",views.delete_cart_item,name="delete_cart_item"),

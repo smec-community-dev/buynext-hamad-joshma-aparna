@@ -21,7 +21,73 @@ def user_profile_view(request):
                 user_obj.profile_image.delete(save=False)
             user_obj.profile_image=pro_image
         user_obj.save()
-    return render(request,"customer/profile.html",{"user":user_obj})
+        messages.success(request,"Profile Updated Successfully.")
+        return redirect("profile")
+    addresses =Address.objects.filter(user=request.user)
+    context={
+        "addresses":addresses,
+        "user":user_obj,
+        }
+    
+    return render(request,"customer/profile.html",context)
+@customer_required
+def set_default_address(request,address_id):
+    address = get_object_or_404(Address, id=address_id, user=request.user)
+    Address.objects.filter(user=request.user, is_default=True).update(is_default=False)
+    address.is_default = True
+    address.save()
+    messages.success(request, "Default address updated")
+    return redirect("profile")
+@customer_required
+def delete_address(request,address_id):
+    address =get_object_or_404(Address,user=request.user,id=address_id)
+    address.delete()
+    messages.error(request,"Address deleted successfully")
+    return redirect("profile")
+
+@customer_required
+def save_address(request):
+
+    if request.method == "POST":
+
+        address_id = request.POST.get("address_id")
+
+        full_name = request.POST.get("full_name")
+        phone_number = request.POST.get("phone_number")
+        pincode = request.POST.get("pincode")
+        locality = request.POST.get("locality")
+        house_info = request.POST.get("house_info")
+        city = request.POST.get("city")
+        state = request.POST.get("state")
+        country = request.POST.get("country")
+        landmark = request.POST.get("landmark")
+        address_type = request.POST.get("address_type")
+        is_default = request.POST.get("is_default") == "on"
+
+        if address_id:
+            address = get_object_or_404(Address, id=address_id, user=request.user)
+
+        else:
+            address = Address(user=request.user)
+
+        address.full_name = full_name
+        address.phone_number = phone_number
+        address.pincode = pincode
+        address.locality = locality
+        address.house_info = house_info
+        address.city = city
+        address.state = state
+        address.country = country
+        address.landmark = landmark
+        address.address_type = address_type
+        address.is_default = is_default
+
+        address.save()
+
+        messages.success(request, "Address saved successfully")
+
+    return redirect("profile")
+    
 @customer_required
 def add_cart(request,variant_id):
     MAX_CART_QUANTITY = 3
