@@ -123,7 +123,8 @@ class ProductGallery(models.Model):
         related_name="gallery"
     )
 
-    image = models.ImageField(upload_to="product_images/")
+    image = models.ImageField(upload_to="product_images/", null=True, blank=True)
+    video = models.FileField(upload_to="product_videos/", null=True, blank=True)
 
     alt_text = models.CharField(max_length=255, blank=True)
 

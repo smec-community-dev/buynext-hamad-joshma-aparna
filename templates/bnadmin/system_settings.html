@@ -1,0 +1,88 @@
+{% extends "bnadmin/base.html" %}
+
+{% block title %}System Settings{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <div>
+        <h1 class="text-3xl font-bold text-slate-900">System Settings</h1>
+        <p class="text-slate-500">System configuration overview for platform operations, security, and support.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+        <div class="bg-white border border-slate-100 rounded-2xl p-5">
+            <p class="text-xs uppercase tracking-widest text-slate-400 font-bold">Database Engine</p>
+            <p class="text-xl font-semibold mt-2">{{ db_engine|upper }}</p>
+        </div>
+        <div class="bg-white border border-slate-100 rounded-2xl p-5">
+            <p class="text-xs uppercase tracking-widest text-slate-400 font-bold">Server Time</p>
+            <p class="text-xl font-semibold mt-2">{{ server_time|date:"M d, Y H:i:s" }}</p>
+        </div>
+        <div class="bg-white border border-slate-100 rounded-2xl p-5">
+            <p class="text-xs uppercase tracking-widest text-slate-400 font-bold">Timezone</p>
+            <p class="text-xl font-semibold mt-2">{{ server_time|date:"e" }}</p>
+        </div>
+        <div class="bg-white border border-slate-100 rounded-2xl p-5">
+            <p class="text-xs uppercase tracking-widest text-slate-400 font-bold">Configuration Scope</p>
+            <p class="text-xl font-semibold mt-2">Read-Only</p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <section class="bg-white border border-slate-100 rounded-2xl p-5">
+            <h2 class="font-bold text-slate-800 mb-4">Operational Controls</h2>
+            <div class="space-y-3">
+                <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
+                    <div>
+                        <p class="font-semibold text-slate-700">Order Processing</p>
+                        <p class="text-xs text-slate-500">Order pipeline and status transitions.</p>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700">Enabled</span>
+                </div>
+                <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
+                    <div>
+                        <p class="font-semibold text-slate-700">Seller Verification</p>
+                        <p class="text-xs text-slate-500">Manual verification by admin team.</p>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700">Review-Based</span>
+                </div>
+                <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
+                    <div>
+                        <p class="font-semibold text-slate-700">Product Moderation</p>
+                        <p class="text-xs text-slate-500">Pending product approval workflow.</p>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700">Enabled</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-white border border-slate-100 rounded-2xl p-5">
+            <h2 class="font-bold text-slate-800 mb-4">Security Defaults</h2>
+            <div class="space-y-3">
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-100">
+                    <p class="font-semibold text-slate-700">Authentication</p>
+                    <p class="text-xs text-slate-500 mt-1">Admin routes protected with role-based access checks.</p>
+                </div>
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-100">
+                    <p class="font-semibold text-slate-700">Audit Visibility</p>
+                    <p class="text-xs text-slate-500 mt-1">Critical account and verification actions are visible in admin workflows.</p>
+                </div>
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-100">
+                    <p class="font-semibold text-slate-700">Deployment-Controlled Settings</p>
+                    <p class="text-xs text-slate-500 mt-1">Environment-level security configuration is managed outside this panel.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div class="bg-white border border-slate-100 rounded-2xl p-5">
+        <h2 class="font-bold text-slate-800 mb-3">System Links</h2>
+        <div class="flex flex-wrap gap-3">
+            <a href="{% url 'platform_status' %}" class="px-4 py-2 rounded-xl bg-primary/10 text-primary font-semibold">Platform Status</a>
+            <a href="{% url 'security_policy' %}" class="px-4 py-2 rounded-xl bg-primary/10 text-primary font-semibold">Security Policy</a>
+            <a href="{% url 'help_desk' %}" class="px-4 py-2 rounded-xl bg-primary/10 text-primary font-semibold">Help Desk</a>
+        </div>
+        <p class="text-xs text-slate-500 mt-3">For environment changes, use deployment configuration and infrastructure dashboards.</p>
+    </div>
+</div>
+{% endblock %}

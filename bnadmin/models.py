@@ -1,7 +1,7 @@
 import uuid
 from django.db import models
 from django.utils.text import slugify
-from core.models import Category
+from core.models import Category, User
 from seller.models import Product, SellerProfile
 from customer.models import OrderItem
 
@@ -268,3 +268,28 @@ class PlatformCommission(models.Model):
 
     def __str__(self):
         return f"Commission ₹{self.commission_amount} | {self.seller.store_name} | {self.settlement_status}"
+
+
+class ProductRejectionReason(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, related_name="rejection_reasons"
+    )
+    reason = models.TextField()
+    created_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="product_rejections",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["product", "-created_at"]),
+        ]
+
+    def __str__(self):
+        return f"Rejection for {self.product.name}"

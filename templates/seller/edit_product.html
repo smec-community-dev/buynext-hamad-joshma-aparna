@@ -104,7 +104,15 @@
                         {% if product %}
                         {% for img in product.gallery.all %}
                         <div class="relative aspect-square rounded-3xl overflow-hidden border border-slate-200">
+                            {% if img.image %}
                             <img src="{{ img.image.url }}" class="w-full h-full object-cover">
+                            {% elif img.video %}
+                            <video src="{{ img.video.url }}" class="w-full h-full object-cover" muted playsinline></video>
+                            {% else %}
+                            <div class="w-full h-full flex items-center justify-center text-slate-300">
+                                <span class="material-icons-outlined">image</span>
+                            </div>
+                            {% endif %}
 
                             {% if img.is_primary %}
                             <div class="absolute top-2 right-2 w-6 h-6 bg-brand-blue text-white rounded-full flex items-center justify-center">
@@ -116,7 +124,7 @@
                         {% endif %}
 
                         <label class="relative aspect-square rounded-3xl border-2 border-dashed border-slate-200 hover:border-brand-blue hover:bg-blue-50/50 transition-all cursor-pointer flex flex-col items-center justify-center gap-2 group">
-                            <input type="file" name="product_images[]" multiple accept="image/*" class="hidden" id="imageInput" onchange="handleImageUpload(event)">
+                            <input type="file" name="product_images" multiple accept="image/*,video/*" class="hidden" id="imageInput" onchange="handleImageUpload(event)">
                             <div class="w-10 h-10 rounded-full bg-slate-100 group-hover:bg-brand-blue group-hover:text-white flex items-center justify-center transition-all">
                                 <span class="material-icons-outlined">add</span>
                             </div>

@@ -1,0 +1,506 @@
+{% extends "bnadmin/base.html" %}
+{% load static %}
+
+{% block title %}BuyNext Admin - {{ product.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .bn-thumb {
+        border: 1px solid rgba(148, 163, 184, 0.4);
+        transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .bn-thumb:hover {
+        transform: translateY(-2px);
+        border-color: rgba(95, 117, 52, 0.6);
+    }
+    .bn-thumb.active {
+        border-color: rgba(95, 117, 52, 0.9);
+        box-shadow: 0 10px 24px -12px rgba(95, 117, 52, 0.55);
+    }
+    .bn-variant-card {
+        border: 1px solid rgba(226, 232, 240, 0.9);
+        background: #fff;
+        border-radius: 16px;
+        padding: 14px;
+        transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+        text-align: left;
+    }
+    .bn-variant-card:hover {
+        transform: translateY(-2px);
+        border-color: rgba(95, 117, 52, 0.55);
+        box-shadow: 0 12px 26px -18px rgba(15, 23, 42, 0.35);
+    }
+    .bn-variant-card.active {
+        border-color: rgba(95, 117, 52, 0.9);
+        box-shadow: 0 12px 26px -18px rgba(95, 117, 52, 0.45);
+    }
+    .bn-main-image-wrap {
+        position: relative;
+        overflow: hidden;
+        border-radius: 1.5rem;
+        background: #f1f5f9;
+    }
+    .bn-main-image {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        object-fit: cover;
+        transform-origin: 50% 50%;
+        transition: transform 0.12s ease-out;
+    }
+    .bn-zoom-active .bn-main-image {
+        transform: scale(1.8);
+    }
+    .bn-slider-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 44px;
+        height: 44px;
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.55);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(8px);
+        transition: transform 0.15s ease, background 0.2s ease;
+        z-index: 2;
+    }
+    .bn-slider-btn:hover {
+        background: rgba(15, 23, 42, 0.75);
+        transform: translateY(-50%) scale(1.05);
+    }
+    .bn-slider-btn[disabled] {
+        opacity: 0.35;
+        pointer-events: none;
+    }
+    .bn-slider-btn.prev {
+        left: 12px;
+    }
+    .bn-slider-btn.next {
+        right: 12px;
+    }
+    .bn-preview-grid {
+        align-items: flex-start;
+    }
+    .bn-preview-left {
+        position: sticky;
+        top: 0.25rem;
+        max-height: calc(100vh - 3.5rem);
+        overflow: hidden;
+    }
+    @media (max-width: 1023px) {
+        .bn-preview-left {
+            position: static;
+            max-height: none;
+            overflow: visible;
+        }
+        .bn-preview-right {
+            max-height: none;
+            overflow: visible;
+            padding-right: 0;
+            padding-left: 0;
+            margin-right: 0;
+        }
+        html, body {
+            overflow: auto;
+        }
+        #main-content {
+            height: auto;
+            overflow: visible;
+        }
+        .bn-thumb-row {
+            padding: 0 2rem;
+        }
+        .bn-slider-btn {
+            width: 36px;
+            height: 36px;
+        }
+        .bn-thumb-nav {
+            width: 28px;
+            height: 28px;
+        }
+    }
+    @media (min-width: 1024px) {
+        #main-content {
+            height: calc(100vh - 5rem);
+            overflow: hidden;
+        }
+        .bn-preview-grid {
+            grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
+        }
+    }
+    .bn-preview-right {
+        max-height: calc(100vh - 6.5rem);
+        overflow-y: auto;
+        padding-right: 16px;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+        padding-left: 8px;
+        margin-right: 8px;
+    }
+    .bn-preview-right::-webkit-scrollbar {
+        width: 0;
+        height: 0;
+    }
+    #main-footer {
+        display: none;
+    }
+    #main-navbar {
+        display: none;
+    }
+    html, body {
+        height: 100%;
+        overflow: hidden;
+    }
+    .bn-thumb-wrap {
+        position: relative;
+    }
+    .bn-thumb-row {
+        overflow: hidden;
+        padding: 0 2.5rem;
+        scroll-behavior: smooth;
+    }
+    .bn-thumb-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 32px;
+        height: 32px;
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.6);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        z-index: 2;
+    }
+    .bn-thumb-nav.prev {
+        left: 6px;
+    }
+    .bn-thumb-nav.next {
+        right: 6px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen relative pt-6">
+    <div class="grid lg:grid-cols-2 gap-8 bn-preview-grid">
+        <div class="space-y-4 bn-preview-left">
+            <a href="{% if back_url %}{{ back_url }}{% else %}{% url 'product_verification' %}#allProductsTable{% endif %}" class="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-primary transition-colors">
+                <span class="material-symbols-outlined text-sm">chevron_left</span>
+                {{ back_label|default:"Back to products" }}
+            </a>
+            <div class="rounded-3xl border border-slate-200 bg-white p-4">
+                {% if gallery_images %}
+                <div class="bn-main-image-wrap" id="bnMainImageWrap">
+                    <button type="button" class="bn-slider-btn prev" id="bnPrevBtn" aria-label="Previous image">
+                        <span class="material-symbols-outlined">chevron_left</span>
+                    </button>
+                    <img id="mainImage" src="{% if gallery_images.0.type != 'video' %}{{ gallery_images.0.url }}{% endif %}" alt="{{ gallery_images.0.alt|default:product.name }}" class="bn-main-image max-h-[470px] {% if gallery_images.0.type == 'video' %}hidden{% endif %}">
+                    <video id="mainVideo" src="{% if gallery_images.0.type == 'video' %}{{ gallery_images.0.url }}{% endif %}" class="bn-main-image max-h-[470px] {% if gallery_images.0.type != 'video' %}hidden{% endif %}" controls playsinline></video>
+                    <button type="button" class="bn-slider-btn next" id="bnNextBtn" aria-label="Next image">
+                        <span class="material-symbols-outlined">chevron_right</span>
+                    </button>
+                </div>
+                {% else %}
+                <div class="rounded-2xl bg-slate-100 aspect-square flex items-center justify-center text-slate-400 text-sm font-semibold">
+                    No product image
+                </div>
+                {% endif %}
+            </div>
+
+            {% if gallery_images %}
+            <div class="bn-thumb-wrap">
+                <button type="button" class="bn-thumb-nav prev" id="bnThumbPrev" aria-label="Previous thumbnails">
+                    <span class="material-symbols-outlined text-base">chevron_left</span>
+                </button>
+                <div class="bn-thumb-row flex gap-3 pb-2" id="bnThumbRow">
+                    {% for image in gallery_images %}
+                    <button type="button" class="bn-thumb rounded-2xl overflow-hidden bg-white shrink-0 {% if forloop.first %}active{% endif %}" data-gallery-thumb="{{ image.url }}" data-media-type="{{ image.type|default:'image' }}">
+                        {% if image.type == "video" %}
+                        <div class="h-24 w-24 bg-slate-900/80 flex items-center justify-center text-white">
+                            <span class="material-symbols-outlined">play_arrow</span>
+                        </div>
+                        {% else %}
+                        <img src="{{ image.url }}" alt="{{ image.alt|default:product.name }}" class="h-24 w-24 object-cover">
+                        {% endif %}
+                    </button>
+                    {% endfor %}
+                </div>
+                <button type="button" class="bn-thumb-nav next" id="bnThumbNext" aria-label="Next thumbnails">
+                    <span class="material-symbols-outlined text-base">chevron_right</span>
+                </button>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="space-y-6 bn-preview-right pr-2">
+            <div>
+                <p class="text-xs font-bold uppercase tracking-[0.3em] text-slate-400">BuyNext Admin</p>
+                <h1 class="text-3xl font-bold text-slate-900 mt-2">{{ product.name }}</h1>
+                <p class="text-sm text-slate-500 mt-1">
+                    {{ product.brand|default:"Brand n/a" }}
+                    {% if product.subcategory %} • {{ product.subcategory.name }}{% endif %}
+                    {% if product.subcategory and product.subcategory.category %} • {{ product.subcategory.category.name }}{% endif %}
+                </p>
+                <div class="flex flex-wrap gap-2 mt-4">
+                    <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-[10px] font-bold uppercase tracking-widest">Status: {{ product.approval_status }}</span>
+                    <span class="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-bold uppercase tracking-widest">Active: {% if product.is_active %}Yes{% else %}No{% endif %}</span>
+                </div>
+            </div>
+
+            <div class="rounded-3xl border border-slate-200 bg-white p-5">
+                <div class="flex flex-wrap items-baseline gap-3">
+                    <p id="priceValue" class="text-3xl font-bold text-primary">
+                        {% if primary_variant %}₹{{ primary_variant.selling_price|floatformat:2 }}{% else %}₹0.00{% endif %}
+                    </p>
+                    <p id="mrpValue" class="text-sm text-slate-400 line-through">
+                        {% if primary_variant %}₹{{ primary_variant.mrp|floatformat:2 }}{% else %}₹0.00{% endif %}
+                    </p>
+                    <span id="discountValue" class="text-xs font-semibold text-emerald-600">
+                        {% if primary_variant %}{{ primary_variant.discount_percentage }}% off{% else %}{% endif %}
+                    </span>
+                </div>
+
+                <div class="grid sm:grid-cols-2 gap-3 text-xs text-slate-600 mt-4">
+                    <div>SKU: <span id="skuValue" class="font-semibold text-slate-800">{% if primary_variant %}{{ primary_variant.sku_code }}{% else %}-{% endif %}</span></div>
+                    <div>Stock: <span id="stockValue" class="font-semibold text-slate-800">{% if primary_variant %}{{ primary_variant.stock_quantity }}{% else %}-{% endif %}</span></div>
+                    <div>Status: <span id="stockStatus" class="font-semibold {% if primary_variant and primary_variant.is_in_stock %}text-emerald-600{% else %}text-rose-600{% endif %}">{% if primary_variant and primary_variant.is_in_stock %}In stock{% else %}Out of stock{% endif %}</span></div>
+                    <div>Active: <span id="activeStatus" class="font-semibold text-slate-800">{% if primary_variant and primary_variant.is_active %}Active{% else %}Inactive{% endif %}</span></div>
+                </div>
+
+                <p id="variantSummary" class="text-xs text-slate-500 mt-3">
+                    {% if primary_variant %}
+                    {{ primary_variant.sku_code|default:"Standard variant" }}
+                    {% else %}
+                    No variants configured.
+                    {% endif %}
+                </p>
+            </div>
+
+            {% if latest_rejection %}
+            <div class="rounded-3xl border border-rose-200 bg-rose-50/60 p-5">
+                <h3 class="text-xs font-bold uppercase tracking-[0.3em] text-rose-500">Latest Rejection</h3>
+                <p class="text-sm text-rose-700 mt-3">{{ latest_rejection.reason }}</p>
+                <p class="text-[11px] text-rose-500 mt-2">Recorded {{ latest_rejection.created_at|date:"M d, Y H:i" }}</p>
+            </div>
+            {% endif %}
+
+            <div class="rounded-3xl border border-slate-200 bg-white p-5">
+                <h3 class="text-xs font-bold uppercase tracking-[0.3em] text-slate-400">Description</h3>
+                <p class="text-sm text-slate-600 mt-3">
+                    {{ product.description|default:"No description added yet." }}
+                </p>
+            </div>
+
+            <div class="rounded-3xl border border-slate-200 bg-white p-5">
+                <h3 class="text-xs font-bold uppercase tracking-[0.3em] text-slate-400">Product Details</h3>
+                <div class="grid sm:grid-cols-2 gap-4 text-sm text-slate-700 mt-3">
+                    <div>
+                        <p class="text-[11px] uppercase tracking-[0.2em] text-slate-400 font-semibold">Seller</p>
+                        <p class="font-semibold">{{ product.seller.store_name }}</p>
+                        <p class="text-xs text-slate-500">@{{ product.seller.user.username }}</p>
+                    </div>
+                    <div>
+                        <p class="text-[11px] uppercase tracking-[0.2em] text-slate-400 font-semibold">Model</p>
+                        <p class="font-semibold">{{ product.model_number|default:"-" }}</p>
+                        <p class="text-xs text-slate-500">Created {{ product.created_at|date:"M d, Y" }}</p>
+                    </div>
+                    <div>
+                        <p class="text-[11px] uppercase tracking-[0.2em] text-slate-400 font-semibold">Return Policy</p>
+                        <p class="font-semibold">{% if product.is_returnable %}Returnable{% else %}Non-returnable{% endif %}</p>
+                        <p class="text-xs text-slate-500">{{ product.return_days }} day(s) window</p>
+                    </div>
+                    <div>
+                        <p class="text-[11px] uppercase tracking-[0.2em] text-slate-400 font-semibold">Cancellation</p>
+                        <p class="font-semibold">{% if product.is_cancellable %}Cancellable{% else %}Non-cancellable{% endif %}</p>
+                        <p class="text-xs text-slate-500">Status: {{ product.approval_status }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rounded-3xl border border-slate-200 bg-white p-5">
+                <h3 class="text-xs font-bold uppercase tracking-[0.3em] text-slate-400">Variants</h3>
+                <div class="grid sm:grid-cols-2 gap-3 mt-4">
+                    {% for variant in variant_cards %}
+                    <button type="button" class="bn-variant-card {% if primary_variant_id == variant.id %}active{% endif %}" data-variant-id="{{ variant.id }}">
+                        <div class="flex items-center gap-3">
+                            <div class="h-12 w-12 rounded-xl bg-slate-100 overflow-hidden flex items-center justify-center">
+                                {% if variant.image_url %}
+                                <img src="{{ variant.image_url }}" alt="{{ variant.label }}" class="h-full w-full object-cover">
+                                {% else %}
+                                <span class="material-symbols-outlined text-slate-400">image</span>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <p class="text-sm font-semibold text-slate-800">{{ variant.label }}</p>
+                                <p class="text-xs text-slate-500">{{ variant.sku|default:"SKU pending" }}</p>
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-2">
+                            {% if variant.attributes %}
+                                {% for detail in variant.attributes %}
+                                    {{ detail.name }}: {{ detail.value }}{% if not forloop.last %} · {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                Standard configuration
+                            {% endif %}
+                        </p>
+                        <div class="flex items-center justify-between text-xs mt-3">
+                            <span class="font-semibold text-slate-700">₹{{ variant.price|floatformat:2 }}</span>
+                            <span class="font-semibold {% if variant.is_in_stock %}text-emerald-600{% else %}text-rose-600{% endif %}">
+                                {% if variant.is_in_stock %}In stock{% else %}Out of stock{% endif %}
+                            </span>
+                        </div>
+                    </button>
+                    {% empty %}
+                    <div class="text-sm text-slate-500">No variants available for this product.</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{ variant_payload|json_script:"variantPayload" }}
+
+<script>
+    const mainImage = document.getElementById("mainImage");
+    const mainVideo = document.getElementById("mainVideo");
+    const mainWrap = document.getElementById("bnMainImageWrap");
+    const prevBtn = document.getElementById("bnPrevBtn");
+    const nextBtn = document.getElementById("bnNextBtn");
+    const thumbButtons = document.querySelectorAll("[data-gallery-thumb]");
+    const thumbRow = document.getElementById("bnThumbRow");
+    const thumbPrev = document.getElementById("bnThumbPrev");
+    const thumbNext = document.getElementById("bnThumbNext");
+    const priceValue = document.getElementById("priceValue");
+    const mrpValue = document.getElementById("mrpValue");
+    const discountValue = document.getElementById("discountValue");
+    const skuValue = document.getElementById("skuValue");
+    const stockValue = document.getElementById("stockValue");
+    const stockStatus = document.getElementById("stockStatus");
+    const activeStatus = document.getElementById("activeStatus");
+    const variantSummary = document.getElementById("variantSummary");
+    const variantCards = document.querySelectorAll(".bn-variant-card");
+
+    const galleryItems = Array.from(thumbButtons).map((btn) => ({
+        url: btn.getAttribute("data-gallery-thumb"),
+        type: btn.getAttribute("data-media-type") || "image",
+    }));
+    let currentIndex = 0;
+    let currentType = "image";
+
+    const updateMainImage = (index) => {
+        if (!thumbButtons.length) return;
+        currentIndex = Math.max(0, Math.min(index, galleryItems.length - 1));
+        const item = galleryItems[currentIndex];
+        const url = item ? item.url : "";
+        currentType = item ? item.type : "image";
+
+        if (currentType === "video") {
+            if (mainVideo) {
+                mainVideo.src = url;
+                mainVideo.classList.remove("hidden");
+            }
+            if (mainImage) {
+                mainImage.classList.add("hidden");
+            }
+            if (mainWrap) {
+                mainWrap.classList.remove("bn-zoom-active");
+            }
+        } else {
+            if (mainImage) {
+                mainImage.src = url;
+                mainImage.classList.remove("hidden");
+            }
+            if (mainVideo) {
+                mainVideo.pause();
+                mainVideo.classList.add("hidden");
+            }
+        }
+
+        thumbButtons.forEach((el, i) => {
+            if (i === currentIndex) el.classList.add("active");
+            else el.classList.remove("active");
+        });
+        if (prevBtn) prevBtn.disabled = currentIndex === 0;
+        if (nextBtn) nextBtn.disabled = currentIndex === galleryItems.length - 1;
+    };
+
+    if (thumbButtons.length && mainImage) {
+        thumbButtons.forEach((btn, index) => {
+            btn.addEventListener("click", () => updateMainImage(index));
+        });
+        if (prevBtn) prevBtn.addEventListener("click", () => updateMainImage(currentIndex - 1));
+        if (nextBtn) nextBtn.addEventListener("click", () => updateMainImage(currentIndex + 1));
+        updateMainImage(0);
+    }
+
+    const scrollThumbs = (direction) => {
+        if (!thumbRow) return;
+        const amount = thumbRow.clientWidth * 0.6;
+        thumbRow.scrollBy({ left: direction * amount, behavior: "smooth" });
+    };
+    if (thumbPrev) thumbPrev.addEventListener("click", () => scrollThumbs(-1));
+    if (thumbNext) thumbNext.addEventListener("click", () => scrollThumbs(1));
+
+    if (mainWrap && mainImage) {
+        mainWrap.addEventListener("mousemove", (e) => {
+            if (currentType === "video") return;
+            const rect = mainWrap.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 100;
+            const y = ((e.clientY - rect.top) / rect.height) * 100;
+            mainImage.style.transformOrigin = `${x}% ${y}%`;
+            mainWrap.classList.add("bn-zoom-active");
+        });
+        mainWrap.addEventListener("mouseleave", () => {
+            mainWrap.classList.remove("bn-zoom-active");
+            mainImage.style.transformOrigin = "50% 50%";
+        });
+    }
+
+    const payloadNode = document.getElementById("variantPayload");
+    const variantList = payloadNode ? JSON.parse(payloadNode.textContent) : [];
+    const variantMap = new Map(variantList.map((variant) => [variant.id, variant]));
+    const defaultVariantId = "{{ primary_variant_id }}";
+
+    const updateVariantDetails = (variantId) => {
+        const variant = variantMap.get(variantId);
+        if (!variant) {
+            return;
+        }
+        priceValue.textContent = `₹${variant.price}`;
+        mrpValue.textContent = variant.mrp ? `₹${variant.mrp}` : "₹0.00";
+        discountValue.textContent = variant.discount ? `${variant.discount}% off` : "";
+        skuValue.textContent = variant.sku || "-";
+        stockValue.textContent = variant.stock ?? "-";
+        stockStatus.textContent = variant.is_in_stock ? "In stock" : "Out of stock";
+        stockStatus.className = variant.is_in_stock
+            ? "font-semibold text-emerald-600"
+            : "font-semibold text-rose-600";
+        activeStatus.textContent = variant.is_active ? "Active" : "Inactive";
+        activeStatus.className = "font-semibold text-slate-800";
+        variantSummary.textContent = variant.attribute_summary || "Standard configuration";
+    };
+
+    if (defaultVariantId && variantMap.has(defaultVariantId)) {
+        updateVariantDetails(defaultVariantId);
+    }
+
+    if (variantCards.length) {
+        variantCards.forEach((card) => {
+            card.addEventListener("click", () => {
+                const variantId = card.getAttribute("data-variant-id");
+                variantCards.forEach((el) => el.classList.remove("active"));
+                card.classList.add("active");
+                updateVariantDetails(variantId);
+            });
+        });
+    }
+</script>
+{% endblock %}

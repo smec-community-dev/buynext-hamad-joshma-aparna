@@ -1,0 +1,205 @@
+{% extends "bnadmin/base.html" %}
+{% load static %}
+
+{% block title %}BuyNext Admin - Customer Orders{% endblock %}
+
+{% block extra_css %}
+<style>
+:root{
+--bn-cream:#ffffff;
+--bn-sage:#5f7534;
+--bn-sage-dark:#4b5e29;
+--bn-text:#27311d;
+--bn-muted:#6f7662;
+--bn-line:#e3dccd;
+--bn-soft:#ebe5d7;
+}
+
+.management-shell{
+background:linear-gradient(180deg,var(--bn-cream) 0%,#ffffff 100%);
+border:1px solid var(--bn-line);
+border-radius:24px;
+padding:1.25rem;
+box-shadow:0 16px 36px rgba(39,49,29,0.08);
+}
+
+.table-card{
+background:#ffffff;
+border-radius:20px;
+border:1px solid var(--bn-line);
+overflow:hidden;
+}
+
+.table-head{
+background:var(--bn-soft);
+color:var(--bn-muted);
+font-size:11px;
+font-weight:800;
+letter-spacing:0.08em;
+text-transform:uppercase;
+}
+
+.status-badge{
+display:inline-flex;
+align-items:center;
+padding:4px 12px;
+border-radius:999px;
+font-size:12px;
+font-weight:700;
+}
+
+.status-delivered{background:#e4eed4;color:#3f5620;}
+.status-cancelled{background:#f9e9e8;color:#a14845;}
+.status-pending{background:#f8edd8;color:#996c2f;}
+.status-other{background:#edf1f5;color:#5d6777;}
+
+.action-btn{
+display:inline-flex;
+align-items:center;
+gap:0.35rem;
+padding:8px 12px;
+border-radius:10px;
+font-size:13px;
+font-weight:700;
+transition:all 0.2s ease;
+}
+
+.action-btn:hover{
+transform:translateY(-1px);
+}
+
+.action-primary{
+color:#fff;
+background:var(--bn-sage);
+border:1px solid var(--bn-sage);
+}
+
+.action-primary:hover{
+background:var(--bn-sage-dark);
+border-color:var(--bn-sage-dark);
+}
+
+.action-secondary{
+color:#5f6357;
+background:#fff;
+border:1px solid #ddd7c9;
+}
+
+.action-secondary:hover{
+background:#f8f6ef;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen p-4 md:p-8">
+<div class="management-shell">
+
+<div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+<div>
+<p class="text-[11px] uppercase tracking-[0.2em] font-bold text-[#7b826f]">Customer Orders</p>
+<h1 class="text-3xl font-bold text-[#2f3a22]">{{ customer.get_full_name|default:customer.username }}</h1>
+<p class="text-sm text-[#727a66] mt-1">
+{{ customer.email|default:"-" }}{% if customer.phone_number %} | {{ customer.phone_number }}{% endif %}
+</p>
+</div>
+<div class="flex flex-wrap gap-2">
+<a href="{% url 'usermanagement' %}" class="action-btn action-secondary">
+<span class="material-symbols-outlined text-[18px]">arrow_back</span>
+Back to Customers
+</a>
+<a href="{% url 'edit_user' customer.id %}" class="action-btn action-primary">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+Edit Customer
+</a>
+</div>
+</div>
+
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+<div class="rounded-2xl border border-[#e7e0d2] bg-white px-5 py-4">
+<p class="text-[11px] font-bold uppercase tracking-[0.16em] text-[#8b907f]">Total Orders</p>
+<p class="mt-2 text-2xl font-bold text-[#2f3a22]">{{ order_stats.total }}</p>
+</div>
+<div class="rounded-2xl border border-[#e7e0d2] bg-[#f2f7e8] px-5 py-4">
+<p class="text-[11px] font-bold uppercase tracking-[0.16em] text-[#8b907f]">Delivered</p>
+<p class="mt-2 text-2xl font-bold text-[#3f5620]">{{ order_stats.delivered }}</p>
+</div>
+<div class="rounded-2xl border border-[#e7e0d2] bg-[#fbefee] px-5 py-4">
+<p class="text-[11px] font-bold uppercase tracking-[0.16em] text-[#8b907f]">Cancelled</p>
+<p class="mt-2 text-2xl font-bold text-[#a14845]">{{ order_stats.cancelled }}</p>
+</div>
+<div class="rounded-2xl border border-[#e7e0d2] bg-[#fbf7ed] px-5 py-4">
+<p class="text-[11px] font-bold uppercase tracking-[0.16em] text-[#8b907f]">Revenue</p>
+<p class="mt-2 text-2xl font-bold text-[#996c2f]">Rs. {{ order_stats.revenue|floatformat:2 }}</p>
+</div>
+</div>
+
+<div class="table-card">
+<div class="overflow-x-auto">
+<table class="w-full text-sm text-left min-w-[1120px]">
+<thead class="table-head">
+<tr>
+<th class="px-6 py-4">Order</th>
+<th class="px-6 py-4">Status</th>
+<th class="px-6 py-4">Items</th>
+<th class="px-6 py-4">Payment</th>
+<th class="px-6 py-4 text-right">Total</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#eee8da]">
+{% for order in orders %}
+<tr class="hover:bg-[#fcfbf7]">
+<td class="px-6 py-4">
+<p class="font-semibold text-[#2f3a22]">{{ order.order_number }}</p>
+<p class="text-xs text-[#808774]">{{ order.ordered_at|date:"M d, Y H:i" }}</p>
+</td>
+<td class="px-6 py-4">
+{% if order.order_status == "DELIVERED" %}
+<span class="status-badge status-delivered">Delivered</span>
+{% elif order.order_status == "CANCELLED" %}
+<span class="status-badge status-cancelled">Cancelled</span>
+{% elif order.order_status == "PLACED" or order.order_status == "CONFIRMED" or order.order_status == "PROCESSING" or order.order_status == "SHIPPED" or order.order_status == "OUT_FOR_DELIVERY" %}
+<span class="status-badge status-pending">{{ order.get_order_status_display }}</span>
+{% else %}
+<span class="status-badge status-other">{{ order.get_order_status_display }}</span>
+{% endif %}
+</td>
+<td class="px-6 py-4">
+<div class="space-y-1">
+{% for item in order.items.all %}
+<div>
+<p class="text-sm font-medium text-[#36412a]">
+{% if item.variant and item.variant.product %}
+{{ item.variant.product.name }}
+{% else %}
+Unknown product
+{% endif %}
+</p>
+<p class="text-xs text-[#808774]">
+Qty {{ item.quantity }}{% if item.seller %} | {{ item.seller.store_name }}{% endif %}
+</p>
+</div>
+{% empty %}
+<p class="text-xs text-[#808774]">No items.</p>
+{% endfor %}
+</div>
+</td>
+<td class="px-6 py-4">
+<p class="font-medium text-[#36412a]">{{ order.payment_method|default:"-" }}</p>
+<p class="text-xs text-[#808774]">{% if order.is_paid %}Paid{% else %}Unpaid{% endif %}</p>
+</td>
+<td class="px-6 py-4 text-right font-semibold text-[#2f3a22]">Rs. {{ order.final_amount|floatformat:2 }}</td>
+</tr>
+{% empty %}
+<tr>
+<td colspan="5" class="py-10 text-center text-[#888f7e]">No orders for this customer.</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</div>
+
+</div>
+</div>
+{% endblock %}

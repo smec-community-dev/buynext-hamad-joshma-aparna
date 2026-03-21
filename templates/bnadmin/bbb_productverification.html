@@ -1,0 +1,885 @@
+{% extends "bnadmin/base.html" %}
+{% load static %}
+
+{% block title %}BuyNext Admin - Product Management{% endblock %}
+
+{% block extra_css %}
+<style>
+:root{
+--bn-cream:#ffffff;
+--bn-sage:#5f7534;
+--bn-sage-dark:#4b5e29;
+--bn-muted:#6f7662;
+--bn-line:#e3dccd;
+--bn-soft:#ebe5d7;
+}
+
+.management-shell{
+background:linear-gradient(180deg,var(--bn-cream) 0%,#ffffff 100%);
+border:1px solid var(--bn-line);
+border-radius:24px;
+padding:1.25rem;
+box-shadow:0 16px 36px rgba(39,49,29,0.08);
+}
+
+.table-card{
+background:#ffffff;
+border-radius:20px;
+border:1px solid var(--bn-line);
+overflow:hidden;
+}
+
+.table-head{
+background:var(--bn-soft);
+color:var(--bn-muted);
+font-size:11px;
+font-weight:800;
+letter-spacing:0.08em;
+text-transform:uppercase;
+}
+
+.tab-btn{
+display:inline-flex;
+align-items:center;
+justify-content:center;
+padding:9px 16px;
+border-radius:10px;
+border:1px solid #dcd6c8;
+background:#fff;
+color:#616856;
+font-size:13px;
+font-weight:700;
+transition:all 0.2s ease;
+}
+
+.tab-btn:hover{
+background:#f6f4ec;
+}
+
+.tab-btn.active{
+background:var(--bn-sage);
+border-color:var(--bn-sage);
+color:#fff;
+}
+
+.status-badge{
+display:inline-flex;
+align-items:center;
+padding:4px 12px;
+border-radius:999px;
+font-size:12px;
+font-weight:700;
+}
+
+.status-approved{background:#e4eed4;color:#3f5620;}
+.status-pending{background:#f8edd8;color:#996c2f;}
+.status-rejected{background:#f9e9e8;color:#a14845;}
+.status-draft{background:#edf1f5;color:#5d6777;}
+
+.action-btn{
+display:inline-flex;
+align-items:center;
+gap:0.25rem;
+padding:8px 12px;
+border-radius:10px;
+font-size:13px;
+font-weight:700;
+transition:all 0.2s ease;
+}
+
+.action-btn:hover{
+transform:translateY(-1px);
+}
+
+.action-approve{
+color:var(--bn-sage);
+background:#edf2e3;
+}
+
+.action-approve:hover{
+background:var(--bn-sage);
+color:#fff;
+}
+
+.action-reject{
+color:#b54242;
+background:#f9eeee;
+}
+
+.action-reject:hover{
+background:#b54242;
+color:#fff;
+}
+
+.action-edit{
+color:#4f632a;
+background:#edf2e3;
+}
+
+.action-edit:hover{
+background:#dfe8ce;
+}
+
+.action-view{
+color:#3f5620;
+background:#e7efda;
+}
+
+.action-view:hover{
+background:var(--bn-sage);
+color:#fff;
+}
+
+.action-delete{
+color:#b54242;
+background:#f9eeee;
+}
+
+.action-delete:hover{
+background:#f0dada;
+}
+
+.modal-form-control{
+width:100%;
+appearance:none;
+-webkit-appearance:none;
+border-radius:12px;
+border:1px solid #dfd8c8;
+background:#fffefb;
+padding:0.65rem 0.75rem;
+font-size:0.875rem;
+color:#334155;
+transition:all 0.2s ease;
+}
+
+.modal-form-control:focus{
+outline:none;
+border-color:var(--bn-sage) !important;
+box-shadow:0 0 0 4px rgba(95,117,52,0.14) !important;
+}
+
+.theme-primary-btn{
+display:inline-flex;
+justify-content:center;
+align-items:center;
+gap:0.4rem;
+padding:0.65rem 1rem;
+border-radius:12px;
+border:1px solid var(--bn-sage);
+background:var(--bn-sage);
+color:#fff;
+font-size:14px;
+font-weight:700;
+transition:all 0.2s ease;
+}
+
+.theme-primary-btn:hover{
+background:var(--bn-sage-dark);
+border-color:var(--bn-sage-dark);
+}
+
+.theme-secondary-btn{
+display:inline-flex;
+justify-content:center;
+align-items:center;
+gap:0.4rem;
+padding:0.65rem 1rem;
+border-radius:12px;
+border:1px solid #ddd7c9;
+background:#fff;
+color:#5f6357;
+font-size:14px;
+font-weight:700;
+transition:all 0.2s ease;
+}
+
+.theme-secondary-btn:hover{
+background:#f8f6ef;
+}
+
+.bn-product-grid{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+gap:1.5rem;
+padding:1.5rem;
+align-items:start;
+}
+
+.bn-product-card{
+position:relative;
+display:flex;
+flex-direction:column;
+border:1px solid #e6decd;
+border-radius:24px;
+background:#ffffff;
+overflow:hidden;
+box-shadow:0 26px 60px -36px rgba(39,49,29,0.42);
+transition:transform 0.2s ease, box-shadow 0.2s ease, height 0.25s ease;
+height:360px;
+}
+
+.bn-product-card::after{
+background:
+linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.6) 70%, rgba(255,255,255,0.92) 100%),
+radial-gradient(180px 90px at 10% 0%, rgba(95,117,52,0.08), transparent 60%),
+radial-gradient(200px 100px at 90% 10%, rgba(249,115,22,0.08), transparent 60%);
+}
+
+.bn-product-card:hover{
+transform:translateY(-4px);
+box-shadow:0 32px 70px -30px rgba(31,42,22,0.4);
+height:520px;
+z-index:2;
+}
+
+.bn-product-card::before{
+content:"";
+position:absolute;
+inset:0;
+border-radius:inherit;
+border:3px solid rgba(75,94,41,0.4);
+pointer-events:none;
+opacity:0.6;
+}
+
+.bn-product-card:hover::before{
+opacity:1;
+border-color:rgba(75,94,41,0.85);
+}
+
+.bn-product-card::after{
+content:"";
+position:absolute;
+inset:0;
+background:linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.7) 75%, rgba(255,255,255,0.95) 100%);
+opacity:0;
+pointer-events:none;
+transition:opacity 0.2s ease;
+}
+
+.bn-product-card:hover::after{
+opacity:1;
+}
+
+.bn-product-media{
+position:relative;
+padding-top:70%;
+background:linear-gradient(135deg,#f4efe6 0%, #fff7ee 100%);
+overflow:hidden;
+}
+
+.bn-stock-chip{
+position:absolute;
+top:12px;
+left:12px;
+z-index:2;
+display:inline-flex;
+align-items:center;
+gap:6px;
+padding:6px 10px;
+border-radius:999px;
+background:rgba(255,255,255,0.95);
+border:1px solid rgba(95,117,52,0.18);
+font-size:11px;
+font-weight:800;
+color:#3f5620;
+letter-spacing:0.08em;
+text-transform:uppercase;
+backdrop-filter:blur(6px);
+}
+
+.bn-product-media img,
+.bn-product-media .bn-media-frame{
+position:absolute;
+inset:0;
+width:100%;
+height:100%;
+object-fit:cover;
+opacity:0;
+transition:opacity 0.6s ease;
+}
+
+.bn-product-media .bn-media-frame{
+display:flex;
+align-items:center;
+justify-content:center;
+background:#1f2937;
+color:#fff;
+font-size:1.25rem;
+}
+
+.bn-product-media .is-active{
+opacity:1;
+}
+
+.bn-carousel-dots{
+position:absolute;
+left:50%;
+bottom:10px;
+transform:translateX(-50%);
+display:flex;
+gap:6px;
+}
+
+.bn-carousel-dot{
+width:6px;
+height:6px;
+border-radius:999px;
+background:rgba(47,58,34,0.35);
+transition:transform 0.2s ease, background 0.2s ease;
+}
+
+.bn-carousel-dot.is-active{
+background:#4b5e29;
+transform:scale(1.2);
+}
+
+.bn-product-body{
+padding:1rem 1.1rem 1.2rem;
+display:flex;
+flex-direction:column;
+gap:0.35rem;
+min-height:140px;
+position:relative;
+padding-bottom:1.6rem;
+z-index:2;
+}
+
+.bn-product-title{
+font-size:1rem;
+font-weight:800;
+color:#2f3a22;
+line-height:1.3;
+}
+
+.bn-product-title:hover{
+color:#4b5e29;
+}
+
+.bn-product-brand{
+font-size:0.78rem;
+font-weight:600;
+color:#7a816e;
+}
+
+.bn-product-price{
+display:flex;
+align-items:center;
+gap:0.5rem;
+flex-wrap:wrap;
+margin-top:0.15rem;
+}
+
+.bn-product-amount{
+font-size:1.05rem;
+font-weight:900;
+color:#1f2a16;
+letter-spacing:-0.02em;
+}
+
+.bn-product-mrp{
+font-size:0.75rem;
+font-weight:700;
+color:#9aa18f;
+text-decoration:line-through;
+}
+
+.bn-product-offer{
+font-size:0.72rem;
+font-weight:900;
+color:#1f2a16;
+background:linear-gradient(135deg,#e6f0d6 0%, #f6f2d8 100%);
+padding:0.18rem 0.55rem;
+border-radius:999px;
+border:1px solid rgba(95,117,52,0.18);
+}
+
+.bn-product-details{
+overflow:hidden;
+max-height:0;
+opacity:0;
+transform:translateY(6px);
+transition:max-height 0.35s ease, opacity 0.25s ease, transform 0.25s ease;
+margin-top:0.5rem;
+padding-top:0.6rem;
+border-top:1px solid #efe9dc;
+}
+
+.bn-product-card:hover .bn-product-details,
+.bn-product-card:focus-within .bn-product-details{
+max-height:320px;
+opacity:1;
+transform:translateY(0);
+}
+
+.bn-product-card:hover .bn-product-details,
+.bn-product-card:focus-within .bn-product-details{
+max-height:200px;
+opacity:1;
+transform:translateY(0);
+}
+
+.bn-product-row{
+display:flex;
+justify-content:space-between;
+gap:0.75rem;
+font-size:0.78rem;
+color:#6f7662;
+margin-top:0.4rem;
+}
+
+.bn-product-actions{
+margin-top:0.9rem;
+}
+
+.bn-product-row span{
+font-weight:700;
+color:#3f4a35;
+}
+
+.bn-product-actions{
+display:flex;
+gap:0.5rem;
+margin-top:0.8rem;
+flex-wrap:wrap;
+}
+
+.bn-product-btn{
+display:inline-flex;
+align-items:center;
+gap:0.35rem;
+padding:0.45rem 0.75rem;
+border-radius:10px;
+font-size:0.75rem;
+font-weight:700;
+transition:all 0.2s ease;
+}
+
+.bn-product-btn.view{
+color:#3f5620;
+background:#e7efda;
+}
+
+.bn-product-btn.view:hover{
+background:var(--bn-sage);
+color:#fff;
+}
+
+.bn-product-btn.delete{
+color:#b54242;
+background:#f9eeee;
+}
+
+.bn-product-btn.delete:hover{
+background:#b54242;
+color:#fff;
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen p-4 md:p-8">
+<div class="management-shell">
+{% if messages %}
+<div class="space-y-2 mb-4">
+{% for message in messages %}
+<div class="px-4 py-2.5 rounded-xl border text-sm font-semibold
+{% if message.tags == 'success' %}bg-[#e7efda] border-[#cfdcb7] text-[#425a22]
+{% elif message.tags == 'warning' or message.tags == 'error' %}bg-[#f9eded] border-[#efd2d1] text-[#9a4745]
+{% else %}bg-[#f4f0e5] border-[#e5dece] text-[#716b5d]{% endif %}">
+{{ message }}
+</div>
+{% endfor %}
+</div>
+{% endif %}
+
+<div class="mb-6">
+<p class="text-[11px] uppercase tracking-[0.2em] font-bold text-[#7b826f]">BuyNext Admin</p>
+<h1 class="text-3xl font-bold text-[#2f3a22]">Product Management</h1>
+<p class="text-sm text-[#727a66] mt-1">Seller drafts stay with the seller. Only submitted products in pending review should be approved or rejected here.</p>
+</div>
+
+<div class="mb-5 rounded-2xl border border-[#e7dfcf] bg-[#f8f4ea] px-5 py-4 text-sm text-[#5f6357]">
+Products reach this admin workflow from the seller app with `approval_status = PENDING`. Approval actions are only shown in the verification queue.
+</div>
+
+<form method="GET" class="grid grid-cols-1 lg:grid-cols-12 gap-3 mb-6 rounded-2xl border border-[#e7e0d2] bg-white p-4">
+<div class="lg:col-span-6 relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#9aa18f] text-[20px]">search</span>
+<input type="text" name="q" value="{{ q }}" placeholder="Search product, brand, or seller"
+class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#e1d9c9] bg-[#fffdf8] text-sm font-semibold text-[#2f3a22] focus:border-primary focus:ring-4 focus:ring-primary/10">
+</div>
+<div class="lg:col-span-3">
+<select name="status" class="w-full px-4 py-2.5 rounded-xl border border-[#e1d9c9] bg-[#fffdf8] text-sm font-semibold text-[#2f3a22] focus:border-primary focus:ring-4 focus:ring-primary/10">
+<option value="">All Statuses</option>
+<option value="APPROVED" {% if selected_status == "APPROVED" %}selected{% endif %}>Approved</option>
+<option value="PENDING" {% if selected_status == "PENDING" %}selected{% endif %}>Pending</option>
+</select>
+</div>
+<div class="lg:col-span-3">
+<select name="subcategory" class="w-full px-4 py-2.5 rounded-xl border border-[#e1d9c9] bg-[#fffdf8] text-sm font-semibold text-[#2f3a22] focus:border-primary focus:ring-4 focus:ring-primary/10">
+<option value="">All Categories</option>
+{% for sub in subcategories %}
+<option value="{{ sub.id }}" {% if selected_subcategory == sub.id|stringformat:"s" %}selected{% endif %}>
+{{ sub.category.name }} / {{ sub.name }}
+</option>
+{% endfor %}
+</select>
+</div>
+<div class="lg:col-span-12 flex flex-col sm:flex-row gap-2">
+<button type="submit" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-[#4b5e29] text-white font-bold text-sm uppercase tracking-widest">Apply</button>
+<a href="{% url 'product_verification' %}" class="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-[#e1d9c9] text-[#5f6357] font-bold text-sm uppercase tracking-widest text-center bg-white">Clear</a>
+</div>
+</form>
+
+<div class="flex gap-3 mb-5">
+<button type="button" id="allProductsTab" class="tab-btn active">
+All Products ({{ product_stats.total }})
+</button>
+<button type="button" id="verificationTab" class="tab-btn">
+Verification Queue ({{ product_stats.pending }})
+</button>
+</div>
+
+<div id="allProductsTable" class="table-card">
+<div class="bn-product-grid">
+{% for product in all_products %}
+<div class="bn-product-card">
+    {% with gallery_images=product.gallery.all %}
+    <div class="bn-product-media" data-cycle="true">
+        <div class="bn-stock-chip">
+            <span class="material-symbols-outlined text-[16px]">inventory_2</span>
+            {{ product.total_stock|default:0 }} in stock
+        </div>
+        {% if gallery_images|length %}
+            {% for media in gallery_images %}
+                {% if media.image %}
+                <img src="{{ media.image.url }}" alt="{{ media.alt_text|default:product.name }}" class="{% if forloop.first %}is-active{% endif %}" data-frame="true">
+                {% elif media.video %}
+                <div class="bn-media-frame {% if forloop.first %}is-active{% endif %}" data-frame="true">
+                    <span class="material-symbols-outlined">play_arrow</span>
+                </div>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            <div class="bn-media-frame is-active" data-frame="true">
+                <span class="material-symbols-outlined">image</span>
+            </div>
+        {% endif %}
+        {% if gallery_images|length > 1 %}
+        <div class="bn-carousel-dots">
+            {% for media in gallery_images %}
+            <span class="bn-carousel-dot {% if forloop.first %}is-active{% endif %}" data-dot="true"></span>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+    {% endwith %}
+
+    <div class="bn-product-body">
+        <a href="{% url 'admin_product_preview' product.id %}" class="bn-product-title">
+            {{ product.name }}
+        </a>
+        <div class="bn-product-brand">{{ product.brand }}</div>
+        <div class="bn-product-price">
+            {% if product.display_price %}
+            <span class="bn-product-amount">$ {{ product.display_price|floatformat:0 }}</span>
+            {% if product.display_mrp and product.display_mrp > product.display_price %}
+            <span class="bn-product-mrp">$ {{ product.display_mrp|floatformat:0 }}</span>
+            {% endif %}
+            {% if product.display_discount %}
+            <span class="bn-product-offer">{{ product.display_discount|floatformat:0 }}% off</span>
+            {% endif %}
+            {% else %}
+            <span class="bn-product-amount">Price unavailable</span>
+            {% endif %}
+        </div>
+
+        <div class="bn-product-details">
+            <div class="bn-product-row">
+                <span>Seller</span>
+                <div>{{ product.seller.store_name }}</div>
+            </div>
+            <div class="bn-product-row">
+                <span>Category</span>
+                <div>{{ product.subcategory.name|default:"-" }}</div>
+            </div>
+            <div class="bn-product-row">
+                <span>Created</span>
+                <div>{{ product.created_at|date:"M d, Y" }}</div>
+            </div>
+            <div class="bn-product-actions">
+                <a href="{% url 'admin_product_preview' product.id %}" class="bn-product-btn view">
+                    <span class="material-symbols-outlined text-[18px]">visibility</span>
+                    View
+                </a>
+                <a href="{% url 'delete_product_admin' product.id %}" class="bn-product-btn delete">
+                    <span class="material-symbols-outlined text-[18px]">delete</span>
+                    Delete
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% empty %}
+<div class="col-span-full py-12 text-center text-[#888f7e]">No products found.</div>
+{% endfor %}
+</div>
+</div>
+
+<div id="verificationTable" class="table-card hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-sm min-w-[1020px]">
+<thead class="table-head">
+<tr>
+<th class="px-6 py-4">Product</th>
+<th class="px-6 py-4">Seller</th>
+<th class="px-6 py-4 text-center">Status</th>
+<th class="px-6 py-4">Submitted</th>
+<th class="px-6 py-4 text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#eee8da]">
+{% for product in pending_products %}
+<tr class="hover:bg-[#fcfbf7]">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+{% with first_image=product.gallery.all|first %}
+{% if first_image %}
+{% if first_image.image %}
+<img src="{{ first_image.image.url }}" alt="{{ first_image.alt_text|default:product.name }}" class="h-10 w-10 rounded-lg object-cover border border-[#ded8cb]">
+{% elif first_image.video %}
+<div class="h-10 w-10 rounded-lg bg-[#1f2937] text-white flex items-center justify-center border border-[#ded8cb]">
+<span class="material-symbols-outlined text-base">play_arrow</span>
+</div>
+{% else %}
+<span class="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-[#f0efe9] text-[#a4a092]">
+<span class="material-symbols-outlined text-base">image</span>
+</span>
+{% endif %}
+{% else %}
+<span class="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-[#f0efe9] text-[#a4a092]">
+<span class="material-symbols-outlined text-base">image</span>
+</span>
+{% endif %}
+{% endwith %}
+<div>
+<p class="font-semibold text-[#303a22]">{{ product.name }}</p>
+<p class="text-xs text-[#848b79]">{{ product.brand }}</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<p class="font-medium text-[#36412a]">{{ product.seller.store_name }}</p>
+<p class="text-xs text-[#808774]">@{{ product.seller.user.username }}</p>
+</td>
+<td class="px-6 py-4 text-center">
+<span class="status-badge status-pending">Pending</span>
+</td>
+<td class="px-6 py-4 text-[#5e6554]">{{ product.created_at|date:"M d, Y H:i" }}</td>
+<td class="px-6 py-4 text-right">
+<div class="inline-flex gap-2">
+<a href="{% url 'approve_product' product.id %}" class="action-btn action-approve">
+<span class="material-symbols-outlined text-[18px]">check_circle</span>
+Approve
+</a>
+<button type="button" class="action-btn action-reject reject-product-btn" data-reject-url="{% url 'reject_product' product.id %}" data-product-name="{{ product.name }}">
+<span class="material-symbols-outlined text-[18px]">cancel</span>
+Reject
+</button>
+</div>
+</td>
+</tr>
+{% empty %}
+<tr>
+<td colspan="5" class="py-12 text-center text-[#888f7e]">No products in verification queue.</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</div>
+
+</div>
+</div>
+
+<div id="rejectProductModal" class="bn-modal-overlay hidden fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+<div class="bn-modal-card max-w-4xl w-full bg-white rounded-3xl shadow-2xl overflow-hidden">
+<div class="grid lg:grid-cols-[1.1fr_1fr]">
+<div class="relative bg-[#5f7534] flex items-center justify-center p-[3px]">
+<img src="{% static 'images/dashboard/rejected_products.png' %}" alt="Rejected products" class="w-full h-full max-h-[520px] object-contain">
+</div>
+
+<div class="p-6 sm:p-8">
+<div class="mb-5">
+<p class="text-[11px] uppercase tracking-[0.25em] font-bold text-[#7b826f]">Reject Product</p>
+<h3 class="text-2xl font-bold text-[#2f3a22] mt-2">Add Rejection Reason</h3>
+<p id="rejectProductName" class="text-sm text-[#7a816e] mt-2">Add a reason for rejection.</p>
+</div>
+
+<form id="rejectProductForm" method="POST" class="space-y-6">
+{% csrf_token %}
+<div>
+<label class="text-xs font-semibold text-[#707864] uppercase tracking-widest">Rejection Reason</label>
+<textarea name="rejection_reason" rows="6" class="modal-form-control mt-2 min-h-[160px]" placeholder="Explain why this product was rejected..." required></textarea>
+</div>
+
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+<button type="button" class="theme-secondary-btn w-full" id="rejectCancelBtn">Cancel</button>
+<button type="submit" class="theme-primary-btn w-full">Reject Product</button>
+</div>
+</form>
+</div>
+</div>
+</div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const allProductsTab = document.getElementById("allProductsTab")
+const verificationTab = document.getElementById("verificationTab")
+const allProductsTable = document.getElementById("allProductsTable")
+const verificationTable = document.getElementById("verificationTable")
+const defaultTab = "{{ default_tab|default:'all' }}"
+
+const showAllProductsTable = () => {
+allProductsTab.classList.add("active")
+verificationTab.classList.remove("active")
+allProductsTable.classList.remove("hidden")
+verificationTable.classList.add("hidden")
+}
+
+const showVerificationTable = () => {
+verificationTab.classList.add("active")
+allProductsTab.classList.remove("active")
+verificationTable.classList.remove("hidden")
+allProductsTable.classList.add("hidden")
+}
+
+allProductsTab.onclick = (e) => {
+e.preventDefault()
+showAllProductsTable()
+history.replaceState(null, "", "#allProductsTable")
+}
+
+verificationTab.onclick = (e) => {
+e.preventDefault()
+showVerificationTable()
+history.replaceState(null, "", "#verificationTable")
+}
+
+const syncProductTabWithHash = () => {
+if (window.location.hash === "#verificationTable") {
+showVerificationTable()
+return
+}
+if (window.location.hash === "#allProductsTable") {
+showAllProductsTable()
+return
+}
+if (defaultTab === "verification") {
+showVerificationTable()
+return
+}
+showAllProductsTable()
+}
+
+syncProductTabWithHash()
+window.addEventListener("hashchange", syncProductTabWithHash)
+
+const rejectProductModal = document.getElementById("rejectProductModal")
+const rejectProductForm = document.getElementById("rejectProductForm")
+const rejectProductName = document.getElementById("rejectProductName")
+const rejectCancelBtn = document.getElementById("rejectCancelBtn")
+const rejectProductModalCard = rejectProductModal.querySelector(".bn-modal-card")
+
+document.querySelectorAll(".reject-product-btn").forEach((btn) => {
+btn.addEventListener("click", (e) => {
+e.preventDefault()
+rejectProductForm.action = btn.dataset.rejectUrl
+rejectProductName.textContent = `Add a reason for rejecting "${btn.dataset.productName || "this product"}".`
+rejectProductModal.classList.remove("hidden")
+})
+})
+
+const closeRejectProductModal = () => rejectProductModal.classList.add("hidden")
+if (rejectCancelBtn) {
+rejectCancelBtn.onclick = closeRejectProductModal
+}
+
+rejectProductModal.onclick = (e) => {
+if (e.target === rejectProductModal) {
+closeRejectProductModal()
+}
+}
+
+rejectProductModalCard.onclick = (e) => {
+e.stopPropagation()
+}
+
+document.addEventListener("keydown", (e) => {
+if (e.key === "Escape" && !rejectProductModal.classList.contains("hidden")) {
+closeRejectProductModal()
+}
+})
+
+const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+document.querySelectorAll(".bn-product-media[data-cycle]").forEach((media) => {
+const frames = Array.from(media.querySelectorAll("[data-frame]"))
+const dots = Array.from(media.querySelectorAll("[data-dot]"))
+if (!frames.length) {
+return
+}
+frames.forEach((frame) => frame.classList.remove("is-active"))
+frames[0].classList.add("is-active")
+dots.forEach((dot, idx) => dot.classList.toggle("is-active", idx === 0))
+if (prefersReducedMotion || frames.length < 2) {
+return
+}
+let index = 0
+let timer = null
+const interval = 2200
+
+const showFrame = (nextIndex) => {
+frames[index].classList.remove("is-active")
+if (dots[index]) {
+dots[index].classList.remove("is-active")
+}
+index = nextIndex
+frames[index].classList.add("is-active")
+if (dots[index]) {
+dots[index].classList.add("is-active")
+}
+}
+
+const startCycle = () => {
+if (timer) {
+return
+}
+timer = setInterval(() => {
+const nextIndex = (index + 1) % frames.length
+showFrame(nextIndex)
+}, interval)
+}
+
+const stopCycle = () => {
+if (!timer) {
+return
+}
+clearInterval(timer)
+timer = null
+frames.forEach((frame) => frame.classList.remove("is-active"))
+dots.forEach((dot) => dot.classList.remove("is-active"))
+index = 0
+frames[0].classList.add("is-active")
+if (dots[0]) {
+dots[0].classList.add("is-active")
+}
+}
+
+startCycle()
+})
+</script>
+{% endblock %}

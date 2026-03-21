@@ -1,11 +1,28 @@
+import os
 from django.shortcuts import render,redirect,get_object_or_404
 from core.models import *
 from .models import *
 from bnadmin.models import *
 from django.contrib import messages
 from django.contrib.auth import login
-from django.db.models import  Q
+from django.db.models import Q, Prefetch
 from core.decorator import seller_profile_required,verified_seller_required
+
+
+def _variant_label(variant):
+     bridges = list(variant.variant_attributes.all())
+     if not bridges:
+          return variant.sku_code or "Standard"
+     values = [bridge.option.value for bridge in bridges]
+     return " / ".join(values)
+
+
+def _is_video_file(upload):
+     content_type = getattr(upload, "content_type", "") or ""
+     if content_type.startswith("video/"):
+          return True
+     ext = os.path.splitext(upload.name or "")[1].lower()
+     return ext in {".mp4", ".mov", ".webm", ".ogg", ".m4v"}
 
 # Create your views here.
 def user_seller_bridge(request):
@@ -83,7 +100,13 @@ def seller_dashboard(request):
 def seller_products(request):
      seller=request.user.seller_profile
      products = (
-    Product.objects.filter(seller=seller).select_related("subcategory").prefetch_related("gallery","variants","variants__images","variants__variant_attributes__option__attribute").order_by("-created_at")
+    Product.objects.filter(seller=seller).select_related("subcategory").prefetch_related(
+        "gallery",
+        "variants",
+        "variants__images",
+        "variants__variant_attributes__option__attribute",
+        "rejection_reasons",
+    ).order_by("-created_at")
 )
      query=request.GET.get("q")
      if query:
@@ -104,10 +127,117 @@ def seller_products(request):
         product.variant_count = variants.count()
         product.total_stock = sum(v.stock_quantity for v in variants)
         product.stock_percentage = min((product.total_stock / 100) * 100 if product.total_stock else 0,100)
+        product.latest_rejection = product.rejection_reasons.first()
           
      return render(request,"seller/product.html",{"products": products,"products_pending_count": products_pending_count,
         "products_approved_count": products_approved_count,
         "products_rejected_count": products_rejected_count,})
+
+
+@verified_seller_required
+def seller_product_preview(request, product_id):
+     product = get_object_or_404(
+          Product.objects.select_related(
+               "seller",
+               "seller__user",
+               "subcategory",
+               "subcategory__category",
+          ).prefetch_related(
+               "gallery",
+               "rejection_reasons",
+               Prefetch(
+                    "variants",
+                    queryset=ProductVariant.objects.prefetch_related(
+                         "images",
+                         "variant_attributes__option__attribute",
+                    ).order_by("-is_active", "selling_price", "created_at"),
+               ),
+          ),
+          id=product_id,
+          seller=request.user.seller_profile,
+     )
+
+     variants = list(product.variants.all())
+     primary_variant = next((variant for variant in variants if variant.is_active), None)
+     if primary_variant is None and variants:
+          primary_variant = variants[0]
+
+     gallery_images = []
+     seen_urls = set()
+
+     for image in product.gallery.all():
+          if image.video:
+               media_url = image.video.url
+               media_type = "video"
+          elif image.image:
+               media_url = image.image.url
+               media_type = "image"
+          else:
+               continue
+          if media_url in seen_urls:
+               continue
+          seen_urls.add(media_url)
+          gallery_images.append(
+               {
+                    "url": media_url,
+                    "alt": image.alt_text or product.name,
+                    "type": media_type,
+               }
+          )
+
+     if not gallery_images:
+          for variant in variants:
+               for image in variant.images.all():
+                    if not image.image:
+                         continue
+                    image_url = image.image.url
+                    if image_url in seen_urls:
+                         continue
+                    seen_urls.add(image_url)
+                    gallery_images.append(
+                         {
+                              "url": image_url,
+                              "alt": image.alt_text or product.name,
+                              "type": "image",
+                         }
+                    )
+
+     variant_cards = []
+     for variant in variants:
+          variant_cards.append(
+               {
+                    "id": str(variant.id),
+                    "label": _variant_label(variant),
+                    "attributes": [
+                         {
+                              "name": bridge.option.attribute.name,
+                              "value": bridge.option.value,
+                         }
+                         for bridge in variant.variant_attributes.all()
+                    ],
+                    "sku": variant.sku_code,
+                    "price": variant.selling_price,
+                    "mrp": variant.mrp,
+                    "stock_quantity": variant.stock_quantity,
+                    "discount": variant.discount_percentage,
+                    "is_active": variant.is_active,
+                    "is_in_stock": variant.is_in_stock,
+                    "image_url": next(
+                         (image.image.url for image in variant.images.all() if image.image),
+                         "",
+                    ),
+               }
+          )
+
+     context = {
+          "product": product,
+          "gallery_images": gallery_images,
+          "variant_cards": variant_cards,
+          "primary_variant": primary_variant,
+          "latest_rejection": product.rejection_reasons.first(),
+     }
+
+     return render(request, "seller/product_preview.html", context)
 @verified_seller_required
 def deactivate_product(request, id):
     product = Product.objects.get(id=id, seller=request.user.seller_profile)
@@ -137,7 +267,7 @@ def activate_variant(request, id):
 
 @verified_seller_required
 def add_products(request):
-     subcategory =SubCategory.objects.all
+     subcategory = SubCategory.objects.all()
      if request.method == "POST":
         name = request.POST.get("name")
         brand = request.POST.get("brand")
@@ -165,26 +295,42 @@ def add_products(request):
             return_days=return_days,
             approval_status=approval_status
         )
-        images = request.FILES.getlist("product_images[]")
+        images = request.FILES.getlist("product_images")
+        images += request.FILES.getlist("product_images[]")
+        try:
+            primary_index = int(request.POST.get("primary_image_index", 0))
+        except (TypeError, ValueError):
+            primary_index = 0
 
-        primary_index = int(request.POST.get("primary_image_index", 0))
+        if images:
+            if primary_index < 0 or primary_index >= len(images):
+                primary_index = 0
 
-        for index, image in enumerate(images):
+            for index, image in enumerate(images):
+                if _is_video_file(image):
+                    ProductGallery.objects.create(
+                        product=product,
+                        video=image,
+                        is_primary=(index == primary_index),
+                        display_order=index,
+                    )
+                else:
+                    ProductGallery.objects.create(
+                        product=product,
+                        image=image,
+                        is_primary=(index == primary_index),
+                        display_order=index,
+                    )
 
-         ProductGallery.objects.create(
-        product=product,
-        image=image,
-        is_primary=(index == primary_index),
-        display_order=index
-    )
-         return redirect("product_status")
+        return redirect("product_status")
      return render(request,"seller/addproduct.html",{"subcategories":subcategory})
 @verified_seller_required
 def edit_product(request, product_id):
 
-    product = Product.objects.get(
+    product = get_object_or_404(
+        Product.objects.prefetch_related("gallery"),
         id=product_id,
-        seller=request.user.seller_profile
+        seller=request.user.seller_profile,
     )
 
     subcategories = SubCategory.objects.all()
@@ -212,23 +358,64 @@ def edit_product(request, product_id):
         product.save()
 
 
-        images = request.FILES.getlist("product_images[]")
+        remove_gallery_ids = request.POST.getlist("remove_gallery_ids")
+        existing_primary_id = request.POST.get("existing_primary_id", "").strip()
+
+        if remove_gallery_ids:
+            ProductGallery.objects.filter(
+                product=product,
+                id__in=remove_gallery_ids,
+            ).delete()
+
+        if existing_primary_id:
+            if existing_primary_id in remove_gallery_ids:
+                existing_primary_id = ""
+            else:
+                ProductGallery.objects.filter(product=product).update(is_primary=False)
+                ProductGallery.objects.filter(
+                    product=product,
+                    id=existing_primary_id,
+                ).update(is_primary=True)
+
+        images = request.FILES.getlist("product_images")
+        images += request.FILES.getlist("product_images[]")
+        try:
+            primary_index = int(request.POST.get("primary_image_index", 0))
+        except (TypeError, ValueError):
+            primary_index = 0
+
+        existing_count = ProductGallery.objects.filter(product=product).count()
+        has_primary = ProductGallery.objects.filter(
+            product=product, is_primary=True
+        ).exists()
 
         if images:
-
-
-            ProductGallery.objects.filter(product=product).delete()
-
-            primary_index = int(request.POST.get("primary_image_index", 0))
+            if primary_index < 0 or primary_index >= len(images):
+                primary_index = 0
 
             for index, image in enumerate(images):
+                if _is_video_file(image):
+                    ProductGallery.objects.create(
+                        product=product,
+                        video=image,
+                        is_primary=(not has_primary and index == primary_index),
+                        display_order=existing_count + index,
+                    )
+                else:
+                    ProductGallery.objects.create(
+                        product=product,
+                        image=image,
+                        is_primary=(not has_primary and index == primary_index),
+                        display_order=existing_count + index,
+                    )
 
-                ProductGallery.objects.create(
-                    product=product,
-                    image=image,
-                    is_primary=(index == primary_index),
-                    display_order=index
-                )
+        if not ProductGallery.objects.filter(product=product, is_primary=True).exists():
+            fallback = ProductGallery.objects.filter(product=product).order_by(
+                "display_order", "created_at"
+            ).first()
+            if fallback:
+                fallback.is_primary = True
+                fallback.save(update_fields=["is_primary"])
 
         return redirect("product_status")
 
@@ -285,8 +472,18 @@ def add_variant(request,product_id):
      return render(request,"seller/addvariant.html",{"product":product,"attributes":attributes})
 @verified_seller_required
 def product_status(request):
-     products = Product.objects.filter(seller=request.user.seller_profile)
-     return render(request,"seller/product_status.html",{"products":products})
+     products = Product.objects.filter(seller=request.user.seller_profile).select_related("subcategory").prefetch_related("gallery", "rejection_reasons")
+     products_pending_count = products.filter(approval_status="PENDING").count()
+     products_approved_count = products.filter(approval_status="APPROVED").count()
+     products_rejected_count = products.filter(approval_status="REJECTED").count()
+     for product in products:
+          product.latest_rejection = product.rejection_reasons.first()
+     return render(request,"seller/product_status.html",{
+          "products":products,
+          "products_pending_count": products_pending_count,
+          "products_approved_count": products_approved_count,
+          "products_rejected_count": products_rejected_count,
+     })
 @verified_seller_required
 def seller_inventory(request):
      return render(request,"seller/inventory.html")

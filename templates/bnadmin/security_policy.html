@@ -1,0 +1,17 @@
+{% extends "bnadmin/base.html" %}
+
+{% block title %}Security Policy{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <h1 class="text-3xl font-bold text-slate-900">Security Policy</h1>
+    <div class="bg-white border border-slate-100 rounded-2xl p-6 space-y-4 text-slate-600">
+        <p class="font-semibold text-slate-800">Admin Access Policy</p>
+        <p>1. Only authorized admin users can access bnadmin routes protected by `admin_required`.</p>
+        <p>2. Password sharing is prohibited. Use unique credentials for each admin account.</p>
+        <p>3. Review seller and product approvals before allowing marketplace visibility.</p>
+        <p>4. Rotate credentials and audit inactive admin accounts periodically.</p>
+    </div>
+</div>
+{% endblock %}
+

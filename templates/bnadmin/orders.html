@@ -1,0 +1,98 @@
+{% extends "bnadmin/base.html" %}
+
+{% block title %}Order Management{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-3xl font-bold text-slate-900">Order Management</h1>
+            <p class="text-slate-500">Track all orders and fulfillment status.</p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 gap-4">
+        <div class="bg-white rounded-2xl border border-slate-100 p-5">
+            <p class="text-xs uppercase tracking-widest text-slate-400 font-bold">Total Orders</p>
+            <p class="text-2xl font-bold mt-2">{{ order_stats.total }}</p>
+        </div>
+        <div class="bg-white rounded-2xl border border-slate-100 p-5">
+            <p class="text-xs uppercase tracking-widest text-slate-400 font-bold">Revenue</p>
+            <p class="text-2xl font-bold mt-2 text-primary">Rs {{ order_stats.revenue }}</p>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-100 p-5">
+        <form method="GET" class="grid grid-cols-1 lg:grid-cols-12 gap-3">
+            <div class="lg:col-span-7 relative">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">search</span>
+                <input type="text" name="q" value="{{ q }}" placeholder="Search order number, customer name, or email"
+                       class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-primary focus:ring-primary/30">
+            </div>
+            <div class="lg:col-span-3">
+                <select name="status" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-primary focus:ring-primary/30">
+                    <option value="">All Statuses</option>
+                    {% for key, label in status_choices %}
+                    <option value="{{ key }}" {% if selected_status == key %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="lg:col-span-2 flex flex-col sm:flex-row gap-2">
+                <button type="submit" class="w-full px-4 py-2.5 rounded-xl bg-primary text-white font-semibold">Search</button>
+                <a href="{% url 'order_management' %}" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-slate-500 font-semibold text-center">Clear</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-100 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm min-w-[860px]">
+                <thead class="bg-slate-50 text-slate-500 uppercase text-xs tracking-wider">
+                    <tr>
+                        <th class="px-5 py-3 text-left">Order</th>
+                        <th class="px-5 py-3 text-left">Customer</th>
+                        <th class="px-5 py-3 text-left">Status</th>
+                        <th class="px-5 py-3 text-left">Payment</th>
+                        <th class="px-5 py-3 text-left">Amount</th>
+                        <th class="px-5 py-3 text-left">Date</th>
+                        <th class="px-5 py-3 text-left">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for order in orders %}
+                    <tr class="hover:bg-slate-50/70">
+                        <td class="px-5 py-4 font-semibold">{{ order.order_number }}</td>
+                        <td class="px-5 py-4">{{ order.user.username }}</td>
+                        <td class="px-5 py-4">
+                            <span class="px-2.5 py-1 rounded-full text-xs font-semibold
+                                {% if order.order_status == 'DELIVERED' %}bg-emerald-50 text-emerald-700
+                                {% elif order.order_status == 'CANCELLED' %}bg-rose-50 text-rose-700
+                                {% else %}bg-primary/10 text-primary{% endif %}">
+                                {{ order.get_order_status_display }}
+                            </span>
+                        </td>
+                        <td class="px-5 py-4">
+                            <span class="px-2.5 py-1 rounded-full text-xs font-semibold {% if order.is_paid %}bg-emerald-50 text-emerald-700{% else %}bg-amber-50 text-amber-700{% endif %}">
+                                {% if order.is_paid %}Paid{% else %}Pending{% endif %}
+                            </span>
+                        </td>
+                        <td class="px-5 py-4 font-medium">Rs {{ order.final_amount }}</td>
+                        <td class="px-5 py-4 text-slate-500">{{ order.ordered_at|date:"M d, Y H:i" }}</td>
+                        <td class="px-5 py-4">
+                            <a href="{% url 'order_detail' order.id %}" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary text-white text-xs font-semibold">
+                                <span class="material-symbols-outlined text-[16px]">visibility</span>
+                                View
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="px-5 py-12 text-center text-slate-400 font-medium">No orders found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

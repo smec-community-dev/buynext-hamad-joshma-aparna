@@ -53,14 +53,26 @@
                     <tr class="hover:bg-slate-50/80 transition-all group">
                         <td class="px-8 py-5">
                             <div class="flex items-center gap-4">
-                                <div
-                                    class="w-14 h-14 bg-slate-100 rounded-2xl overflow-hidden border border-slate-200 flex-shrink-0">
-                                    {% if product.gallery.first %}
-                                    <img src="{{ product.gallery.first.image.url }}"
-                                        class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                                <div class="flex items-center -space-x-2 flex-shrink-0">
+                                    {% for img in product.gallery.all|slice:":3" %}
+                                    {% if img.image %}
+                                    <img src="{{ img.image.url }}" alt="{{ img.alt_text|default:product.name }}"
+                                        class="w-10 h-10 rounded-xl object-cover border-2 border-white shadow-sm group-hover:scale-105 transition-transform duration-300">
+                                    {% elif img.video %}
+                                    <video src="{{ img.video.url }}" class="w-10 h-10 rounded-xl object-cover border-2 border-white shadow-sm group-hover:scale-105 transition-transform duration-300" muted playsinline></video>
                                     {% else %}
-                                    <div class="w-full h-full flex items-center justify-center text-slate-300">
+                                    <div class="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-300 border border-slate-200">
                                         <span class="material-icons-outlined">image</span>
+                                    </div>
+                                    {% endif %}
+                                    {% empty %}
+                                    <div class="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-300 border border-slate-200">
+                                        <span class="material-icons-outlined">image</span>
+                                    </div>
+                                    {% endfor %}
+                                    {% if product.gallery.all|length > 3 %}
+                                    <div class="w-10 h-10 rounded-xl bg-slate-100 border border-white flex items-center justify-center text-[10px] font-black text-slate-500">
+                                        +{{ product.gallery.all|length|add:"-3" }}
                                     </div>
                                     {% endif %}
                                 </div>
@@ -96,17 +108,22 @@
                                 <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
                                 <span class="text-[10px] font-black uppercase tracking-widest">Approved</span>
                             </div>
-
-
                             {% elif product.approval_status == 'REJECTED' %}
-                            <div class="flex items-center gap-2 text-rose-600">
-                                <span class="w-2 h-2 rounded-full bg-rose-500"></span>
-                                <span class="text-[10px] font-black uppercase tracking-widest">Rejected</span>
-                            {% elif product.approval_status == 'DRAFT' %}
-                                <div class="flex items-center gap-2 text-slate-500">
-                                    <span class="w-2 h-2 rounded-full bg-slate-400"></span>
-                                    <span class="text-[10px] font-black uppercase tracking-widest">Draft</span>
+                            <div class="flex flex-col gap-2 text-rose-600">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                                    <span class="text-[10px] font-black uppercase tracking-widest">Rejected</span>
                                 </div>
+                                {% if product.latest_rejection %}
+                                <p class="text-[11px] text-rose-600 font-semibold">
+                                    Reason: {{ product.latest_rejection.reason }}
+                                </p>
+                                {% endif %}
+                            </div>
+                            {% elif product.approval_status == 'DRAFT' %}
+                            <div class="flex items-center gap-2 text-slate-500">
+                                <span class="w-2 h-2 rounded-full bg-slate-400"></span>
+                                <span class="text-[10px] font-black uppercase tracking-widest">Draft</span>
                             </div>
                             {% endif %}
                         </td> 

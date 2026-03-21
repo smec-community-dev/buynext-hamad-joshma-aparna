@@ -29,7 +29,7 @@
     </div>
     {% endif %}
 
-    <div class="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
+    <div class="bn-surface bg-white rounded-[1.6rem] border border-slate-200/80 shadow-sm overflow-hidden">
 
         <div class="p-8 border-b border-slate-50 bg-slate-50/30">
             <h3 class="text-xl font-black text-slate-800">Edit Attribute</h3>
@@ -64,6 +64,12 @@
                     Assign to SubCategories
                 </label>
 
+                <div class="relative">
+                    <span class="material-icons-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 text-sm">search</span>
+                    <input id="subcategoryFilter" type="text" placeholder="Filter subcategories..."
+                        class="w-full pl-11 pr-4 py-3 text-xs bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-brand-blue transition-all font-semibold text-slate-700">
+                </div>
+
                 <select name="subcategories" multiple
                     class="w-full min-h-[200px] p-4 bg-slate-50 border border-slate-100 rounded-[1.5rem] font-bold text-slate-600 sidebar-scroll">
 
@@ -88,7 +94,7 @@
                 </a>
 
                 <button type="submit"
-                    class="click-shrink px-10 py-4 bg-brand-blue text-white rounded-2xl text-xs font-black shadow-lg shadow-blue-100 hover:bg-blue-700 uppercase tracking-[0.15em]">
+                    class="click-shrink px-10 py-4 bg-brand-blue text-white rounded-2xl text-xs font-black shadow-lg shadow-primary/25 hover:bg-primary-dark uppercase tracking-[0.15em]">
                     Update Attribute
                 </button>
 
@@ -98,4 +104,19 @@
 
     </div>
 </div>
+<script>
+    const subcategoryFilter = document.getElementById("subcategoryFilter");
+    const subcategoryOptions = document.querySelectorAll("select[name='subcategories'] option");
+
+    if (subcategoryFilter) {
+        subcategoryFilter.addEventListener("input", (event) => {
+            const value = event.target.value.toLowerCase().trim();
+            subcategoryOptions.forEach((option) => {
+                const text = option.textContent.toLowerCase();
+                option.hidden = value && !text.includes(value);
+            });
+        });
+    }
+</script>
 {% endblock %}
+

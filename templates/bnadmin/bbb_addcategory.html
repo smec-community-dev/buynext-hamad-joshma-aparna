@@ -46,13 +46,13 @@
 </script>
 {% endif %}
 
-    <div class="bn-surface bg-white rounded-[1.6rem] border border-slate-200/80 shadow-sm overflow-hidden">
-        <div class="p-8 border-b border-slate-50 bg-slate-50/30">
+    <div class="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
+        <div class="p-5 sm:p-8 border-b border-slate-50 bg-slate-50/30">
             <h3 class="text-xl font-black text-slate-800">Category Information</h3>
             <p class="text-xs text-slate-400 font-medium">Define a new product group for the BuyNext marketplace.</p>
         </div>
 
-        <form method="POST" enctype="multipart/form-data" class="p-8 space-y-6">
+        <form method="POST" enctype="multipart/form-data" class="p-5 sm:p-8 space-y-6">
             {% csrf_token %}
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -84,25 +84,19 @@
             <div class="space-y-2">
                 <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Category
                     Image</label>
-                <div class="grid md:grid-cols-[180px_1fr] gap-4 items-center">
-                    <div class="h-36 w-36 rounded-[1.5rem] border border-dashed border-slate-200 bg-slate-50 flex items-center justify-center overflow-hidden">
-                        <img id="categoryImagePreview" class="hidden h-full w-full object-cover" alt="Category preview">
-                        <span id="categoryImagePlaceholder" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Preview</span>
-                    </div>
-                    <div class="relative group">
-                        <label for="image"
-                            class="flex flex-col items-center justify-center w-full h-36 border-2 border-dashed border-slate-200 rounded-[2rem] bg-slate-50 hover:bg-white hover:border-brand-blue transition-all cursor-pointer overflow-hidden">
-                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                                <span
-                                    class="material-icons-outlined text-slate-400 group-hover:text-brand-blue mb-2 text-3xl transition-colors">cloud_upload</span>
-                                <p class="text-xs font-bold text-slate-500 group-hover:text-brand-blue transition-colors">
-                                    Click to upload image</p>
-                                <p class="text-[10px] text-slate-400 mt-1 uppercase tracking-tighter">PNG, JPG or WEBP (Max.
-                                    2MB)</p>
-                            </div>
-                            <input type="file" name="image" id="image" class="hidden" accept="image/*" />
-                        </label>
-                    </div>
+                <div class="relative group">
+                    <label for="image"
+                        class="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-slate-200 rounded-[2rem] bg-slate-50 hover:bg-white hover:border-brand-blue transition-all cursor-pointer overflow-hidden">
+                        <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                            <span
+                                class="material-icons-outlined text-slate-400 group-hover:text-brand-blue mb-2 text-3xl transition-colors">cloud_upload</span>
+                            <p class="text-xs font-bold text-slate-500 group-hover:text-brand-blue transition-colors">
+                                Click to upload image</p>
+                            <p class="text-[10px] text-slate-400 mt-1 uppercase tracking-tighter">PNG, JPG or WEBP (Max.
+                                2MB)</p>
+                        </div>
+                        <input type="file" name="image" id="image" class="hidden" accept="image/*" />
+                    </label>
                 </div>
             </div>
 
@@ -130,26 +124,4 @@
         </form>
     </div>
 </div>
-<script>
-    const categoryImageInput = document.getElementById("image");
-    const categoryImagePreview = document.getElementById("categoryImagePreview");
-    const categoryImagePlaceholder = document.getElementById("categoryImagePlaceholder");
-
-    if (categoryImageInput) {
-        categoryImageInput.addEventListener("change", (event) => {
-            const file = event.target.files && event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                categoryImagePreview.src = e.target.result;
-                categoryImagePreview.classList.remove("hidden");
-                if (categoryImagePlaceholder) {
-                    categoryImagePlaceholder.classList.add("hidden");
-                }
-            };
-            reader.readAsDataURL(file);
-        });
-    }
-</script>
 {% endblock %}
-

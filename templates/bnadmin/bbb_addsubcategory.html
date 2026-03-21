@@ -50,14 +50,14 @@
         </div>
     </div>
 
-    <div class="bn-surface bg-white rounded-[1.6rem] border border-slate-200/80 shadow-sm overflow-hidden">
-        <div class="p-8 border-b border-slate-50 bg-slate-50/30">
+    <div class="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
+        <div class="p-5 sm:p-8 border-b border-slate-50 bg-slate-50/30">
             <h3 class="text-xl font-black text-slate-800">SubCategory Details</h3>
             <p class="text-xs text-slate-400 font-medium">Create a specific sub-group to help customers filter products
                 more effectively.</p>
         </div>
 
-        <form method="POST" enctype="multipart/form-data" class="p-8 space-y-6">
+        <form method="POST" enctype="multipart/form-data" class="p-5 sm:p-8 space-y-6">
             {% csrf_token %}
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -100,25 +100,19 @@
                 <div class="space-y-2">
                     <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Thumbnail
                         Image</label>
-                    <div class="flex items-center gap-4">
-                        <div class="h-24 w-24 rounded-2xl border border-dashed border-slate-200 bg-slate-50 flex items-center justify-center overflow-hidden">
-                            <img id="subcategoryImagePreview" class="hidden h-full w-full object-cover" alt="Subcategory preview">
-                            <span id="subcategoryImagePlaceholder" class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Preview</span>
+                    <label for="image"
+                        class="flex items-center gap-4 p-4 bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl hover:bg-white hover:border-brand-blue transition-all cursor-pointer group">
+                        <div
+                            class="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-slate-400 group-hover:text-brand-blue shadow-sm transition-colors">
+                            <span class="material-icons-outlined">add_a_photo</span>
                         </div>
-                        <label for="image"
-                            class="flex items-center gap-4 p-4 bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl hover:bg-white hover:border-brand-blue transition-all cursor-pointer group flex-1">
-                            <div
-                                class="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-slate-400 group-hover:text-brand-blue shadow-sm transition-colors">
-                                <span class="material-icons-outlined">add_a_photo</span>
-                            </div>
-                            <div>
-                                <p class="text-xs font-bold text-slate-600">Select Image</p>
-                                <p class="text-[10px] text-slate-400 uppercase tracking-tighter">JPG, PNG (1:1 Aspect
-                                    recommended)</p>
-                            </div>
-                            <input type="file" name="image" id="image" class="hidden" accept="image/*">
-                        </label>
-                    </div>
+                        <div>
+                            <p class="text-xs font-bold text-slate-600">Select Image</p>
+                            <p class="text-[10px] text-slate-400 uppercase tracking-tighter">JPG, PNG (1:1 Aspect
+                                recommended)</p>
+                        </div>
+                        <input type="file" name="image" id="image" class="hidden" accept="image/*">
+                    </label>
                 </div>
 
                 <div class="space-y-2">
@@ -160,7 +154,7 @@
                     Discard
                 </a>
                 <button type="submit"
-                    class="click-shrink px-10 py-3.5 bg-brand-blue text-white rounded-2xl text-[11px] font-black shadow-lg shadow-primary/25 hover:bg-primary-dark transition-all uppercase tracking-[0.2em] flex items-center gap-2">
+                    class="click-shrink px-10 py-3.5 bg-brand-blue text-white rounded-2xl text-[11px] font-black shadow-lg shadow-primary/20 hover:bg-primary-dark transition-all uppercase tracking-[0.2em] flex items-center gap-2">
                     <span class="material-icons-outlined text-sm">auto_awesome</span>
                     Create SubCategory
                 </button>
@@ -168,26 +162,4 @@
         </form>
     </div>
 </div>
-<script>
-    const subcategoryImageInput = document.getElementById("image");
-    const subcategoryImagePreview = document.getElementById("subcategoryImagePreview");
-    const subcategoryImagePlaceholder = document.getElementById("subcategoryImagePlaceholder");
-
-    if (subcategoryImageInput) {
-        subcategoryImageInput.addEventListener("change", (event) => {
-            const file = event.target.files && event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                subcategoryImagePreview.src = e.target.result;
-                subcategoryImagePreview.classList.remove("hidden");
-                if (subcategoryImagePlaceholder) {
-                    subcategoryImagePlaceholder.classList.add("hidden");
-                }
-            };
-            reader.readAsDataURL(file);
-        });
-    }
-</script>
 {% endblock %}
-

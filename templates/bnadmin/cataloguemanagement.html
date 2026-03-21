@@ -9,45 +9,127 @@
 <script defer src="https://unpkg.com/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
 <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-<div class="space-y-6 animate-in fade-in duration-500 pb-20">
+<style>
+    .bn-glass {
+        background: linear-gradient(135deg, rgba(255,255,255,0.92), rgba(248,250,252,0.85));
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        box-shadow: 0 16px 40px -24px rgba(15, 23, 42, 0.25);
+    }
+    .bn-chip {
+        border: 1px solid rgba(226, 232, 240, 0.9);
+        background: #fff;
+    }
+    .bn-pill {
+        background: linear-gradient(135deg, rgba(94, 234, 212, 0.2), rgba(14, 116, 144, 0.15));
+        border: 1px solid rgba(45, 212, 191, 0.35);
+    }
+    .bn-shadow-soft {
+        box-shadow: 0 20px 50px -30px rgba(15, 23, 42, 0.25);
+    }
+    .bn-scrollbar-hide::-webkit-scrollbar { width: 0; height: 0; }
+    .bn-scrollbar-hide { scrollbar-width: none; -ms-overflow-style: none; }
+</style>
 
-    <div class="flex justify-between items-center mb-8">
-        <div>
-            <h3 class="text-xl font-black text-slate-800">Master Hierarchy</h3>
-            <p class="text-sm text-slate-500 font-medium">
-                Manage Categories, SubCategories, and their specific Attributes.
-            </p>
+<div class="space-y-8 animate-in fade-in duration-500 pb-20">
+
+    <div class="bn-glass rounded-[2rem] p-6 md:p-8">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+            <div class="space-y-2">
+                <p class="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Catalog Studio</p>
+                <h3 class="text-2xl md:text-3xl font-black text-slate-800">Master Hierarchy</h3>
+                <p class="text-sm text-slate-500 font-medium max-w-2xl">
+                    Manage categories, subcategories, attributes, and options in one modern workspace.
+                </p>
+            </div>
+            <div class="flex flex-wrap items-center gap-3">
+                <a href="{% url 'add_category' %}"
+                    class="click-shrink flex items-center gap-2 bg-brand-blue text-white px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-primary/25">
+                    <span class="material-icons-outlined text-sm">add_circle</span>
+                    Add Category
+                </a>
+                <a href="{% url 'add_attribute' %}"
+                    class="click-shrink flex items-center gap-2 bg-white text-brand-blue px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest border border-slate-200 hover:border-brand-blue">
+                    <span class="material-icons-outlined text-sm">tune</span>
+                    Add Attribute
+                </a>
+            </div>
         </div>
 
-        <a href="{% url 'add_category' %}"
-            class="click-shrink flex items-center gap-2 bg-brand-blue text-white px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-blue-200">
+        <form method="GET" class="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-3 bg-white rounded-2xl border border-slate-200 p-4">
+            <div class="lg:col-span-7 relative">
+                <span class="material-icons-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">search</span>
+                <input type="text" name="q" value="{{ q }}" placeholder="Search category, subcategory, attribute, or option"
+                    class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-primary focus:ring-primary/30 text-sm font-semibold text-slate-700 bg-white">
+            </div>
+            <div class="lg:col-span-3">
+                <select name="status" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-primary focus:ring-primary/30 text-sm font-semibold text-slate-700 bg-white">
+                    <option value="">All Categories</option>
+                    <option value="active" {% if selected_status == "active" %}selected{% endif %}>Active</option>
+                    <option value="inactive" {% if selected_status == "inactive" %}selected{% endif %}>Hidden</option>
+                </select>
+            </div>
+            <div class="lg:col-span-2 flex flex-col sm:flex-row gap-2">
+                <button type="submit" class="w-full px-4 py-2.5 rounded-xl bg-brand-blue text-white font-black text-xs uppercase tracking-widest">Apply</button>
+                <a href="{% url 'catalogue_management' %}" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-slate-500 font-black text-xs uppercase tracking-widest text-center bg-white">Clear</a>
+            </div>
+        </form>
 
-            <span class="material-icons-outlined text-sm">add_circle</span>
-            Add Category
-
-        </a>
     </div>
 
+    {% if messages %}
+    <div id="messages" class="space-y-3">
+        {% for message in messages %}
+        <div class="flex items-center gap-3 px-5 py-4 rounded-2xl font-bold text-sm
+            {% if message.tags == 'success' %}
+                bg-emerald-50 text-emerald-700 border border-emerald-200
+            {% elif message.tags == 'error' %}
+                bg-rose-50 text-rose-700 border border-rose-200
+            {% else %}
+                bg-primary/10 text-primary border border-primary/25
+            {% endif %}">
+            <span class="material-icons-outlined text-base">
+                {% if message.tags == 'success' %}check_circle
+                {% elif message.tags == 'error' %}error
+                {% else %}info{% endif %}
+            </span>
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        setTimeout(() => {
+            const msgBox = document.getElementById("messages");
+            if (msgBox) {
+                msgBox.style.transition = "opacity 0.5s ease";
+                msgBox.style.opacity = "0";
+                setTimeout(() => msgBox.remove(), 500);
+            }
+        }, 4000);
+    </script>
+    {% endif %}
+
     {% for category in categories %}
-    <div x-data="{ openCat: false }"
-        class="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden mb-8">
+    <div x-data="{ openCat: false }" data-catalog-item="{{ category.name|lower }}"
+        class="bn-surface bg-white rounded-[2rem] border border-slate-200/80 shadow-sm overflow-hidden mb-8">
 
         <!-- CATEGORY HEADER -->
 
-        <div class="p-6 bg-slate-50/50 border-b border-slate-50 flex items-center justify-between cursor-pointer hover:bg-slate-100 transition-all"
+        <div class="p-6 bg-slate-50/50 border-b border-slate-50 flex items-center justify-between cursor-pointer hover:bg-white transition-all"
             @click="openCat = !openCat">
 
             <div class="flex items-center gap-4">
 
                 <div
-                    class="w-12 h-12 bg-white rounded-2xl border border-slate-200 flex items-center justify-center text-brand-blue shadow-sm">
-
+                    class="w-14 h-14 bg-white rounded-2xl border border-slate-200 flex items-center justify-center text-brand-blue shadow-sm overflow-hidden">
+                    {% if category.image %}
+                    <img src="{{ category.image.url }}" alt="{{ category.name }}" class="h-full w-full object-cover">
+                    {% else %}
                     <span class="material-icons-outlined" x-show="!openCat">category</span>
-
                     <span class="material-icons-outlined" x-show="openCat" x-cloak>
                         expand_more
                     </span>
-
+                    {% endif %}
                 </div>
 
                 <div>
@@ -55,10 +137,18 @@
                         {{ category.name }}
                     </h4>
 
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                        <span x-show="!openCat">Click to expand</span>
-                        <span x-show="openCat" x-cloak>Click to collapse</span>
-                    </p>
+                    <div class="flex flex-wrap items-center gap-2 mt-2">
+                        <span class="bn-chip text-[10px] font-bold text-slate-500 uppercase tracking-widest px-2.5 py-1 rounded-full">
+                            {{ category.subcategories.all|length }} Subcategories
+                        </span>
+                        <span class="bn-pill text-[10px] font-bold text-emerald-700 uppercase tracking-widest px-2.5 py-1 rounded-full">
+                            {% if category.is_active %}Active{% else %}Hidden{% endif %}
+                        </span>
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                            <span x-show="!openCat">Click to expand</span>
+                            <span x-show="openCat" x-cloak>Click to collapse</span>
+                        </span>
+                    </div>
 
                 </div>
 
@@ -92,8 +182,8 @@
 
             {% for sub in category.subcategories.all %}
 
-            <div x-data="{ openSub: false }"
-                class="ml-8 border-l-2 border-slate-100 pl-8 relative">
+            <div x-data="{ openSub: false }" data-catalog-item="{{ sub.name|lower }}"
+                class="ml-6 border-l-2 border-slate-100 pl-6 relative">
 
                 <div
                     class="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-slate-100 border-4 border-white"></div>
@@ -105,22 +195,30 @@
 
                     <div class="flex items-center gap-3">
 
-                        <span class="material-icons-outlined text-slate-400"
-                            x-show="!openSub">account_tree</span>
+                        <div class="h-9 w-9 rounded-xl border border-slate-200 bg-white flex items-center justify-center overflow-hidden text-slate-400">
+                            {% if sub.image %}
+                            <img src="{{ sub.image.url }}" alt="{{ sub.name }}" class="h-full w-full object-cover">
+                            {% else %}
+                            <span class="material-icons-outlined" x-show="!openSub">account_tree</span>
+                            <span class="material-icons-outlined text-brand-blue" x-show="openSub" x-cloak>unfold_less</span>
+                            {% endif %}
+                        </div>
 
-                        <span class="material-icons-outlined text-brand-blue"
-                            x-show="openSub" x-cloak>unfold_less</span>
-
-                        <span class="font-black text-slate-700">
-                            {{ sub.name }}
-                        </span>
+                        <div>
+                            <span class="font-black text-slate-700">
+                                {{ sub.name }}
+                            </span>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
+                                {{ sub.attributes.all|length }} Attributes
+                            </p>
+                        </div>
 
                     </div>
 
                     <div class="flex items-center gap-2" @click.stop>
 
                         <a href="{% url 'edit_subcategory' sub.id %}"
-                            class="text-xs font-bold text-brand-blue px-3 py-1 hover:bg-blue-50 rounded-lg">
+                            class="text-xs font-bold text-brand-blue px-3 py-1 hover:bg-primary/10 rounded-lg">
 
                             Edit
 
@@ -146,7 +244,7 @@
                     {% for attribute in sub.attributes.all %}
 
                     <div
-                        class="flex items-start justify-between p-4 bg-slate-50/50 border border-slate-100 rounded-2xl">
+                        class="flex items-start justify-between p-4 bg-white border border-slate-100 rounded-2xl shadow-sm">
 
                         <div class="space-y-3">
 
@@ -185,7 +283,7 @@
                                 {% for option in attribute.options.all %}
 
                                 <div
-                                    class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-100 group/opt">
+                                    class="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100 group/opt">
 
                                     <span class="text-[11px] font-bold text-slate-600">
                                         {{ option.value }}
@@ -206,7 +304,7 @@
                                 {% endfor %}
 
 
-                                <a href="{% url 'add_attributeoptions' %}"
+                                <a href="{% url 'add_attributeoptions' %}?attribute={{ attribute.id }}"
                                     class="flex items-center gap-1 px-3 py-1.5 rounded-xl border border-dashed border-slate-300 text-slate-400 hover:text-brand-orange">
 
                                     <span class="material-icons-outlined text-[12px]">add</span>
@@ -276,3 +374,4 @@
 </style>
 
 {% endblock %}
+

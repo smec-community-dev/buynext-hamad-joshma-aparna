@@ -1,167 +1,1270 @@
 {% extends "bnadmin/base.html" %}
 
-{% block title %}Admin Dashboard{% endblock %}
+{% block title %}BuyNext Admin - Dashboard{% endblock %}
 {% block header_title %}Admin Dashboard{% endblock %}
 
+{% block extra_css %}
+<style>
+    :root{
+        --bn-cream:#ffffff;
+        --bn-sage:#5f7534;
+        --bn-sage-dark:#4b5e29;
+        --bn-text:#27311d;
+        --bn-muted:#6f7662;
+        --bn-line:#e3dccd;
+        --bn-soft:#ebe5d7;
+        --bn-amber:#f59e0b;
+        --bn-amber-deep:#d97706;
+        --bn-olive-ink:#2f3a22;
+        --bn-mint:#ecf2e6;
+        --bn-ivory:#f8f6ef;
+    }
+
+    .bn-dashboard-shell {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+        border: 1px solid rgba(207, 199, 184, 0.92);
+        background: #ffffff;
+        box-shadow: 0 20px 44px -28px rgba(31, 42, 22, 0.3);
+    }
+
+    .bn-dashboard-shell::before,
+    .bn-dashboard-shell::after {
+        content: none;
+    }
+
+    .bn-dashboard-shell::before {
+        content: none;
+    }
+
+    .bn-dashboard-shell::after {
+        content: none;
+    }
+
+    .bn-dashboard-shell > * {
+        position: relative;
+        z-index: 1;
+    }
+
+    .bn-premium-card {
+        position: relative;
+        border: 1px solid rgba(207, 199, 184, 0.92);
+        background: #4b5e29;
+        color: #ffffff;
+        box-shadow: 0 16px 36px rgba(39, 49, 29, 0.28);
+    }
+
+    .bn-premium-card::before {
+        content: none;
+    }
+
+    .bn-hero-card {
+        background: #4b5e29;
+    }
+
+    .bn-hero-card h2 {
+        color: #ffffff;
+    }
+
+    .bn-hero-card p {
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .bn-hero-card::after {
+        content: none;
+    }
+
+    .bn-date-chip {
+        border: 1px solid rgba(95, 117, 52, 0.18);
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.92);
+    }
+
+    .bn-kpi-grid {
+        gap: 1.25rem;
+    }
+
+    .bn-stat-card {
+        min-height: 12.25rem;
+        overflow: hidden;
+        transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+    }
+
+    .bn-stat-card::before {
+        content: none;
+    }
+
+    .bn-stat-link {
+        display: block;
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .bn-stat-link:focus-visible {
+        outline: none;
+        box-shadow:
+            0 0 0 4px rgba(95, 117, 52, 0.14),
+            0 22px 42px -28px rgba(15, 23, 42, 0.36),
+            inset 0 1px 0 rgba(255, 255, 255, 0.94);
+    }
+
+    .bn-stat-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(255, 255, 255, 0.25);
+        box-shadow: 0 18px 36px rgba(39, 49, 29, 0.32);
+    }
+
+    .bn-stat-card .material-icons-outlined {
+        font-size: 1.35rem;
+    }
+
+    .bn-stat-card::after {
+        content: none;
+    }
+
+    .bn-stat-icon {
+        position: relative;
+        background: #ffffff !important;
+        color: #4b5e29 !important;
+        box-shadow: 0 10px 18px -12px rgba(0, 0, 0, 0.35);
+    }
+
+    .bn-stat-icon::after {
+        content: none;
+    }
+
+    .bn-stat-topline {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+    }
+
+    .bn-stat-label {
+        display: inline-flex;
+        align-items: center;
+        min-height: 1.7rem;
+        padding: 0.35rem 0.7rem;
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.12);
+        font-size: 0.6rem;
+        font-weight: 900;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    .bn-stat-copy {
+        position: relative;
+        z-index: 1;
+    }
+
+    .bn-stat-title {
+        margin-top: 1.2rem;
+        font-size: 0.68rem;
+        font-weight: 900;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .bn-stat-value-row {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-top: 0.45rem;
+    }
+
+    .bn-stat-value {
+        font-size: clamp(2rem, 3vw, 2.6rem);
+        line-height: 0.95;
+        font-weight: 900;
+        letter-spacing: -0.05em;
+        color: #ffffff;
+    }
+
+    .bn-stat-foot {
+        margin-top: 1.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+    }
+
+    .bn-stat-line {
+        flex: 1;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.35);
+    }
+
+    .bn-stat-dot {
+        width: 0.55rem;
+        height: 0.55rem;
+        border-radius: 999px;
+        background: #ffffff;
+        box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.12);
+        flex-shrink: 0;
+    }
+
+    .bn-kpi-accent {
+        height: 5px;
+        margin: 1rem 1rem 0;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.6);
+        opacity: 0.95;
+    }
+
+    .bn-kpi-grid article:nth-child(2) .bn-kpi-accent {
+        background: rgba(255, 255, 255, 0.55);
+    }
+
+    .bn-kpi-grid article:nth-child(3) .bn-kpi-accent {
+        background: rgba(255, 255, 255, 0.5);
+    }
+
+    .bn-kpi-grid article:nth-child(4) .bn-kpi-accent {
+        background: rgba(255, 255, 255, 0.45);
+    }
+
+    .bn-kpi-grid article:nth-child(2)::after {
+        background: none;
+    }
+
+    .bn-kpi-grid article:nth-child(3)::after {
+        background: none;
+    }
+
+    .bn-kpi-grid article:nth-child(4)::after {
+        background: none;
+    }
+
+    .bn-kpi-grid article:nth-child(2) .bn-stat-dot {
+        background: #ffffff;
+        box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.12);
+    }
+
+    .bn-kpi-grid article:nth-child(3) .bn-stat-dot {
+        background: #ffffff;
+        box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.12);
+    }
+
+    .bn-kpi-grid article:nth-child(4) .bn-stat-dot {
+        background: #ffffff;
+        box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.12);
+    }
+
+    .bn-table-card {
+        background: #ffffff;
+        border: 1px solid var(--bn-line);
+        box-shadow: 0 16px 36px rgba(39, 49, 29, 0.08);
+    }
+
+    .bn-panel-head {
+        padding: 1rem 1.4rem;
+        background: #ffffff;
+        color: #1f2a16;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        border-bottom: 1px solid #eee8da;
+    }
+
+    .bn-panel-head h3 {
+        color: #1f2a16;
+    }
+
+    .bn-panel-head a,
+    .bn-panel-head a:visited {
+        color: #1f2a16;
+    }
+
+    .bn-inline-action {
+        border: 1px solid #d8cfbf;
+        background: #ffffff;
+        color: #1f2a16;
+        box-shadow: none;
+    }
+
+    .bn-inline-action:hover {
+        background: #f4efe3;
+    }
+
+    .bn-table-shell {
+        padding: 0;
+        background: #ffffff;
+    }
+
+    .bn-table {
+        min-width: 100%;
+        border-collapse: collapse;
+    }
+
+    .bn-table thead {
+        background: transparent !important;
+    }
+
+    .bn-table thead tr {
+        background: transparent !important;
+    }
+
+    .bn-table thead th {
+        padding: 1rem 1.5rem;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        color: #ffffff;
+        text-transform: uppercase;
+    }
+
+    .bn-table thead tr {
+        background: #4b5e29 !important;
+        border-bottom: none;
+    }
+
+    .bn-table tbody tr {
+        transition: background-color 0.2s ease;
+        background: #ffffff;
+    }
+
+    .bn-table tbody tr:hover {
+        background: #fcfbf7;
+    }
+
+    .bn-table tbody td {
+        border-top: 1px solid #eee8da;
+        padding: 1rem 1.5rem;
+        vertical-align: middle;
+        color: #1f2a16;
+    }
+
+    .bn-table tbody td a,
+    .bn-table tbody td a:visited {
+        color: #1f2a16;
+    }
+
+    .bn-table tbody td .bn-cell-secondary {
+        color: var(--bn-muted);
+    }
+
+    .bn-table tbody td :is(.text-slate-900, .text-slate-800, .text-slate-700, .text-slate-600, .text-slate-500) {
+        color: #1f2a16 !important;
+    }
+
+    .bn-table tbody td:first-child,
+    .bn-table tbody td:last-child {
+        border-radius: 0;
+    }
+
+    .bn-cell-primary {
+        display: block;
+        font-size: 0.82rem;
+        font-weight: 800;
+        color: #1f2a16;
+        letter-spacing: -0.01em;
+    }
+
+    .bn-cell-secondary {
+        display: block;
+        font-size: 0.74rem;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.75);
+    }
+
+    .bn-avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 14px;
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        box-shadow: 0 10px 18px -14px rgba(0, 0, 0, 0.4);
+        flex-shrink: 0;
+    }
+
+    .bn-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .bn-avatar.is-round {
+        border-radius: 999px;
+    }
+
+    .bn-status-pill,
+    .bn-meta-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        min-height: 1.9rem;
+        padding: 0.35rem 0.72rem;
+        border-radius: 999px;
+        font-size: 0.7rem;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        white-space: nowrap;
+    }
+
+    .bn-table-card {
+        background: #ffffff;
+        border: 1px solid var(--bn-line);
+        box-shadow: 0 16px 36px rgba(39, 49, 29, 0.08);
+    }
+
+    .bn-panel-head {
+        background: var(--bn-soft);
+    }
+
+    .bn-table tbody tr {
+        background: transparent;
+    }
+
+    .bn-status-pill {
+        border: 1px solid #e3dccd;
+        background: #f4efe3;
+        color: #2f3a22;
+        box-shadow: none;
+    }
+
+    .bn-status-pill.is-approved,
+    .bn-status-pill.is-verified {
+        border-color: #cfdcb7;
+        background: #e7efda;
+        color: #3f5620;
+    }
+
+    .bn-status-pill.is-rejected {
+        border-color: #efd2d1;
+        background: #f9eded;
+        color: #9a4745;
+    }
+
+    .bn-status-pill.is-draft {
+        border-color: #d9d2c1;
+        background: #f4efe3;
+        color: #7a6f5b;
+    }
+
+    .bn-status-pill::before {
+        content: "";
+        width: 0.45rem;
+        height: 0.45rem;
+        border-radius: 999px;
+        background: currentColor;
+        opacity: 0.9;
+        box-shadow: 0 0 0 4px rgba(47, 58, 34, 0.08);
+        flex-shrink: 0;
+    }
+
+    .bn-meta-pill {
+        border: 1px solid #e3dccd;
+        background: #ffffff;
+        color: #6f7662;
+        box-shadow: none;
+    }
+
+    .bn-empty-row {
+        background: transparent !important;
+        box-shadow: none !important;
+    }
+
+    .bn-empty-row td {
+        border: 1px dashed #d8cfbf !important;
+        border-radius: 1rem !important;
+        background: #f8f6ef;
+        padding: 1.5rem 1rem;
+        text-align: center;
+        font-size: 0.76rem;
+        font-weight: 700;
+        color: #6f7662;
+    }
+
+    .bn-pie-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1.5rem;
+    }
+
+    @media (max-width: 1024px) {
+        .bn-pie-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    .bn-pie-body {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: 1.4rem;
+        padding: 1.6rem 1.2rem 2.2rem;
+    }
+
+    .bn-pie-shell {
+        --shell-size: 220px;
+        --pie-size: 160px;
+        position: relative;
+        width: var(--shell-size);
+        height: var(--shell-size);
+        border-radius: 50%;
+        background: radial-gradient(circle at 30% 30%, #6c873d, #3f5221);
+        display: grid;
+        place-items: center;
+        box-shadow: 0 26px 46px rgba(39, 49, 29, 0.32);
+    }
+
+    .bn-pie-3d {
+        --a: 0;
+        --b: 0;
+        --c: 0;
+        --d: 0;
+        --a-deg: calc(var(--a) * 3.6deg);
+        --b-deg: calc(var(--b) * 3.6deg);
+        --c-deg: calc(var(--c) * 3.6deg);
+        --d-deg: calc(var(--d) * 3.6deg);
+        --ab-deg: calc(var(--a-deg) + var(--b-deg));
+        --abc-deg: calc(var(--a-deg) + var(--b-deg) + var(--c-deg));
+        position: relative;
+        width: var(--pie-size);
+        height: var(--pie-size);
+        border-radius: 50%;
+        background: conic-gradient(#e9e2d4 0 100%);
+        box-shadow: 0 16px 30px rgba(39, 49, 29, 0.28);
+    }
+
+    .bn-pie-3d.is-three {
+        background:
+            conic-gradient(
+                var(--color-a) 0 var(--a-deg),
+                transparent var(--a-deg) calc(var(--a-deg) + 2deg),
+                var(--color-b) calc(var(--a-deg) + 2deg) var(--ab-deg),
+                transparent var(--ab-deg) calc(var(--ab-deg) + 2deg),
+                var(--color-c) calc(var(--ab-deg) + 2deg) 360deg
+            );
+    }
+
+    .bn-pie-3d.is-four {
+        background:
+            conic-gradient(
+                var(--color-a) 0 var(--a-deg),
+                transparent var(--a-deg) calc(var(--a-deg) + 2deg),
+                var(--color-b) calc(var(--a-deg) + 2deg) var(--ab-deg),
+                transparent var(--ab-deg) calc(var(--ab-deg) + 2deg),
+                var(--color-c) calc(var(--ab-deg) + 2deg) var(--abc-deg),
+                transparent var(--abc-deg) calc(var(--abc-deg) + 2deg),
+                var(--color-d) calc(var(--abc-deg) + 2deg) 360deg
+            );
+    }
+
+    .bn-pie-3d::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        background: inherit;
+        transform: translateY(12px);
+        filter: brightness(0.82);
+        z-index: -1;
+    }
+
+    .bn-pie-3d::before {
+        content: "";
+        position: absolute;
+        inset: 20px;
+        border-radius: 50%;
+        background: #ffffff;
+        box-shadow: inset 0 0 0 1px #eee8da;
+        z-index: 1;
+    }
+
+    .bn-pie-3d.is-empty {
+        background: conic-gradient(#e9e2d4 0 100%);
+    }
+
+    .bn-pie-3d.is-empty::before {
+        background: #fdfbf6;
+    }
+
+    .bn-pie-center {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.2rem;
+        text-align: center;
+        z-index: 2;
+    }
+
+    .bn-pie-title {
+        font-size: 0.7rem;
+        font-weight: 900;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: #6f7662;
+    }
+
+    .bn-pie-value {
+        font-size: 1.45rem;
+        font-weight: 900;
+        color: #2f3a22;
+        letter-spacing: -0.03em;
+    }
+
+    .bn-pie-sub {
+        font-size: 0.62rem;
+        font-weight: 900;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: #6f7662;
+    }
+
+    .bn-pie-callout {
+        position: absolute;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.4rem 0.6rem;
+        border-radius: 0.55rem;
+        background: #ffffff;
+        font-size: 0.7rem;
+        font-weight: 900;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        box-shadow: 0 10px 18px rgba(39, 49, 29, 0.18);
+    }
+
+    .bn-pie-callout small {
+        display: block;
+        font-size: 0.52rem;
+        letter-spacing: 0.18em;
+        color: #6f7662;
+        font-weight: 800;
+    }
+
+    .bn-pie-callout span {
+        font-size: 0.92rem;
+        letter-spacing: 0.02em;
+        color: #1f2a16;
+    }
+
+    .bn-pie-callout::before {
+        content: "";
+        position: absolute;
+        width: 0.6rem;
+        height: 0.6rem;
+        border-radius: 999px;
+        background: currentColor;
+        box-shadow: 0 0 0 2px #ffffff, 0 0 0 6px rgba(47, 58, 34, 0.08);
+    }
+
+    .bn-pie-callout::after {
+        content: "";
+        position: absolute;
+        width: 2.6rem;
+        height: 3px;
+        background: repeating-linear-gradient(
+            to right,
+            currentColor 0 8px,
+            transparent 8px 14px
+        );
+    }
+
+    .bn-pie-callout.is-green { color: #7aa85c; border: 2px solid #7aa85c; }
+    .bn-pie-callout.is-amber { color: #f59e0b; border: 2px solid #f59e0b; }
+    .bn-pie-callout.is-red { color: #d26b67; border: 2px solid #d26b67; }
+    .bn-pie-callout.is-sand { color: #bda98a; border: 2px solid #bda98a; }
+    .bn-pie-callout.is-teal { color: #3fa3a1; border: 2px solid #3fa3a1; }
+
+    .bn-callout-top-left { top: -1.6rem; left: -1.6rem; }
+    .bn-callout-top-left::before { right: -0.4rem; top: 50%; transform: translateY(-50%); }
+    .bn-callout-top-left::after { right: -2.1rem; top: 50%; transform: translateY(-50%); }
+
+    .bn-callout-top-right { top: -1.8rem; right: -1.6rem; }
+    .bn-callout-top-right::before { left: -0.4rem; top: 50%; transform: translateY(-50%); }
+    .bn-callout-top-right::after { left: -2.1rem; top: 50%; transform: translateY(-50%); }
+
+    .bn-callout-right { top: 42%; right: -1.9rem; transform: translateY(-50%); }
+    .bn-callout-right::before { left: -0.4rem; top: 50%; transform: translateY(-50%); }
+    .bn-callout-right::after { left: -2.1rem; top: 50%; transform: translateY(-50%); }
+
+    .bn-callout-bottom { bottom: -1.6rem; left: 50%; transform: translateX(-50%); }
+    .bn-callout-bottom::before { left: 50%; top: -0.45rem; transform: translateX(-50%); }
+    .bn-callout-bottom::after { left: 50%; top: -1.6rem; transform: translateX(-50%) rotate(90deg); width: 1.6rem; }
+
+    .bn-callout-bottom-left { bottom: -1.6rem; left: -0.4rem; }
+    .bn-callout-bottom-left::before { right: -0.4rem; top: 50%; transform: translateY(-50%); }
+    .bn-callout-bottom-left::after { right: -2.1rem; top: 50%; transform: translateY(-50%); }
+
+    @media (max-width: 640px) {
+        .bn-dashboard-shell {
+            border-radius: 1.5rem;
+        }
+
+        .bn-hero-card {
+            padding: 1.25rem;
+        }
+
+        .bn-table-shell {
+            padding: 0.35rem;
+        }
+
+        .bn-pie-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .bn-pie-shell {
+            --shell-size: 200px;
+            --pie-size: 145px;
+        }
+
+        .bn-pie-callout {
+            font-size: 0.6rem;
+            padding: 0.35rem 0.5rem;
+        }
+    }
+
+    /* Page-load animation */
+    @keyframes bnFadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(16px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .bn-animate-in {
+        opacity: 0;
+        animation: bnFadeUp 0.5s ease forwards;
+    }
+
+    .bn-animate-in[data-delay="1"] { animation-delay: 0.05s; }
+    .bn-animate-in[data-delay="2"] { animation-delay: 0.1s; }
+    .bn-animate-in[data-delay="3"] { animation-delay: 0.15s; }
+    .bn-animate-in[data-delay="4"] { animation-delay: 0.2s; }
+    .bn-animate-in[data-delay="5"] { animation-delay: 0.25s; }
+
+    .bn-kpi-grid .bn-stat-card,
+    .bn-table-card {
+        opacity: 0;
+        animation: bnFadeUp 0.5s ease forwards;
+    }
+
+    .bn-kpi-grid .bn-stat-card:nth-child(1) { animation-delay: 0.05s; }
+    .bn-kpi-grid .bn-stat-card:nth-child(2) { animation-delay: 0.1s; }
+    .bn-kpi-grid .bn-stat-card:nth-child(3) { animation-delay: 0.15s; }
+    .bn-kpi-grid .bn-stat-card:nth-child(4) { animation-delay: 0.2s; }
+
+    .bn-table-card:nth-of-type(1) { animation-delay: 0.25s; }
+    .bn-table-card:nth-of-type(2) { animation-delay: 0.3s; }
+    .bn-table-card:nth-of-type(3) { animation-delay: 0.35s; }
+
+    @media (prefers-reduced-motion: reduce) {
+        .bn-animate-in {
+            animation: none;
+            opacity: 1;
+            transform: none;
+        }
+
+        .bn-kpi-grid .bn-stat-card,
+        .bn-table-card {
+            animation: none;
+            opacity: 1;
+            transform: none;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const counters = document.querySelectorAll('.bn-stat-value[data-count]');
+        if (!counters.length) {
+            return;
+        }
+
+        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const formatValue = (value, el) => {
+            const prefix = el.dataset.prefix || '';
+            const suffix = el.dataset.suffix || '';
+            const decimals = el.dataset.decimals ? parseInt(el.dataset.decimals, 10) : 0;
+            const number = Number(value) || 0;
+            const formatted = number.toLocaleString(undefined, {
+                minimumFractionDigits: decimals,
+                maximumFractionDigits: decimals
+            });
+            el.textContent = `${prefix}${formatted}${suffix}`;
+        };
+
+        counters.forEach((el) => {
+            const target = Number(el.dataset.count);
+            if (!Number.isFinite(target)) {
+                return;
+            }
+
+            if (prefersReduced) {
+                formatValue(target, el);
+                return;
+            }
+
+            const duration = 1200;
+            const start = performance.now();
+            const startValue = 0;
+
+            const tick = (now) => {
+                const progress = Math.min((now - start) / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                const current = Math.floor(startValue + (target - startValue) * eased);
+                formatValue(current, el);
+                if (progress < 1) {
+                    requestAnimationFrame(tick);
+                } else {
+                    formatValue(target, el);
+                }
+            };
+
+            requestAnimationFrame(tick);
+        });
+    });
+</script>
+{% endblock %}
+
 {% block content %}
-<div class="space-y-8 animate-in fade-in duration-500">
-    
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        
-        <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-md transition-all group">
-            <div class="flex items-center justify-between mb-4">
-                <div class="w-12 h-12 rounded-2xl bg-blue-50 text-brand-blue flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <span class="material-icons-outlined">storefront</span>
-                </div>
-                <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">Total</span>
+<div class="space-y-6 bn-dashboard-shell rounded-[2rem] p-1">
+    <section class="bn-premium-card bn-hero-card bn-animate-in rounded-[1.8rem] p-6 md:p-7 relative overflow-hidden shadow-xl" data-delay="1">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div class="flex flex-col gap-2">
+                <p class="text-xs font-bold uppercase tracking-widest text-brand-orange/80">Overview</p>
+                <h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 leading-tight flex items-center gap-2">
+                    <span class="material-icons-outlined text-amber-500 text-2xl md:text-3xl">dashboard</span>
+                    Admin Performance Dashboard
+                </h2>
+                <p class="mt-2 text-base text-slate-500 font-medium">
+                    Clear snapshot of seller and product verification pipeline.
+                </p>
             </div>
-            <h3 class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Total Sellers</h3>
-            <p class="text-3xl font-black text-slate-800">{{ total_sellers|default:"1,284" }}</p>
-        </div>
-
-        <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-md transition-all group border-l-4 border-l-brand-orange">
-            <div class="flex items-center justify-between mb-4">
-                <div class="w-12 h-12 rounded-2xl bg-orange-50 text-brand-orange flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <span class="material-icons-outlined">verified_user</span>
-                </div>
-                <span class="flex h-2 w-2 rounded-full bg-brand-orange animate-pulse"></span>
-            </div>
-            <h3 class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Pending Sellers</h3>
-            <p class="text-3xl font-black text-slate-800">{{ pending_sellers|default:"24" }}</p>
-        </div>
-
-        <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-md transition-all group border-l-4 border-l-indigo-500">
-            <div class="flex items-center justify-between mb-4">
-                <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <span class="material-icons-outlined">inventory_2</span>
-                </div>
-                <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">Pending</span>
-            </div>
-            <h3 class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Pending Products</h3>
-            <p class="text-3xl font-black text-slate-800">{{ pending_products|default:"142" }}</p>
-        </div>
-
-        <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-md transition-all group">
-            <div class="flex items-center justify-between mb-4">
-                <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <span class="material-icons-outlined">shopping_bag</span>
-                </div>
-                <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">Live</span>
-            </div>
-            <h3 class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Total Products</h3>
-            <p class="text-3xl font-black text-slate-800">{{ total_products|default:"8,432" }}</p>
-        </div>
-
-    </div>
-
-    <section class="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
-        <div class="p-8 border-b border-slate-50 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-orange-50 text-brand-orange flex items-center justify-center">
-                    <span class="material-icons-outlined">person_add_alt</span>
-                </div>
-                <div>
-                    <h3 class="text-lg font-black text-slate-800">Recent Seller Applications</h3>
-                    <p class="text-xs text-slate-400 font-medium">New requests waiting for manual verification</p>
+            <div class="flex flex-col items-end gap-2">
+                <div class="bn-date-chip inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-bold uppercase tracking-widest text-primary bg-amber-50 shadow">
+                    <span class="material-icons-outlined text-amber-500 text-base">calendar_today</span>
+                    {% now "M d, Y" %}
                 </div>
             </div>
-            <a href="#" class="click-shrink text-xs font-black text-brand-blue uppercase tracking-widest bg-blue-50 px-4 py-2 rounded-lg hover:bg-blue-100 transition-colors">View All</a>
-        </div>
-        <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
-                <thead>
-                    <tr class="bg-slate-50/50">
-                        <th class="px-8 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Store Name</th>
-                        <th class="px-8 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Seller Name</th>
-                        <th class="px-8 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">GST Number</th>
-                        <th class="px-8 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Submitted Date</th>
-                        <th class="px-8 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Status</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-50">
-                    {% for seller in recent_sellers %}
-                    <tr class="hover:bg-slate-50/80 transition-colors cursor-pointer group">
-                        <td class="px-8 py-5 font-bold text-slate-700">{{ seller.store_name }}</td>
-                        <td class="px-8 py-5 text-sm text-slate-500">{{ seller.user.get_full_name }}</td>
-                        <td class="px-8 py-5 font-mono text-xs text-brand-blue">{{ seller.gst_number }}</td>
-                        <td class="px-8 py-5 text-sm text-slate-400">{{ seller.created_at|date:"M d, Y" }}</td>
-                        <td class="px-8 py-5 text-center">
-                            <span class="px-3 py-1 bg-orange-100 text-brand-orange rounded-full text-[10px] font-black uppercase tracking-tighter">Pending</span>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="5" class="px-8 py-10 text-center text-slate-400 font-bold">No recent applications found.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
         </div>
     </section>
 
-    <section class="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
-        <div class="p-8 border-b border-slate-50 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-blue-50 text-brand-blue flex items-center justify-center">
-                    <span class="material-icons-outlined">add_shopping_cart</span>
+    <section class="bn-kpi-grid grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
+        <a href="{% url 'seller_management' %}#sellerTable" class="bn-stat-link bn-premium-card bn-stat-card overflow-hidden rounded-[1.4rem]">
+            <div class="bn-kpi-accent"></div>
+            <div class="p-5 md:p-6">
+            <div class="bn-stat-copy">
+                <div class="bn-stat-topline">
+                    <div class="bn-stat-icon w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center">
+                        <span class="material-icons-outlined">storefront</span>
+                    </div>
+                    <span class="bn-stat-label">Total</span>
                 </div>
-                <div>
-                    <h3 class="text-lg font-black text-slate-800">Recently Submitted Products</h3>
-                    <p class="text-xs text-slate-400 font-medium">Verify product details and images before going live</p>
+                <p class="bn-stat-title">Total Sellers</p>
+                <div class="bn-stat-value-row">
+                    <p class="bn-stat-value" data-count="{{ total_sellers|default_if_none:0 }}">{{ total_sellers|default_if_none:0 }}</p>
+                </div>
+                <div class="bn-stat-foot">
+                    <div class="bn-stat-line"></div>
+                    <span class="bn-stat-dot"></span>
                 </div>
             </div>
-            <a href="#" class="click-shrink text-xs font-black text-brand-blue uppercase tracking-widest bg-blue-50 px-4 py-2 rounded-lg hover:bg-blue-100 transition-colors">Review Queue</a>
-        </div>
-        <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
-                <thead>
-                    <tr class="bg-slate-50/50">
-                        <th class="px-8 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Product</th>
-                        <th class="px-8 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Seller Store</th>
-                        <th class="px-8 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Category</th>
-                        <th class="px-8 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Submitted</th>
-                        <th class="px-8 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Action</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-50">
-                    {% for product in recent_products %}
-                    <tr class="hover:bg-slate-50/80 transition-colors group">
-                        <td class="px-8 py-4">
-                            <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 rounded-xl bg-slate-100 overflow-hidden flex-shrink-0 border border-slate-200 shadow-sm">
-                                    {% if product.image %}
-                                    <img src="{{ product.image.url }}" class="w-full h-full object-cover">
-                                    {% else %}
-                                    <div class="w-full h-full flex items-center justify-center text-slate-300">
-                                        <span class="material-icons-outlined">image</span>
-                                    </div>
-                                    {% endif %}
-                                </div>
-                                <div>
-                                    <p class="font-bold text-slate-800 text-sm leading-tight">{{ product.name }}</p>
-                                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">SKU: {{ product.sku|default:"N/A" }}</p>
-                                </div>
+            </div>
+        </a>
+
+        <a href="{% url 'order_management' %}" class="bn-stat-link bn-premium-card bn-stat-card overflow-hidden rounded-[1.4rem]">
+            <div class="bn-kpi-accent"></div>
+            <div class="p-5 md:p-6">
+            <div class="bn-stat-copy">
+                <div class="bn-stat-topline">
+                    <div class="bn-stat-icon w-12 h-12 rounded-2xl bg-brand-orange/15 text-brand-orange flex items-center justify-center">
+                        <span class="material-icons-outlined">shopping_cart</span>
+                    </div>
+                    <span class="bn-stat-label">Orders</span>
+                </div>
+                <p class="bn-stat-title">Total Orders Placed</p>
+                <div class="bn-stat-value-row">
+                    <p class="bn-stat-value" data-count="{{ total_orders|default_if_none:0 }}">{{ total_orders|default_if_none:0 }}</p>
+                </div>
+                <div class="bn-stat-foot">
+                    <div class="bn-stat-line"></div>
+                    <span class="bn-stat-dot"></span>
+                </div>
+            </div>
+            </div>
+        </a>
+
+        <a href="{% url 'order_management' %}" class="bn-stat-link bn-premium-card bn-stat-card overflow-hidden rounded-[1.4rem]">
+            <div class="bn-kpi-accent"></div>
+            <div class="p-5 md:p-6">
+            <div class="bn-stat-copy">
+                <div class="bn-stat-topline">
+                    <div class="bn-stat-icon w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center">
+                        <span class="material-icons-outlined">payments</span>
+                    </div>
+                    <span class="bn-stat-label">Revenue</span>
+                </div>
+                <p class="bn-stat-title">Total Amount</p>
+                <div class="bn-stat-value-row">
+                    <p class="bn-stat-value" data-count="{{ annual_revenue|default_if_none:0 }}" data-prefix="$ " data-decimals="2">$ {{ annual_revenue|default_if_none:0|floatformat:2 }}</p>
+                </div>
+                <div class="bn-stat-foot">
+                    <div class="bn-stat-line"></div>
+                    <span class="bn-stat-dot"></span>
+                </div>
+            </div>
+            </div>
+        </a>
+
+        <a href="{% url 'product_verification' %}#allProductsTable" class="bn-stat-link bn-premium-card bn-stat-card overflow-hidden rounded-[1.4rem]">
+            <div class="bn-kpi-accent"></div>
+            <div class="p-5 md:p-6">
+            <div class="bn-stat-copy">
+                <div class="bn-stat-topline">
+                    <div class="bn-stat-icon w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                        <span class="material-icons-outlined">shopping_bag</span>
+                    </div>
+                    <span class="bn-stat-label">Active</span>
+                </div>
+                <p class="bn-stat-title">Total Products</p>
+                <div class="bn-stat-value-row">
+                    <p class="bn-stat-value" data-count="{{ total_products|default_if_none:0 }}">{{ total_products|default_if_none:0 }}</p>
+                </div>
+                <div class="bn-stat-foot">
+                    <div class="bn-stat-line"></div>
+                    <span class="bn-stat-dot"></span>
+                </div>
+            </div>
+            </div>
+        </a>
+    </section>
+
+    <section class="space-y-5">
+        <div class="bn-pie-grid">
+            <article class="bn-premium-card bn-table-card rounded-[1.4rem] overflow-hidden">
+                <div class="bn-panel-head flex items-center justify-between gap-2">
+                    <h3 class="text-sm font-black text-slate-800 uppercase tracking-wider">Orders</h3>
+                    <span class="text-[10px] font-black uppercase tracking-widest text-slate-500">Status Mix</span>
+                </div>
+                <div class="bn-pie-body">
+                    <div class="bn-pie-shell">
+                        <div
+                            class="bn-pie-3d is-three {% if not total_orders %}is-empty{% endif %}"
+                            style="--a: {{ order_in_progress_pct }}; --b: {{ order_delivered_pct }}; --c: {{ order_exception_pct }}; --color-a: #3fa3a1; --color-b: #7aa85c; --color-c: #d26b67;">
+                            <div class="bn-pie-center">
+                                <span class="bn-pie-title">Orders</span>
+                                <span class="bn-pie-value">{{ total_orders|default_if_none:0 }}</span>
+                                <span class="bn-pie-sub">Total</span>
                             </div>
-                        </td>
-                        <td class="px-8 py-4">
-                            <span class="px-3 py-1 bg-slate-100 text-slate-600 rounded-lg text-[10px] font-black uppercase">{{ product.seller.store_name }}</span>
-                        </td>
-                        <td class="px-8 py-4 text-sm font-bold text-slate-500">{{ product.category.name }}</td>
-                        <td class="px-8 py-4 text-sm text-slate-400">{{ product.created_at|timesince }} ago</td>
-                        <td class="px-8 py-4 text-center">
-                            <button class="click-shrink w-10 h-10 rounded-xl bg-brand-blue/10 text-brand-blue hover:bg-brand-blue hover:text-white transition-all">
-                                <span class="material-icons-outlined text-xl">chevron_right</span>
-                            </button>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="5" class="px-8 py-10 text-center text-slate-400 font-bold">No products in the approval queue.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                        </div>
+                        <div class="bn-pie-callout is-teal bn-callout-top-left">
+                            <div>
+                                <small>In Progress</small>
+                                <span>{{ order_in_progress_pct }}%</span>
+                            </div>
+                        </div>
+                        <div class="bn-pie-callout is-green bn-callout-top-right">
+                            <div>
+                                <small>Delivered</small>
+                                <span>{{ order_delivered_pct }}%</span>
+                            </div>
+                        </div>
+                        <div class="bn-pie-callout is-red bn-callout-bottom">
+                            <div>
+                                <small>Cancel/Return</small>
+                                <span>{{ order_exception_pct }}%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <article class="bn-premium-card bn-table-card rounded-[1.4rem] overflow-hidden">
+                <div class="bn-panel-head flex items-center justify-between gap-2">
+                    <h3 class="text-sm font-black text-slate-800 uppercase tracking-wider">Products</h3>
+                    <span class="text-[10px] font-black uppercase tracking-widest text-slate-500">Approval Mix</span>
+                </div>
+                <div class="bn-pie-body">
+                    <div class="bn-pie-shell">
+                        <div
+                            class="bn-pie-3d is-three {% if not product_visible_total %}is-empty{% endif %}"
+                            style="--a: {{ product_approved_pct }}; --b: {{ product_pending_pct }}; --c: {{ product_rejected_pct }}; --color-a: #7aa85c; --color-b: #f59e0b; --color-c: #d26b67;">
+                            <div class="bn-pie-center">
+                                <span class="bn-pie-title">Products</span>
+                                <span class="bn-pie-value">{{ product_visible_total|default_if_none:0 }}</span>
+                                <span class="bn-pie-sub">Total</span>
+                            </div>
+                        </div>
+                        <div class="bn-pie-callout is-green bn-callout-top-left">
+                            <div>
+                                <small>Approved</small>
+                                <span>{{ product_approved_pct }}%</span>
+                            </div>
+                        </div>
+                        <div class="bn-pie-callout is-amber bn-callout-top-right">
+                            <div>
+                                <small>Pending</small>
+                                <span>{{ product_pending_pct }}%</span>
+                            </div>
+                        </div>
+                        <div class="bn-pie-callout is-red bn-callout-right">
+                            <div>
+                                <small>Rejected</small>
+                                <span>{{ product_rejected_pct }}%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <article class="bn-premium-card bn-table-card rounded-[1.4rem] overflow-hidden">
+                <div class="bn-panel-head flex items-center justify-between gap-2">
+                    <h3 class="text-sm font-black text-slate-800 uppercase tracking-wider">Sellers</h3>
+                    <span class="text-[10px] font-black uppercase tracking-widest text-slate-500">Verification Mix</span>
+                </div>
+                <div class="bn-pie-body">
+                    <div class="bn-pie-shell">
+                        <div
+                            class="bn-pie-3d is-three {% if not total_sellers %}is-empty{% endif %}"
+                            style="--a: {{ seller_verified_pct }}; --b: {{ seller_pending_pct }}; --c: {{ seller_rejected_pct }}; --color-a: #7aa85c; --color-b: #f59e0b; --color-c: #d26b67;">
+                            <div class="bn-pie-center">
+                                <span class="bn-pie-title">Sellers</span>
+                                <span class="bn-pie-value">{{ total_sellers|default_if_none:0 }}</span>
+                                <span class="bn-pie-sub">Total</span>
+                            </div>
+                        </div>
+                        <div class="bn-pie-callout is-green bn-callout-top-left">
+                            <div>
+                                <small>Verified</small>
+                                <span>{{ seller_verified_pct }}%</span>
+                            </div>
+                        </div>
+                        <div class="bn-pie-callout is-amber bn-callout-top-right">
+                            <div>
+                                <small>Pending</small>
+                                <span>{{ seller_pending_pct }}%</span>
+                            </div>
+                        </div>
+                        <div class="bn-pie-callout is-red bn-callout-bottom">
+                            <div>
+                                <small>Rejected</small>
+                                <span>{{ seller_rejected_pct }}%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
         </div>
+
+        <article class="bn-premium-card bn-table-card rounded-[1.4rem] overflow-hidden">
+            <div class="bn-panel-head flex items-center justify-between gap-2">
+                <h3 class="text-sm font-black text-slate-800 uppercase tracking-wider">Products</h3>
+                <a href="{% url 'product_verification' %}" class="bn-inline-action click-shrink inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-primary transition-colors">
+                    View More
+                </a>
+            </div>
+            <div class="bn-table-shell overflow-x-auto custom-scrollbar">
+                <table class="bn-table text-left">
+                    <thead>
+                        <tr>
+                            <th class="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-slate-500">Product</th>
+                            <th class="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-slate-500">Seller</th>
+                            <th class="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-slate-500">Status</th>
+                            <th class="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-slate-500">Created</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in recent_products %}
+                        <tr class="group">
+                            <td class="px-4 py-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="bn-avatar">
+                                        {% if product.preview_image_url %}
+                                        <img src="{{ product.preview_image_url }}" alt="{{ product.name }} image" loading="lazy">
+                                        {% else %}
+                                        <img src="https://ui-avatars.com/api/?name={{ product.name|urlencode }}&background=5f7534&color=fff&size=120" alt="{{ product.name }} placeholder" loading="lazy">
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <span class="bn-cell-primary">{{ product.name }}</span>
+                                        <span class="bn-cell-secondary">{{ product.brand|default:"-" }}</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3">
+                                <span class="bn-cell-secondary">{{ product.seller.store_name }}</span>
+                            </td>
+                            <td class="px-4 py-3">
+                                {% if product.approval_status == "APPROVED" %}
+                                <span class="bn-status-pill is-approved">Approved</span>
+                                {% elif product.approval_status == "REJECTED" %}
+                                <span class="bn-status-pill is-rejected">Rejected</span>
+                                {% elif product.approval_status == "PENDING" %}
+                                <span class="bn-status-pill">Pending</span>
+                                {% else %}
+                                <span class="bn-status-pill is-draft">Draft</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-4 py-3">
+                                <span class="bn-meta-pill">{{ product.created_at|date:"M d, Y" }}</span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr class="bn-empty-row">
+                            <td colspan="4">No product data available.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </article>
+
+        <article class="bn-premium-card bn-table-card rounded-[1.4rem] overflow-hidden">
+            <div class="bn-panel-head flex items-center justify-between gap-2">
+                <h3 class="text-sm font-black text-slate-800 uppercase tracking-wider">Sellers</h3>
+                <a href="{% url 'seller_management' %}" class="bn-inline-action click-shrink inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-primary transition-colors">
+                    View More
+                </a>
+            </div>
+            <div class="bn-table-shell overflow-x-auto custom-scrollbar">
+                <table class="bn-table text-left">
+                    <thead>
+                        <tr>
+                            <th class="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-slate-500">Store</th>
+                            <th class="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-slate-500">Owner</th>
+                            <th class="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-slate-500">Email</th>
+                            <th class="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-slate-500">Account</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for seller in recent_sellers %}
+                        <tr class="group">
+                            <td class="px-4 py-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="bn-avatar">
+                                        {% if seller.logo %}
+                                        <img src="{{ seller.logo.url }}" alt="{{ seller.store_name }} logo" loading="lazy">
+                                        {% else %}
+                                        <img src="https://ui-avatars.com/api/?name={{ seller.store_name|urlencode }}&background=5f7534&color=fff&size=120" alt="{{ seller.store_name }} placeholder" loading="lazy">
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <span class="bn-cell-primary">{{ seller.store_name }}</span>
+                                        <span class="bn-cell-secondary">Store profile</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="bn-avatar is-round">
+                                        {% if seller.user.profile_image %}
+                                        <img src="{{ seller.user.profile_image.url }}" alt="{{ seller.user.get_full_name|default:seller.user.username }} profile" loading="lazy">
+                                        {% else %}
+                                        <img src="https://ui-avatars.com/api/?name={{ seller.user.get_full_name|default:seller.user.username|urlencode }}&background=d97706&color=fff&size=120" alt="{{ seller.user.get_full_name|default:seller.user.username }} placeholder" loading="lazy">
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <span class="bn-cell-primary">{{ seller.user.get_full_name|default:seller.user.username }}</span>
+                                        <span class="bn-cell-secondary">@{{ seller.user.username }}</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3">
+                                <span class="bn-cell-secondary">{{ seller.user.email|default:"-" }}</span>
+                            </td>
+                            <td class="px-4 py-3">
+                                {% if seller.user.is_active %}
+                                <span class="bn-status-pill is-verified">Active</span>
+                                {% else %}
+                                <span class="bn-status-pill is-rejected">Inactive</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr class="bn-empty-row">
+                            <td colspan="4">No seller data available.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </article>
+
+        <article class="bn-premium-card bn-table-card rounded-[1.4rem] overflow-hidden">
+            <div class="bn-panel-head flex items-center justify-between gap-2">
+                <h3 class="text-sm font-black text-slate-800 uppercase tracking-wider">Customers</h3>
+                <a href="{% url 'usermanagement' %}" class="bn-inline-action click-shrink inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-primary transition-colors">
+                    View More
+                </a>
+            </div>
+            <div class="bn-table-shell overflow-x-auto custom-scrollbar">
+                <table class="bn-table text-left">
+                    <thead>
+                        <tr>
+                            <th class="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-slate-500">Customer</th>
+                            <th class="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-slate-500">Email</th>
+                            <th class="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-slate-500">Phone</th>
+                            <th class="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-slate-500">Status</th>
+                            <th class="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-slate-500">Joined</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for customer in recent_customers %}
+                        <tr class="group">
+                            <td class="px-4 py-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="bn-avatar is-round">
+                                        {% if customer.profile_image %}
+                                        <img src="{{ customer.profile_image.url }}" alt="{{ customer.get_full_name|default:customer.username }} profile" loading="lazy">
+                                        {% else %}
+                                        <img src="https://ui-avatars.com/api/?name={{ customer.get_full_name|default:customer.username|urlencode }}&background=5f7534&color=fff&size=120" alt="{{ customer.get_full_name|default:customer.username }} placeholder" loading="lazy">
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <span class="bn-cell-primary">{{ customer.get_full_name|default:customer.username }}</span>
+                                        <span class="bn-cell-secondary">@{{ customer.username }}</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3">
+                                <span class="bn-cell-secondary">{{ customer.email }}</span>
+                            </td>
+                            <td class="px-4 py-3">
+                                <span class="bn-cell-secondary">{{ customer.phone_number|default:"-" }}</span>
+                            </td>
+                            <td class="px-4 py-3">
+                                {% if customer.is_active %}
+                                <span class="bn-status-pill is-verified">Active</span>
+                                {% else %}
+                                <span class="bn-status-pill is-rejected">Inactive</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-4 py-3">
+                                <span class="bn-meta-pill">{{ customer.date_joined|date:"M d, Y" }}</span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr class="bn-empty-row">
+                            <td colspan="5">No customer data available.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </article>
     </section>
 
 </div>

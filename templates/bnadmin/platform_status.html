@@ -1,0 +1,23 @@
+{% extends "bnadmin/base.html" %}
+
+{% block title %}Platform Status{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <div>
+        <h1 class="text-3xl font-bold text-slate-900">Platform Status</h1>
+        <p class="text-slate-500">Current health of core services.</p>
+    </div>
+    <div class="bg-white border border-slate-100 rounded-2xl overflow-hidden">
+        <ul class="divide-y divide-slate-100">
+            {% for name, status in status_items %}
+            <li class="px-6 py-4 flex items-center justify-between">
+                <span class="font-semibold text-slate-700">{{ name }}</span>
+                <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700">{{ status }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}
+

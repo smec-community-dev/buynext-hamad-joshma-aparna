@@ -1,0 +1,417 @@
+{% extends "bnadmin/base.html" %}
+{% load static %}
+
+{% block title %}BuyNext Admin - Seller Management{% endblock %}
+
+{% block extra_css %}
+<style>
+:root{
+--bn-cream:#ffffff;
+--bn-sage:#5f7534;
+--bn-sage-dark:#4b5e29;
+--bn-text:#27311d;
+--bn-muted:#6f7662;
+--bn-line:#e3dccd;
+--bn-soft:#ebe5d7;
+}
+
+.management-shell{
+background:linear-gradient(180deg,var(--bn-cream) 0%,#ffffff 100%);
+border:1px solid var(--bn-line);
+border-radius:24px;
+padding:1.25rem;
+box-shadow:0 16px 36px rgba(39,49,29,0.08);
+}
+
+.table-card{
+background:#ffffff;
+border-radius:20px;
+border:1px solid var(--bn-line);
+overflow:hidden;
+}
+
+.table-head{
+background:var(--bn-soft);
+color:var(--bn-muted);
+font-size:11px;
+font-weight:800;
+letter-spacing:0.08em;
+text-transform:uppercase;
+}
+
+.row-hover:hover{
+background:#fcfbf7;
+}
+
+.status-badge{
+display:inline-flex;
+align-items:center;
+padding:4px 12px;
+border-radius:999px;
+font-size:12px;
+font-weight:700;
+}
+
+.status-verified{
+background:#e4eed4;
+color:#3f5620;
+padding:4px 12px;
+border-radius:999px;
+font-size:12px;
+font-weight:700;
+}
+
+.status-pending{
+background:#f8edd8;
+color:#996c2f;
+padding:4px 12px;
+border-radius:999px;
+font-size:12px;
+font-weight:700;
+}
+
+.status-rejected{
+background:#f9e9e8;
+color:#a14845;
+padding:4px 12px;
+border-radius:999px;
+font-size:12px;
+font-weight:700;
+}
+
+.tab-btn{
+display:inline-flex;
+align-items:center;
+justify-content:center;
+padding:9px 16px;
+border-radius:10px;
+border:1px solid #dcd6c8;
+background:#fff;
+color:#616856;
+font-size:13px;
+font-weight:700;
+transition:all 0.2s ease;
+}
+
+.tab-btn:hover{
+background:#f6f4ec;
+}
+
+.tab-btn.active{
+background:var(--bn-sage);
+border-color:var(--bn-sage);
+color:#fff;
+}
+
+.action-btn{
+display:inline-flex;
+align-items:center;
+gap:0.25rem;
+padding:8px 12px;
+border-radius:10px;
+font-size:13px;
+font-weight:700;
+transition:all 0.2s ease;
+}
+
+.action-btn:hover{
+transform:translateY(-1px);
+}
+
+.action-edit{
+color:var(--bn-sage);
+background:#edf2e3;
+}
+
+.action-edit:hover{
+background:#dfe8ce;
+}
+
+.action-delete{
+color:#b54242;
+background:#f9eeee;
+}
+
+.action-delete:hover{
+background:#f4dddd;
+}
+
+.action-verify{
+color:var(--bn-sage);
+background:#edf2e3;
+}
+
+.action-verify:hover{
+background:var(--bn-sage);
+color:#fff;
+}
+
+.action-reject{
+color:#b54242;
+background:#f9eeee;
+}
+
+.action-reject:hover{
+background:#b54242;
+color:#fff;
+}
+
+.action-report{
+color:#3f5620;
+background:#e7efda;
+}
+
+.action-report:hover{
+background:var(--bn-sage);
+color:#fff;
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen p-4 md:p-8">
+<div class="management-shell">
+{% if messages %}
+<div class="space-y-2 mb-4">
+{% for message in messages %}
+<div class="px-4 py-2.5 rounded-xl border text-sm font-semibold
+{% if message.tags == 'success' %}bg-[#e7efda] border-[#cfdcb7] text-[#425a22]
+{% elif message.tags == 'warning' or message.tags == 'error' %}bg-[#f9eded] border-[#efd2d1] text-[#9a4745]
+{% else %}bg-[#f4f0e5] border-[#e5dece] text-[#716b5d]{% endif %}">
+{{ message }}
+</div>
+{% endfor %}
+</div>
+{% endif %}
+
+<div class="mb-6">
+<p class="text-[11px] uppercase tracking-[0.2em] font-bold text-[#7b826f]">BuyNext Admin</p>
+<h1 class="text-3xl font-bold text-[#2f3a22]">Seller Management</h1>
+<p class="text-sm text-[#727a66] mt-1">Track store identity, owner contact and verification workflow.</p>
+</div>
+
+<form method="GET" class="grid grid-cols-1 lg:grid-cols-12 gap-3 mb-6 rounded-2xl border border-[#e7e0d2] bg-white p-4">
+<div class="lg:col-span-7 relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#9aa18f] text-[20px]">search</span>
+<input type="text" name="q" value="{{ q }}" placeholder="Search store, owner, email, or phone"
+class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#e1d9c9] bg-[#fffdf8] text-sm font-semibold text-[#2f3a22] focus:border-primary focus:ring-4 focus:ring-primary/10">
+</div>
+<div class="lg:col-span-3">
+<select name="status" class="w-full px-4 py-2.5 rounded-xl border border-[#e1d9c9] bg-[#fffdf8] text-sm font-semibold text-[#2f3a22] focus:border-primary focus:ring-4 focus:ring-primary/10">
+<option value="">All Statuses</option>
+<option value="VERIFIED" {% if selected_status == "VERIFIED" %}selected{% endif %}>Verified</option>
+<option value="PENDING" {% if selected_status == "PENDING" %}selected{% endif %}>Pending</option>
+</select>
+</div>
+<div class="lg:col-span-2 flex flex-col sm:flex-row gap-2">
+<button type="submit" class="w-full px-4 py-2.5 rounded-xl bg-[#4b5e29] text-white font-bold text-sm uppercase tracking-widest">Apply</button>
+<a href="{% url 'seller_management' %}" class="w-full px-4 py-2.5 rounded-xl border border-[#e1d9c9] text-[#5f6357] font-bold text-sm uppercase tracking-widest text-center bg-white">Clear</a>
+</div>
+</form>
+
+<div class="flex gap-3 mb-5">
+<button type="button" id="sellerTab" class="tab-btn active">Verified Sellers ({{ seller_stats.verified }})</button>
+<button type="button" id="verificationTab" class="tab-btn">Verification Queue ({{ seller_stats.pending }})</button>
+</div>
+
+<div id="sellerTable" class="table-card">
+<div class="overflow-x-auto">
+<table class="w-full text-sm min-w-[980px]">
+<thead class="table-head">
+<tr>
+<th class="px-6 py-4">Store</th>
+<th class="px-6 py-4">Owner</th>
+<th class="px-6 py-4">Contact</th>
+<th class="px-6 py-4 text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#eee8da]">
+{% for seller in verified_sellers %}
+<tr class="row-hover">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-11 h-11 rounded-full overflow-hidden bg-[#f2efe6] border border-[#efe6d6] shadow-sm">
+{% if seller.logo %}
+<img src="{{ seller.logo.url }}" alt="{{ seller.store_name }} logo" class="w-full h-full object-cover" loading="lazy">
+{% else %}
+<img src="https://ui-avatars.com/api/?name={{ seller.store_name|urlencode }}&background=5f7534&color=fff&size=120" alt="{{ seller.store_name }} logo placeholder" class="w-full h-full object-cover" loading="lazy">
+{% endif %}
+</div>
+<div>
+<p class="font-semibold text-[#303a22]">{{ seller.store_name }}</p>
+<p class="text-xs text-[#848b79]">Store profile</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<p class="font-medium text-[#36412a]">{{ seller.user.get_full_name|default:seller.user.username }}</p>
+<p class="text-xs text-[#848b79]">@{{ seller.user.username }}</p>
+</td>
+<td class="px-6 py-4">
+<p class="font-medium text-[#36412a]">{{ seller.user.email|default:"-" }}</p>
+<p class="text-xs text-[#808774]">{{ seller.user.phone_number|default:"No phone number" }}</p>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="inline-flex gap-2">
+<a href="{% url 'edit_seller' seller.id %}" class="action-btn action-edit">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+Edit
+</a>
+<a href="{% url 'seller_product_report' seller.id %}" class="action-btn action-report">
+<span class="material-symbols-outlined text-[18px]">analytics</span>
+Report
+</a>
+<a href="{% url 'delete_seller' seller.id %}" class="action-btn action-delete">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+Delete
+</a>
+</div>
+</td>
+</tr>
+{% empty %}
+<tr>
+<td colspan="4" class="py-10 text-center text-[#888f7e]">No verified sellers.</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</div>
+
+<div id="verificationTable" class="table-card hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-sm min-w-[1120px]">
+<thead class="table-head">
+<tr>
+<th class="px-6 py-4">Store</th>
+<th class="px-6 py-4">Owner</th>
+<th class="px-6 py-4">Contact</th>
+<th class="px-6 py-4 text-center">Status</th>
+<th class="px-6 py-4 text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#eee8da]">
+{% for seller in pending_sellers %}
+<tr class="row-hover">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-11 h-11 rounded-full overflow-hidden bg-[#f2efe6] border border-[#efe6d6] shadow-sm">
+{% if seller.logo %}
+<img src="{{ seller.logo.url }}" alt="{{ seller.store_name }} logo" class="w-full h-full object-cover" loading="lazy">
+{% else %}
+<img src="https://ui-avatars.com/api/?name={{ seller.store_name|urlencode }}&background=5f7534&color=fff&size=120" alt="{{ seller.store_name }} logo placeholder" class="w-full h-full object-cover" loading="lazy">
+{% endif %}
+</div>
+<div>
+<p class="font-semibold text-[#303a22]">{{ seller.store_name }}</p>
+<p class="text-xs text-[#848b79]">Store profile</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<p class="font-medium text-[#36412a]">{{ seller.user.get_full_name|default:seller.user.username }}</p>
+<p class="text-xs text-[#848b79]">@{{ seller.user.username }}</p>
+</td>
+<td class="px-6 py-4">
+<p class="font-medium text-[#36412a]">{{ seller.user.email|default:"-" }}</p>
+<p class="text-xs text-[#808774]">{{ seller.user.phone_number|default:"No phone number" }}</p>
+</td>
+<td class="px-6 py-4 text-center">
+{% if seller.verification_status == "REJECTED" %}
+<span class="status-badge status-rejected">Rejected</span>
+{% else %}
+<span class="status-badge status-pending">Pending</span>
+{% endif %}
+</td>
+<td class="px-6 py-4 text-right">
+<div class="inline-flex gap-2">
+<a href="{% url 'edit_seller' seller.id %}" class="action-btn action-edit">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+Edit
+</a>
+<a href="{% url 'seller_product_report' seller.id %}" class="action-btn action-report">
+<span class="material-symbols-outlined text-[18px]">analytics</span>
+Report
+</a>
+<a href="{% url 'verify_seller' seller.id %}" class="action-btn action-verify">
+<span class="material-symbols-outlined text-[18px]">check_circle</span>
+Verify
+</a>
+<a href="{% url 'reject_seller' seller.id %}" class="action-btn action-reject">
+<span class="material-symbols-outlined text-[18px]">cancel</span>
+Reject
+</a>
+</div>
+</td>
+</tr>
+{% empty %}
+<tr>
+<td colspan="5" class="py-10 text-center text-[#888f7e]">No sellers in verification queue.</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</div>
+
+</div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const sellerTab = document.getElementById("sellerTab")
+const verificationTab = document.getElementById("verificationTab")
+const sellerTable = document.getElementById("sellerTable")
+const verificationTable = document.getElementById("verificationTable")
+const defaultTab = "{{ default_tab|default:'seller' }}"
+
+const showSellerTable = () => {
+sellerTab.classList.add("active")
+verificationTab.classList.remove("active")
+sellerTable.classList.remove("hidden")
+verificationTable.classList.add("hidden")
+}
+
+const showVerificationTable = () => {
+verificationTab.classList.add("active")
+sellerTab.classList.remove("active")
+verificationTable.classList.remove("hidden")
+sellerTable.classList.add("hidden")
+}
+
+sellerTab.onclick = (e) => {
+e.preventDefault()
+showSellerTable()
+history.replaceState(null, "", "#sellerTable")
+}
+
+verificationTab.onclick = (e) => {
+e.preventDefault()
+showVerificationTable()
+history.replaceState(null, "", "#verificationTable")
+}
+
+const syncSellerTabWithHash = () => {
+if (window.location.hash === "#verificationTable") {
+showVerificationTable()
+return
+}
+if (window.location.hash === "#sellerTable") {
+showSellerTable()
+return
+}
+if (defaultTab === "verification") {
+showVerificationTable()
+return
+}
+showSellerTable()
+}
+
+syncSellerTabWithHash()
+window.addEventListener("hashchange", syncSellerTabWithHash)
+
+</script>
+{% endblock %}

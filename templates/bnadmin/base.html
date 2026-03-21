@@ -1,0 +1,464 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>{% block title %}BuyNext Admin{% endblock %}</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%235F7534'/%3E%3Cpath d='M21 24h22l-2 23H23l-2-23Z' fill='white'/%3E%3Cpath d='M26 24a6 6 0 0 1 12 0' fill='none' stroke='white' stroke-width='4' stroke-linecap='round'/%3E%3Ccircle cx='45' cy='19' r='6' fill='%23F97316'/%3E%3C/svg%3E"/>
+
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=block"/>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=block" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet"/>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#5F7534",
+                        "primary-dark": "#4B5E29",
+                        "brand-blue": "#5F7534",
+                        "brand-orange": "#F97316",
+                        "background-cream": "#FFFFFF",
+                        "accent-tan": "#DDD4C6",
+                        "text-main": "#27311D",
+                        "text-muted": "#6D7463",
+                        "navbar": "#FFFFFF"
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "2xl": "2rem"
+                    },
+                    boxShadow: {
+                        "soft": "0 4px 20px -2px rgba(0, 0, 0, 0.05)"
+                    }
+                }
+            }
+        }
+    </script>
+    <script>
+        (function () {
+            try {
+                const stored = localStorage.getItem('bnadmin_sidebar_collapsed');
+                const collapsed = stored === null ? true : stored === '1';
+                if (collapsed) {
+                    document.documentElement.classList.add('sidebar-collapsed');
+                    document.documentElement.style.setProperty('--sidebar-width', '5rem');
+                } else {
+                    document.documentElement.style.setProperty('--sidebar-width', '16rem');
+                }
+            } catch (e) {
+                // ignore storage errors
+            }
+            document.documentElement.classList.add('sidebar-preload');
+        })();
+    </script>
+    <style type="text/tailwindcss">
+        @layer base {
+            :root {
+                --sidebar-width: 16rem;
+                --bn-scrollbar: #5b7032;
+                --bn-scrollbar-hover: #4b5e29;
+                --bn-scrollbar-track: #d8decb;
+            }
+            body {
+                @apply bg-background-cream text-text-main font-display antialiased overflow-x-hidden;
+            }
+            body::before {
+                content: "";
+                position: fixed;
+                inset: 0;
+                pointer-events: none;
+                background:
+                    radial-gradient(900px 260px at 8% -8%, rgba(95, 117, 52, 0.10), transparent 70%),
+                    radial-gradient(880px 240px at 96% -10%, rgba(249, 115, 22, 0.08), transparent 74%);
+                z-index: -1;
+            }
+            .material-symbols-outlined {
+                font-display: block;
+                white-space: nowrap;
+                width: 1em;
+                height: 1em;
+            }
+
+            * {
+                scrollbar-width: thin;
+                scrollbar-color: var(--bn-scrollbar) var(--bn-scrollbar-track);
+            }
+        }
+
+        .custom-scrollbar::-webkit-scrollbar,
+        .overflow-x-auto::-webkit-scrollbar,
+        .overflow-y-auto::-webkit-scrollbar {
+            width: 8px;
+            height: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track,
+        .overflow-x-auto::-webkit-scrollbar-track,
+        .overflow-y-auto::-webkit-scrollbar-track {
+            background: var(--bn-scrollbar-track);
+            border-radius: 999px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb,
+        .overflow-x-auto::-webkit-scrollbar-thumb,
+        .overflow-y-auto::-webkit-scrollbar-thumb {
+            background: var(--bn-scrollbar);
+            border-radius: 999px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover,
+        .overflow-x-auto::-webkit-scrollbar-thumb:hover,
+        .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+            background: var(--bn-scrollbar-hover);
+        }
+
+        .click-shrink {
+            transition: transform 0.1s ease, background-color 0.2s ease;
+        }
+        .click-shrink:active {
+            transform: scale(0.95);
+        }
+
+        .bn-surface {
+            border-color: rgb(226 232 240 / 0.9);
+            box-shadow: 0 10px 30px -18px rgba(15, 23, 42, 0.30);
+            background: linear-gradient(180deg, #ffffff 0%, #fcfcfb 100%);
+        }
+
+        #main-navbar {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.8) 100%);
+            backdrop-filter: blur(10px);
+        }
+
+        #main-content table thead tr {
+            background: #4b5e29;
+        }
+
+        #main-content table thead tr th {
+            color: #ffffff;
+        }
+
+        #main-content :is(input[type="text"], input[type="number"], input[type="email"], input[type="search"], textarea, select) {
+            border-color: rgb(226 232 240 / 0.9);
+            background-color: rgb(248 250 252 / 0.65);
+            transition: all 0.2s ease;
+        }
+
+        #main-content :is(input[type="text"], input[type="number"], input[type="email"], input[type="search"], textarea, select):focus {
+            border-color: rgb(95 117 52 / 0.45);
+            box-shadow: 0 0 0 4px rgba(95, 117, 52, 0.10);
+            background-color: #fff;
+        }
+
+        #main-sidebar {
+            width: var(--sidebar-width);
+            transition: width 0.08s linear, transform 0.08s linear;
+            will-change: width, transform;
+        }
+
+        #navbar-logo {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(-6px);
+            transition: opacity 0.08s linear, transform 0.08s linear;
+            white-space: nowrap;
+        }
+
+        body.sidebar-collapsed #navbar-logo,
+        html.sidebar-collapsed #navbar-logo {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateX(0);
+        }
+
+        body.sidebar-collapsed #sidebar-brand-group,
+        body.sidebar-collapsed .sidebar-text,
+        html.sidebar-collapsed #sidebar-brand-group,
+        html.sidebar-collapsed .sidebar-text {
+            display: none;
+        }
+
+        #main-navbar,
+        #main-content,
+        #main-footer {
+            transition: margin-left 0.08s linear;
+            will-change: margin-left;
+        }
+
+        #main-sidebar nav {
+            overflow-x: hidden;
+        }
+
+        body.sidebar-collapsed #sidebar-header,
+        html.sidebar-collapsed #sidebar-header {
+            justify-content: center;
+        }
+
+        html.sidebar-preload #main-sidebar,
+        html.sidebar-preload #main-navbar,
+        html.sidebar-preload #main-content,
+        html.sidebar-preload #main-footer,
+        html.sidebar-preload #navbar-logo {
+            transition: none !important;
+        }
+
+        @media (min-width: 1024px) {
+            #main-navbar,
+            #main-content,
+            #main-footer {
+                margin-left: var(--sidebar-width);
+            }
+        }
+
+        #sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.4);
+            z-index: 45;
+        }
+
+        body.sidebar-open #sidebar-overlay {
+            display: block;
+        }
+
+        body.sidebar-open #main-sidebar {
+            transform: translateX(0);
+        }
+
+        @media (max-width: 768px) {
+            .table-card {
+                border-radius: 14px;
+            }
+
+            .table-card .overflow-x-auto {
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .table-card table {
+                min-width: 720px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            #main-content {
+                padding: 1rem;
+            }
+
+            #main-footer .container {
+                text-align: center;
+            }
+        }
+    </style>
+{% block extra_css %}{% endblock %}
+{% block extrahead %}{% endblock %}
+</head>
+<body class="min-h-screen flex flex-col">
+
+<div id="sidebar-overlay"></div>
+
+<aside id="main-sidebar" class="fixed top-0 left-0 z-50 h-screen border-r border-primary/15 bg-[#4b5e29] text-white flex flex-col overflow-x-hidden -translate-x-full lg:translate-x-0">
+    <div class="flex flex-col h-full px-3 lg:px-4 space-y-2">
+        <div class="h-20 flex items-center justify-between px-4 border-b border-white/10 shrink-0" id="sidebar-header">
+            <div id="sidebar-brand-group" class="flex items-center gap-3 shrink-0">
+                <div class="w-10 h-10 rounded-xl bg-white/95 shadow-md flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-primary text-xl">shopping_bag</span>
+                </div>
+                <span class="text-lg font-extrabold tracking-tight sidebar-text whitespace-nowrap">
+                    <span class="text-[#e4efd1]">Buy</span><span class="text-orange-300">Next</span>
+                </span>
+            </div>
+            <button id="toggle-sidebar" class="flex items-center justify-center w-10 h-10 rounded-lg text-white/80 hover:bg-white/15 hover:text-white transition-all shrink-0">
+                <span class="material-symbols-outlined text-2xl">menu_open</span>
+            </button>
+        </div>
+
+        <nav class="flex-1 space-y-1 mt-4 overflow-y-auto custom-scrollbar">
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg {% if request.resolver_match.url_name == 'admin_dashboard' %}bg-white text-primary{% else %}text-white/80 hover:bg-white/15 hover:text-white{% endif %} font-medium transition-all shadow-sm nav-link leading-none"
+               href="{% url 'admin_dashboard' %}" title="Overview">
+                <span class="material-symbols-outlined text-2xl shrink-0">dashboard</span>
+                <span class="sidebar-text whitespace-nowrap">Overview</span>
+            </a>
+
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg {% if request.resolver_match.url_name == 'usermanagement' or request.resolver_match.url_name == 'edit_user' or request.resolver_match.url_name == 'delete_user' or request.resolver_match.url_name == 'customer_orders' %}bg-white text-primary{% else %}text-white/80 hover:bg-white/15 hover:text-white{% endif %} font-medium transition-all nav-link leading-none"
+               href="{% url 'usermanagement' %}" title="Customers">
+                <span class="material-symbols-outlined text-2xl shrink-0">group</span>
+                <span class="sidebar-text whitespace-nowrap">Customers</span>
+            </a>
+
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg {% if request.resolver_match.url_name == 'seller_management' or request.resolver_match.url_name == 'verify_seller' or request.resolver_match.url_name == 'reject_seller' or request.resolver_match.url_name == 'edit_seller' or request.resolver_match.url_name == 'delete_seller' or request.resolver_match.url_name == 'seller_product_report' %}bg-white text-primary{% else %}text-white/80 hover:bg-white/15 hover:text-white{% endif %} font-medium transition-all nav-link leading-none"
+               href="{% url 'seller_management' %}" title="Seller Management">
+                <span class="material-symbols-outlined text-2xl shrink-0">store</span>
+                <span class="sidebar-text whitespace-nowrap">Seller Management</span>
+            </a>
+
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg {% if request.resolver_match.url_name == 'product_verification' or request.resolver_match.url_name == 'admin_product_preview' or request.resolver_match.url_name == 'edit_product_admin' or request.resolver_match.url_name == 'delete_product_admin' or request.resolver_match.url_name == 'approve_product' or request.resolver_match.url_name == 'reject_product' %}bg-white text-primary{% else %}text-white/80 hover:bg-white/15 hover:text-white{% endif %} font-medium transition-all nav-link leading-none"
+               href="{% url 'product_verification' %}" title="Products">
+                <span class="material-symbols-outlined text-2xl shrink-0">inventory_2</span>
+                <span class="sidebar-text whitespace-nowrap">Products</span>
+            </a>
+
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg {% if request.resolver_match.url_name == 'order_management' or request.resolver_match.url_name == 'order_detail' %}bg-white text-primary{% else %}text-white/80 hover:bg-white/15 hover:text-white{% endif %} font-medium transition-all nav-link leading-none"
+               href="{% url 'order_management' %}" title="Orders">
+                <span class="material-symbols-outlined text-2xl shrink-0">receipt_long</span>
+                <span class="sidebar-text whitespace-nowrap">Orders</span>
+            </a>
+
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg {% if request.resolver_match.url_name == 'catalogue_management' or request.resolver_match.url_name == 'add_category' or request.resolver_match.url_name == 'edit_category' or request.resolver_match.url_name == 'add_subcategory' or request.resolver_match.url_name == 'edit_subcategory' or request.resolver_match.url_name == 'add_attribute' or request.resolver_match.url_name == 'edit_attribute' or request.resolver_match.url_name == 'add_attributeoptions' %}bg-white text-primary{% else %}text-white/80 hover:bg-white/15 hover:text-white{% endif %} font-medium transition-all nav-link leading-none"
+               href="{% url 'catalogue_management' %}" title="Catalogue">
+                <span class="material-symbols-outlined text-2xl shrink-0">category</span>
+                <span class="sidebar-text whitespace-nowrap">Catalogue</span>
+            </a>
+
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-white/80 hover:bg-white/15 hover:text-white font-medium transition-all nav-link leading-none"
+               href="{% url 'logout' %}" title="Logout">
+                <span class="material-symbols-outlined text-2xl shrink-0">logout</span>
+                <span class="sidebar-text whitespace-nowrap">Logout</span>
+            </a>
+        </nav>
+    </div>
+</aside>
+
+<nav id="main-navbar" class="sticky top-0 z-40 bg-navbar border-b border-primary/15 text-black">
+    <div class="h-20 flex items-center justify-between px-6">
+        <div class="flex items-center gap-4">
+            <button id="open-mobile-menu" class="lg:hidden p-2 -ml-2 text-black/80 hover:text-black transition-colors" aria-label="Open sidebar">
+                <span class="material-symbols-outlined text-2xl" id="sidebar-toggle-icon">menu</span>
+            </button>
+            <div id="navbar-logo" class="flex items-center gap-3 whitespace-nowrap">
+                <div class="w-10 h-10 rounded-xl bg-white shadow-sm border border-primary/20 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-primary text-xl">shopping_bag</span>
+                </div>
+                <span class="text-lg font-extrabold tracking-tight whitespace-nowrap">
+                    <span class="text-primary">Buy</span><span class="text-orange-500">Next</span>
+                </span>
+            </div>
+        </div>
+
+        <div class="flex-1 max-w-xl relative mx-4 hidden lg:block">
+            <div class="hidden sm:block"></div>
+        </div>
+
+        <div class="flex items-center gap-3 shrink-0">
+            <button class="flex items-center gap-3" type="button">
+                <div class="text-right hidden sm:block">
+                    <p class="text-sm font-semibold">{{ user.get_full_name|default:user.username }}</p>
+                    <p class="text-xs text-black/70">{% if user.is_superuser %}Super Admin{% else %}Staff{% endif %}</p>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-black/10 flex items-center justify-center overflow-hidden border border-black/20">
+                    <span class="material-symbols-outlined text-black">shield_person</span>
+                </div>
+            </button>
+        </div>
+    </div>
+</nav>
+
+<main id="main-content" class="flex-1 p-4 md:p-8 lg:p-10 overflow-y-auto custom-scrollbar">
+    <div class="max-w-[1400px] mx-auto pb-20 md:pb-0">
+        {% block content %}
+        {% endblock %}
+    </div>
+</main>
+
+<footer id="main-footer" class="bg-background-cream border-t border-primary/10 py-6">
+    <div class="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center text-[11px] text-text-muted uppercase tracking-widest font-bold gap-4">
+        <span>&copy; {% now "Y" %} BuyNext Admin Console - Internal Use Only</span>
+    </div>
+</footer>
+
+<script>
+    const sidebar = document.getElementById('main-sidebar');
+    const toggleBtn = document.getElementById('toggle-sidebar');
+    const openMobileBtn = document.getElementById('open-mobile-menu');
+    const storageKey = 'bnadmin_sidebar_collapsed';
+    const toggleIcon = document.getElementById('sidebar-toggle-icon');
+    const sidebarToggleIcon = toggleBtn ? toggleBtn.querySelector('.material-symbols-outlined') : null;
+
+    const applyCollapsedState = (collapsed) => {
+        document.body.classList.toggle('sidebar-collapsed', collapsed);
+        document.documentElement.classList.toggle('sidebar-collapsed', collapsed);
+        document.documentElement.style.setProperty('--sidebar-width', collapsed ? '5rem' : '16rem');
+        try {
+            localStorage.setItem(storageKey, collapsed ? '1' : '0');
+        } catch (e) {
+            // ignore storage errors
+        }
+        if (toggleIcon) {
+            toggleIcon.textContent = 'menu';
+        }
+        if (sidebarToggleIcon) {
+            sidebarToggleIcon.textContent = collapsed ? 'menu' : 'menu_open';
+        }
+    };
+
+    const getStoredCollapsedState = () => {
+        try {
+            return localStorage.getItem(storageKey);
+        } catch (e) {
+            return null;
+        }
+    };
+
+    const setDesktopState = () => {
+        const stored = getStoredCollapsedState();
+        const collapsed = stored === null ? true : stored === '1';
+        applyCollapsedState(collapsed);
+    };
+
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', () => {
+            if (window.innerWidth >= 1024) {
+                const nextState = !document.body.classList.contains('sidebar-collapsed');
+                applyCollapsedState(nextState);
+            } else {
+                document.body.classList.remove('sidebar-open');
+            }
+        });
+    }
+
+    if (openMobileBtn) {
+        openMobileBtn.addEventListener('click', () => {
+            if (window.innerWidth >= 1024) {
+                const nextState = !document.body.classList.contains('sidebar-collapsed');
+                applyCollapsedState(nextState);
+            } else {
+                document.body.classList.add('sidebar-open');
+            }
+        });
+    }
+
+    window.addEventListener('resize', () => {
+        if (window.innerWidth >= 1024) {
+            document.body.classList.remove('sidebar-open');
+            setDesktopState();
+        } else {
+            document.body.classList.remove('sidebar-collapsed');
+            document.documentElement.style.setProperty('--sidebar-width', '16rem');
+        }
+    });
+
+    if (window.innerWidth >= 1024) {
+        setDesktopState();
+    } else {
+        document.body.classList.remove('sidebar-open');
+        document.body.classList.remove('sidebar-collapsed');
+        document.documentElement.classList.remove('sidebar-collapsed');
+        document.documentElement.style.setProperty('--sidebar-width', '16rem');
+    }
+
+    document.documentElement.classList.remove('sidebar-preload');
+</script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

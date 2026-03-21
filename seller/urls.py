@@ -5,6 +5,7 @@ urlpatterns = [
           path("sellerregistration/",views.seller_registration,name="seller_registration"),
           path("sellerdashboard/",views.seller_dashboard,name="seller_dashboard"),
           path("sellerproducts/",views.seller_products,name="seller_product"),
+          path("sellerproducts/<uuid:product_id>/view/", views.seller_product_preview, name="seller_product_preview"),
           path("product/<uuid:id>/deactivate/", views.deactivate_product, name="deactivate_product"),
           path("product/<uuid:id>/activate/", views.activate_product, name="activate_product"),
           path("variant/<uuid:id>/deactivate/", views.deactivate_variant, name="deactivate_variant"),

@@ -1,0 +1,222 @@
+{% extends "bnadmin/base.html" %}
+{% load static %}
+
+{% block title %}BuyNext Admin - Seller Product Report{% endblock %}
+
+{% block extra_css %}
+<style>
+:root{
+--bn-cream:#ffffff;
+--bn-sage:#5f7534;
+--bn-sage-dark:#4b5e29;
+--bn-text:#27311d;
+--bn-muted:#6f7662;
+--bn-line:#e3dccd;
+--bn-soft:#ebe5d7;
+}
+
+.management-shell{
+background:linear-gradient(180deg,var(--bn-cream) 0%,#ffffff 100%);
+border:1px solid var(--bn-line);
+border-radius:24px;
+padding:1.25rem;
+box-shadow:0 16px 36px rgba(39,49,29,0.08);
+}
+
+.table-card{
+background:#ffffff;
+border-radius:20px;
+border:1px solid var(--bn-line);
+overflow:hidden;
+}
+
+.table-head{
+background:var(--bn-soft);
+color:var(--bn-muted);
+font-size:11px;
+font-weight:800;
+letter-spacing:0.08em;
+text-transform:uppercase;
+}
+
+.status-badge{
+display:inline-flex;
+align-items:center;
+padding:4px 12px;
+border-radius:999px;
+font-size:12px;
+font-weight:700;
+}
+
+.status-approved{background:#e4eed4;color:#3f5620;}
+.status-pending{background:#f8edd8;color:#996c2f;}
+.status-rejected{background:#f9e9e8;color:#a14845;}
+.status-draft{background:#edf1f5;color:#5d6777;}
+
+.action-btn{
+display:inline-flex;
+align-items:center;
+gap:0.35rem;
+padding:8px 12px;
+border-radius:10px;
+font-size:13px;
+font-weight:700;
+transition:all 0.2s ease;
+}
+
+.action-btn:hover{
+transform:translateY(-1px);
+}
+
+.action-primary{
+color:#fff;
+background:var(--bn-sage);
+border:1px solid var(--bn-sage);
+}
+
+.action-primary:hover{
+background:var(--bn-sage-dark);
+border-color:var(--bn-sage-dark);
+}
+
+.action-secondary{
+color:#5f6357;
+background:#fff;
+border:1px solid #ddd7c9;
+}
+
+.action-secondary:hover{
+background:#f8f6ef;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen p-4 md:p-8">
+<div class="management-shell">
+
+<div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+<div>
+<p class="text-[11px] uppercase tracking-[0.2em] font-bold text-[#7b826f]">Product Order Report</p>
+<h1 class="text-3xl font-bold text-[#2f3a22]">{{ seller.store_name }}</h1>
+<p class="text-sm text-[#727a66] mt-1">Owner: {{ seller.user.get_full_name|default:seller.user.username }}</p>
+</div>
+<div class="flex flex-wrap gap-2">
+<a href="{% url 'seller_management' %}" class="action-btn action-secondary">
+<span class="material-symbols-outlined text-[18px]">arrow_back</span>
+Back to Sellers
+</a>
+<a href="{% url 'edit_seller' seller.id %}" class="action-btn action-primary">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+Edit Seller
+</a>
+</div>
+</div>
+
+<div class="rounded-[24px] border border-[#e7e0d2] bg-white overflow-hidden mb-6">
+<div class="relative h-40 sm:h-52 lg:h-64 bg-[#f3f0e8]">
+{% if seller.banner %}
+<img src="{{ seller.banner.url }}" alt="{{ seller.store_name }} banner image" class="w-full h-full object-cover" loading="lazy">
+{% else %}
+<div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#f2efe6] to-[#e6e0d1]">
+<span class="material-symbols-outlined text-5xl text-[#c2bcae]">image</span>
+</div>
+{% endif %}
+<div class="absolute top-4 left-4 px-3 py-1 rounded-full bg-white/90 text-[#2f3a22] text-[10px] font-bold uppercase tracking-[0.2em]">
+Banner Image
+</div>
+<div class="absolute top-4 right-4 px-3 py-1 rounded-full bg-white/80 text-[#6f7662] text-[10px] font-bold uppercase tracking-[0.2em]">
+View Only
+</div>
+<div class="absolute bottom-4 left-4 flex items-end gap-4">
+<div class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-white p-1.5 shadow-xl border border-white/70">
+<div class="w-full h-full rounded-xl overflow-hidden bg-[#f2efe6]">
+{% if seller.logo %}
+<img src="{{ seller.logo.url }}" alt="{{ seller.store_name }} logo" class="w-full h-full object-cover" loading="lazy">
+{% else %}
+<img src="https://ui-avatars.com/api/?name={{ seller.store_name|urlencode }}&background=5f7534&color=fff&size=200" alt="{{ seller.store_name }} logo placeholder" class="w-full h-full object-cover" loading="lazy">
+{% endif %}
+</div>
+</div>
+<div class="mb-2">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/90 text-[#2f3a22] text-[10px] font-bold uppercase tracking-[0.16em]">
+<span class="w-2 h-2 rounded-full
+{% if seller.verification_status == 'VERIFIED' %}bg-emerald-500
+{% elif seller.verification_status == 'REJECTED' %}bg-rose-500
+{% else %}bg-amber-400{% endif %}"></span>
+{{ seller.verification_status|title }} Account
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 mb-6">
+<div class="rounded-2xl border border-[#e7e0d2] bg-white px-5 py-4">
+<p class="text-[11px] font-bold uppercase tracking-[0.16em] text-[#8b907f]">Products</p>
+<p class="mt-2 text-2xl font-bold text-[#2f3a22]">{{ report_stats.products }}</p>
+</div>
+<div class="rounded-2xl border border-[#e7e0d2] bg-[#f2f7e8] px-5 py-4">
+<p class="text-[11px] font-bold uppercase tracking-[0.16em] text-[#8b907f]">Orders</p>
+<p class="mt-2 text-2xl font-bold text-[#3f5620]">{{ report_stats.orders }}</p>
+</div>
+<div class="rounded-2xl border border-[#e7e0d2] bg-[#fbf7ed] px-5 py-4">
+<p class="text-[11px] font-bold uppercase tracking-[0.16em] text-[#8b907f]">Units Sold</p>
+<p class="mt-2 text-2xl font-bold text-[#996c2f]">{{ report_stats.units }}</p>
+</div>
+</div>
+
+<div class="table-card">
+<div class="overflow-x-auto">
+<table class="w-full text-sm text-left min-w-[1040px]">
+<thead class="table-head">
+<tr>
+<th class="px-6 py-4">Product</th>
+<th class="px-6 py-4">Brand</th>
+<th class="px-6 py-4">Status</th>
+<th class="px-6 py-4 text-center">Orders</th>
+<th class="px-6 py-4 text-center">Units</th>
+<th class="px-6 py-4 text-right">Preview</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#eee8da]">
+{% for product in products %}
+<tr class="hover:bg-[#fcfbf7]">
+<td class="px-6 py-4">
+<p class="font-semibold text-[#2f3a22]">{{ product.name }}</p>
+<p class="text-xs text-[#808774]">{{ product.subcategory.name|default:"-" }}</p>
+</td>
+<td class="px-6 py-4 text-[#36412a]">{{ product.brand }}</td>
+<td class="px-6 py-4">
+{% if product.approval_status == "APPROVED" %}
+<span class="status-badge status-approved">Approved</span>
+{% elif product.approval_status == "PENDING" %}
+<span class="status-badge status-pending">Pending</span>
+{% elif product.approval_status == "REJECTED" %}
+<span class="status-badge status-rejected">Rejected</span>
+{% else %}
+<span class="status-badge status-draft">Draft</span>
+{% endif %}
+</td>
+<td class="px-6 py-4 text-center font-semibold text-[#2f3a22]">{{ product.orders_count }}</td>
+<td class="px-6 py-4 text-center font-semibold text-[#2f3a22]">{{ product.units_sold }}</td>
+<td class="px-6 py-4 text-right">
+<a href="{% url 'admin_product_preview' product.id %}?next={{ request.get_full_path|urlencode }}" class="action-btn action-secondary">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+View
+</a>
+</td>
+</tr>
+{% empty %}
+<tr>
+<td colspan="6" class="py-10 text-center text-[#888f7e]">No products found for this seller.</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</div>
+
+</div>
+</div>
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends "bnadmin/base.html" %}
+
+{% block title %}Reports{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <div>
+        <h1 class="text-3xl font-bold text-slate-900">Reports</h1>
+        <p class="text-slate-500">Marketplace performance snapshot.</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        <div class="bg-white border border-slate-100 rounded-2xl p-5">
+            <p class="text-xs uppercase tracking-widest text-slate-400 font-bold">Users</p>
+            <p class="text-2xl font-bold mt-2">{{ reports.total_users }}</p>
+        </div>
+        <div class="bg-white border border-slate-100 rounded-2xl p-5">
+            <p class="text-xs uppercase tracking-widest text-slate-400 font-bold">Sellers</p>
+            <p class="text-2xl font-bold mt-2">{{ reports.total_sellers }}</p>
+        </div>
+        <div class="bg-white border border-slate-100 rounded-2xl p-5">
+            <p class="text-xs uppercase tracking-widest text-slate-400 font-bold">Products</p>
+            <p class="text-2xl font-bold mt-2">{{ reports.total_products }}</p>
+        </div>
+        <div class="bg-white border border-slate-100 rounded-2xl p-5">
+            <p class="text-xs uppercase tracking-widest text-slate-400 font-bold">Revenue</p>
+            <p class="text-2xl font-bold mt-2 text-primary">Rs {{ reports.revenue_total }}</p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div class="bg-white border border-slate-100 rounded-2xl p-5">
+            <h2 class="font-bold text-slate-800 mb-4">Seller Verification</h2>
+            <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                    <span class="text-slate-500">Verified Sellers</span>
+                    <span class="font-semibold text-emerald-600">{{ reports.verified_sellers }}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-slate-500">Pending Sellers</span>
+                    <span class="font-semibold text-amber-600">{{ reports.pending_sellers }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white border border-slate-100 rounded-2xl p-5">
+            <h2 class="font-bold text-slate-800 mb-4">Product Moderation</h2>
+            <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                    <span class="text-slate-500">Approved Products</span>
+                    <span class="font-semibold text-emerald-600">{{ reports.approved_products }}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-slate-500">Pending Products</span>
+                    <span class="font-semibold text-amber-600">{{ reports.pending_products }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white border border-slate-100 rounded-2xl p-5">
+        <h2 class="font-bold text-slate-800 mb-4">Orders</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="p-4 bg-slate-50 rounded-xl">
+                <p class="text-slate-500">Total Orders</p>
+                <p class="text-2xl font-bold mt-1">{{ reports.orders_total }}</p>
+            </div>
+            <div class="p-4 bg-slate-50 rounded-xl">
+                <p class="text-slate-500">Delivered Orders</p>
+                <p class="text-2xl font-bold mt-1 text-emerald-600">{{ reports.orders_delivered }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
