@@ -1,0 +1,130 @@
+{% extends "bnadmin/base.html" %}
+
+{% block title %}Product Verification{% endblock %}
+{% block header_title %}Product Verification{% endblock %}
+
+{% block content %}
+<div class="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+
+    <div class="flex flex-col md:flex-row gap-4 justify-between items-center mb-6">
+        <div class="flex items-center gap-4">
+            <div class="bg-white px-6 py-3 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-3">
+                <span class="w-2 h-2 rounded-full bg-brand-orange animate-pulse"></span>
+                <span class="text-sm font-black text-slate-700">{{ products.count }} Pending Reviews</span>
+            </div>
+        </div>
+        
+        <div class="relative w-full md:w-72">
+            <span class="material-icons-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+            <input type="text" placeholder="Search product or SKU..." 
+                class="w-full pl-12 pr-5 py-3 bg-white border border-slate-100 rounded-2xl shadow-sm focus:ring-4 focus:ring-brand-blue/5 outline-none transition-all font-bold text-sm text-slate-700">
+        </div>
+    </div>
+
+    <section class="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50/50">
+                        <th class="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Product</th>
+                        <th class="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Seller & Brand</th>
+                        <th class="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Category</th>
+                        <th class="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Status</th>
+                        <th class="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Submitted</th>
+                        <th class="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-50">
+                    {% for product in products %}
+                    <tr class="hover:bg-slate-50/80 transition-all group">
+                        <td class="px-8 py-4">
+                            <div class="flex items-center gap-4">
+                                <div class="w-[60px] h-[60px] rounded-xl bg-slate-100 border border-slate-200 overflow-hidden flex-shrink-0 shadow-sm">
+                                    {% if product.main_image %}
+                                        <img src="{{ product.main_image.url }}" class="w-full h-full object-cover">
+                                    {% else %}
+                                        <div class="w-full h-full flex items-center justify-center text-slate-300">
+                                            <span class="material-icons-outlined text-xl">image</span>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <p class="font-black text-slate-800 text-sm leading-tight hover:text-brand-blue cursor-pointer transition-colors">{{ product.name }}</p>
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase mt-1">SKU: {{ product.sku|default:"NO-SKU" }}</p>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td class="px-8 py-4">
+                            <div class="flex flex-col">
+                                <span class="text-sm font-bold text-slate-700">{{ product.brand.name }}</span>
+                                <span class="text-[10px] font-bold text-brand-blue uppercase tracking-tighter">{{ product.seller.store_name }}</span>
+                            </div>
+                        </td>
+
+                        <td class="px-8 py-4 text-sm font-bold text-slate-500">
+                            {{ product.category.name }}
+                        </td>
+
+                        <td class="px-8 py-4 text-center">
+                            {% if product.status == 'PENDING' %}
+                                <span class="px-3 py-1 bg-amber-50 text-amber-600 border border-amber-100 rounded-full text-[10px] font-black uppercase">Pending</span>
+                            {% elif product.status == 'APPROVED' %}
+                                <span class="px-3 py-1 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-full text-[10px] font-black uppercase">Approved</span>
+                            {% else %}
+                                <span class="px-3 py-1 bg-rose-50 text-rose-600 border border-rose-100 rounded-full text-[10px] font-black uppercase">Rejected</span>
+                            {% endif %}
+                        </td>
+
+                        <td class="px-8 py-4">
+                            <div class="flex flex-col">
+                                <span class="text-xs font-bold text-slate-700">{{ product.created_at|date:"d M, Y" }}</span>
+                                <span class="text-[10px] text-slate-400">{{ product.created_at|time:"H:i A" }}</span>
+                            </div>
+                        </td>
+
+                        <td class="px-8 py-4">
+                            <div class="flex items-center justify-end gap-2">
+                                <a href="#" class="click-shrink w-9 h-9 flex items-center justify-center rounded-xl bg-slate-100 text-slate-500 hover:bg-slate-200 transition-all" title="View Product Details">
+                                    <span class="material-icons-outlined text-lg">visibility</span>
+                                </a>
+                                
+                                <form action="#" method="POST" class="inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="click-shrink w-9 h-9 flex items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white transition-all shadow-sm shadow-emerald-100" title="Approve Product">
+                                        <span class="material-icons-outlined text-lg">check</span>
+                                    </button>
+                                </form>
+
+                                <button onclick="confirmReject('{{ product.id }}')" class="click-shrink w-9 h-9 flex items-center justify-center rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white transition-all shadow-sm shadow-rose-100" title="Reject Product">
+                                    <span class="material-icons-outlined text-lg">close</span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="px-8 py-20 text-center">
+                            <div class="flex flex-col items-center">
+                                <div class="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-200 mb-4">
+                                    <span class="material-icons-outlined text-3xl">task_alt</span>
+                                </div>
+                                <p class="text-slate-400 font-black uppercase text-[10px] tracking-[0.2em]">All products verified</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+<script>
+    function confirmReject(id) {
+        if(confirm('Are you sure you want to reject this product? A notification will be sent to the seller.')) {
+            // Rejection logic here
+        }
+    }
+</script>
+{% endblock %}

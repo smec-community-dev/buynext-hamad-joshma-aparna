@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin{% endblock %} | BuyNext</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'brand-blue': '#2563eb',
+                        'brand-orange': '#f97316',
+                        'bg-soft': '#F4F7FE',
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body { background-color: #F4F7FE; }
+        .active-link {
+            background-color: #fff7ed;
+            color: #f97316;
+            border-right: 4px solid #f97316;
+        }
+        .border-right-brand {
+        border-right: 4px solid #2563eb; /* brand-blue */
+    }
+        /* Custom scrollbar for sidebar */
+        .sidebar-scroll::-webkit-scrollbar { width: 4px; }
+        .sidebar-scroll::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+
+        /* Global Click Effect for Buttons */
+        .click-shrink {
+            transition: transform 0.1s ease, background-color 0.2s ease;
+        }
+        .click-shrink:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body class="font-sans antialiased text-slate-800">
+
+    <aside class="fixed inset-y-0 left-0 w-72 m-4 mr-0 hidden lg:block z-50">
+        <div class="h-full bg-white rounded-[2.5rem] shadow-sm border border-slate-100 flex flex-col overflow-hidden">
+            
+            <div class="p-8 flex flex-col">
+
+    <!-- Logo Row -->
+    <div class="flex items-center gap-3">
+
+        <!-- Shopping Bag Icon -->
+        <div class="w-10 h-10 rounded-xl bg-orange-50 shadow-md flex items-center justify-center">
+            <span class="material-icons-outlined text-brand-blue text-xl">
+                shopping_bag
+            </span>
+        </div>
+
+        <!-- BuyNext + Seller Hub -->
+        <div class="flex flex-col leading-tight">
+
+            <!-- BuyNext -->
+            <span class="text-2xl font-extrabold tracking-tight">
+                <span class="text-blue-600">Buy</span><span class="text-orange-500">Next</span>
+            </span>
+
+            <!-- Seller Hub -->
+            <span class="text-xs font-bold text-brand-orange tracking-widest uppercase mt-1">
+                Admin Panel
+            </span>
+
+        </div>
+
+    </div>
+
+</div>
+
+           <nav class="flex-1 overflow-y-auto sidebar-scroll px-4 pb-6 space-y-1">
+    <p class="text-[10px] font-black uppercase text-slate-400 tracking-widest px-4 py-4">Main Menu</p>
+
+    <a href="{% url 'admin_dashboard' %}" 
+       class="click-shrink flex items-center gap-4 px-5 py-3.5 rounded-2xl transition-all font-bold text-sm active:bg-orange-100 
+       {% if request.resolver_match.url_name == 'admin_dashboard' %} active-link {% else %} text-slate-500 hover:bg-slate-50 hover:text-slate-800 {% endif %}">
+        <span class="material-icons-outlined">grid_view</span> Dashboard
+    </a>
+
+    <p class="text-[10px] font-black uppercase text-slate-400 tracking-widest px-4 py-6">Verification</p>
+
+    <a href="{% url 'seller_verification' %}" 
+       class="click-shrink flex items-center gap-4 px-5 py-3.5 rounded-2xl transition-all font-bold text-sm active:bg-blue-100
+       {% if request.resolver_match.url_name == 'seller_verification' %} bg-blue-50 text-brand-blue border-right-brand {% else %} text-slate-500 hover:bg-slate-50 hover:text-slate-800 {% endif %}">
+        <span class="material-icons-outlined">verified_user</span> Seller Verification
+    </a>
+
+    <a href="{% url 'product_verification' %}" 
+       class="click-shrink flex items-center gap-4 px-5 py-3.5 rounded-2xl transition-all font-bold text-sm active:bg-blue-100
+       {% if request.resolver_match.url_name == 'product_verification' %} bg-blue-50 text-brand-blue border-right-brand {% else %} text-slate-500 hover:bg-slate-50 hover:text-slate-800 {% endif %}">
+        <span class="material-icons-outlined">inventory_2</span> Product Verification
+    </a>
+
+    <a href="{% url 'catalogue_management' %}" 
+       class="click-shrink flex items-center gap-4 px-5 py-3.5 rounded-2xl transition-all font-bold text-sm active:bg-blue-100
+       {% if request.resolver_match.url_name == 'catalogue_management' %} bg-blue-50 text-brand-blue border-right-brand {% else %} text-slate-500 hover:bg-slate-50 hover:text-slate-800 {% endif %}">
+        <span class="material-icons-outlined">library_books</span> Catalogue Management
+    </a>
+</nav>
+
+            <div class="p-4 border-t border-slate-50">
+                <a href="{% url 'logout' %}" class="click-shrink flex items-center gap-4 px-5 py-4 rounded-2xl transition-all font-bold text-sm text-rose-500 hover:bg-rose-50 active:bg-rose-100">
+                    <span class="material-icons-outlined">logout</span> Logout
+                </a>
+            </div>
+        </div>
+    </aside>
+
+    <main class="lg:ml-72 min-h-screen flex flex-col">
+        <header class="sticky top-0 z-40 p-4">
+            <div class="bg-white/80 backdrop-blur-md border border-slate-200/50 shadow-sm rounded-[2rem] px-8 py-4 flex items-center justify-between">
+                <div>
+                    <h2 class="text-xl font-extrabold text-slate-800 tracking-tight">
+                        {% block header_title %}{% endblock %}
+                    </h2>
+                </div>
+
+                <div class="flex items-center gap-5">
+                    <button class="click-shrink w-10 h-10 flex items-center justify-center text-slate-400 hover:bg-slate-50 active:bg-orange-50 rounded-xl transition-all relative">
+                        <span class="material-icons-outlined">notifications</span>
+                        <span class="absolute top-2 right-2.5 w-2 h-2 bg-brand-orange rounded-full border-2 border-white"></span>
+                    </button>
+
+                    <div class="flex items-center gap-3 pl-5 border-l border-slate-100">
+                        <div class="text-right hidden sm:block">
+                            <p class="text-xs font-black text-slate-800">{{ request.user.username|default:"Admin User" }}</p>
+                            <p class="text-[10px] font-bold text-brand-blue uppercase tracking-widest">Super Admin</p>
+                        </div>
+                        <button class="click-shrink w-10 h-10 rounded-xl bg-slate-100 border-2 border-white shadow-sm overflow-hidden active:ring-2 active:ring-brand-blue">
+                            <img src="https://ui-avatars.com/api/?name=Admin&background=2563eb&color=fff" alt="Avatar" class="w-full h-full object-cover">
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="px-8 py-4">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </main>
+
+</body>
+</html>

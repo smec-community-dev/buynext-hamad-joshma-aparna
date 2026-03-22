@@ -1,0 +1,168 @@
+{% extends "bnadmin/base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+{% block header_title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="space-y-8 animate-in fade-in duration-500">
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        
+        <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-md transition-all group">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 rounded-2xl bg-blue-50 text-brand-blue flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <span class="material-icons-outlined">storefront</span>
+                </div>
+                <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">Total</span>
+            </div>
+            <h3 class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Total Sellers</h3>
+            <p class="text-3xl font-black text-slate-800">{{ total_sellers|default:"1,284" }}</p>
+        </div>
+
+        <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-md transition-all group border-l-4 border-l-brand-orange">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 rounded-2xl bg-orange-50 text-brand-orange flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <span class="material-icons-outlined">verified_user</span>
+                </div>
+                <span class="flex h-2 w-2 rounded-full bg-brand-orange animate-pulse"></span>
+            </div>
+            <h3 class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Pending Sellers</h3>
+            <p class="text-3xl font-black text-slate-800">{{ pending_sellers|default:"24" }}</p>
+        </div>
+
+        <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-md transition-all group border-l-4 border-l-indigo-500">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <span class="material-icons-outlined">inventory_2</span>
+                </div>
+                <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">Pending</span>
+            </div>
+            <h3 class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Pending Products</h3>
+            <p class="text-3xl font-black text-slate-800">{{ pending_products|default:"142" }}</p>
+        </div>
+
+        <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-md transition-all group">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <span class="material-icons-outlined">shopping_bag</span>
+                </div>
+                <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">Live</span>
+            </div>
+            <h3 class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Total Products</h3>
+            <p class="text-3xl font-black text-slate-800">{{ total_products|default:"8,432" }}</p>
+        </div>
+
+    </div>
+
+    <section class="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
+        <div class="p-8 border-b border-slate-50 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-orange-50 text-brand-orange flex items-center justify-center">
+                    <span class="material-icons-outlined">person_add_alt</span>
+                </div>
+                <div>
+                    <h3 class="text-lg font-black text-slate-800">Recent Seller Applications</h3>
+                    <p class="text-xs text-slate-400 font-medium">New requests waiting for manual verification</p>
+                </div>
+            </div>
+            <a href="#" class="click-shrink text-xs font-black text-brand-blue uppercase tracking-widest bg-blue-50 px-4 py-2 rounded-lg hover:bg-blue-100 transition-colors">View All</a>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50/50">
+                        <th class="px-8 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Store Name</th>
+                        <th class="px-8 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Seller Name</th>
+                        <th class="px-8 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">GST Number</th>
+                        <th class="px-8 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Submitted Date</th>
+                        <th class="px-8 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-50">
+                    {% for seller in recent_sellers %}
+                    <tr class="hover:bg-slate-50/80 transition-colors cursor-pointer group">
+                        <td class="px-8 py-5 font-bold text-slate-700">{{ seller.store_name }}</td>
+                        <td class="px-8 py-5 text-sm text-slate-500">{{ seller.user.get_full_name }}</td>
+                        <td class="px-8 py-5 font-mono text-xs text-brand-blue">{{ seller.gst_number }}</td>
+                        <td class="px-8 py-5 text-sm text-slate-400">{{ seller.created_at|date:"M d, Y" }}</td>
+                        <td class="px-8 py-5 text-center">
+                            <span class="px-3 py-1 bg-orange-100 text-brand-orange rounded-full text-[10px] font-black uppercase tracking-tighter">Pending</span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="px-8 py-10 text-center text-slate-400 font-bold">No recent applications found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
+        <div class="p-8 border-b border-slate-50 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-blue-50 text-brand-blue flex items-center justify-center">
+                    <span class="material-icons-outlined">add_shopping_cart</span>
+                </div>
+                <div>
+                    <h3 class="text-lg font-black text-slate-800">Recently Submitted Products</h3>
+                    <p class="text-xs text-slate-400 font-medium">Verify product details and images before going live</p>
+                </div>
+            </div>
+            <a href="#" class="click-shrink text-xs font-black text-brand-blue uppercase tracking-widest bg-blue-50 px-4 py-2 rounded-lg hover:bg-blue-100 transition-colors">Review Queue</a>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50/50">
+                        <th class="px-8 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Product</th>
+                        <th class="px-8 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Seller Store</th>
+                        <th class="px-8 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Category</th>
+                        <th class="px-8 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Submitted</th>
+                        <th class="px-8 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-50">
+                    {% for product in recent_products %}
+                    <tr class="hover:bg-slate-50/80 transition-colors group">
+                        <td class="px-8 py-4">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-slate-100 overflow-hidden flex-shrink-0 border border-slate-200 shadow-sm">
+                                    {% if product.image %}
+                                    <img src="{{ product.image.url }}" class="w-full h-full object-cover">
+                                    {% else %}
+                                    <div class="w-full h-full flex items-center justify-center text-slate-300">
+                                        <span class="material-icons-outlined">image</span>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <p class="font-bold text-slate-800 text-sm leading-tight">{{ product.name }}</p>
+                                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">SKU: {{ product.sku|default:"N/A" }}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-8 py-4">
+                            <span class="px-3 py-1 bg-slate-100 text-slate-600 rounded-lg text-[10px] font-black uppercase">{{ product.seller.store_name }}</span>
+                        </td>
+                        <td class="px-8 py-4 text-sm font-bold text-slate-500">{{ product.category.name }}</td>
+                        <td class="px-8 py-4 text-sm text-slate-400">{{ product.created_at|timesince }} ago</td>
+                        <td class="px-8 py-4 text-center">
+                            <button class="click-shrink w-10 h-10 rounded-xl bg-brand-blue/10 text-brand-blue hover:bg-brand-blue hover:text-white transition-all">
+                                <span class="material-icons-outlined text-xl">chevron_right</span>
+                            </button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="px-8 py-10 text-center text-slate-400 font-bold">No products in the approval queue.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</div>
+{% endblock %}

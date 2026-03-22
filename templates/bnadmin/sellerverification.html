@@ -1,0 +1,119 @@
+{% extends "bnadmin/base.html" %}
+
+{% block title %}Seller Verification{% endblock %}
+{% block header_title %}Seller Verification{% endblock %}
+
+{% block content %}
+<div class="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div class="bg-white p-4 rounded-3xl border border-slate-100 shadow-sm flex items-center gap-4">
+            <div class="w-10 h-10 rounded-xl bg-orange-50 text-brand-orange flex items-center justify-center">
+                <span class="material-icons-outlined text-sm">hourglass_empty</span>
+            </div>
+            <div>
+                <p class="text-[10px] font-black uppercase text-slate-400 tracking-widest">Pending</p>
+                <p class="text-lg font-black text-slate-800">{{ sellers.count }} Requests</p>
+            </div>
+        </div>
+    </div>
+
+    <section class="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
+        <div class="p-8 border-b border-slate-50 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+                <h3 class="text-xl font-black text-slate-800">Verification Queue</h3>
+                <p class="text-xs text-slate-400 font-medium">Review legal documents and store details before granting seller access.</p>
+            </div>
+            
+            <div class="relative">
+                <span class="material-icons-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
+                <input type="text" placeholder="Search store or GST..." 
+                    class="pl-11 pr-5 py-3 bg-slate-50 border border-transparent rounded-2xl focus:bg-white focus:border-brand-blue outline-none transition-all text-sm font-bold w-full md:w-64">
+            </div>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50/50">
+                        <th class="px-8 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Store Name</th>
+                        <th class="px-8 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Seller Name</th>
+                        <th class="px-8 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">GST Number</th>
+                        <th class="px-8 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Status</th>
+                        <th class="px-8 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Submitted Date</th>
+                        <th class="px-8 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-50">
+                    {% for seller in sellers %}
+                    <tr class="hover:bg-slate-50/80 transition-colors group">
+                        <td class="px-8 py-5">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 font-black text-xs border border-slate-200">
+                                    {{ seller.store_name|slice:":2"|upper }}
+                                </div>
+                                <span class="font-bold text-slate-800">{{ seller.store_name }}</span>
+                            </div>
+                        </td>
+                        <td class="px-8 py-5 text-sm font-semibold text-slate-600">{{ seller.user.get_full_name }}</td>
+                        <td class="px-8 py-5">
+                            <span class="font-mono text-xs bg-blue-50 text-brand-blue px-2 py-1 rounded-md border border-blue-100">
+                                {{ seller.gst_number }}
+                            </span>
+                        </td>
+                        <td class="px-8 py-5">
+                            {% if seller.verification_status == 'PENDING' %}
+                                <span class="px-3 py-1 bg-amber-50 text-amber-600 border border-amber-100 rounded-full text-[10px] font-black uppercase tracking-tighter">Pending</span>
+                            {% elif seller.verification_status == 'VERIFIED' %}
+                                <span class="px-3 py-1 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-full text-[10px] font-black uppercase tracking-tighter">Verified</span>
+                            {% else %}
+                                <span class="px-3 py-1 bg-rose-50 text-rose-600 border border-rose-100 rounded-full text-[10px] font-black uppercase tracking-tighter">Rejected</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-8 py-5 text-sm text-slate-400 font-medium">{{ seller.created_at|date:"M d, Y" }}</td>
+                        <td class="px-8 py-5">
+                            <div class="flex items-center justify-end gap-2">
+                                <a href="#" class="click-shrink w-9 h-9 flex items-center justify-center rounded-xl bg-slate-100 text-slate-500 hover:bg-slate-200 transition-all" title="View Details">
+                                    <span class="material-icons-outlined text-lg">visibility</span>
+                                </a>
+                                
+                                <form action="#" method="POST" class="inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="click-shrink w-9 h-9 flex items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white transition-all shadow-sm shadow-emerald-100" title="Approve Seller">
+                                        <span class="material-icons-outlined text-lg">check_circle</span>
+                                    </button>
+                                </form>
+
+                                <button onclick="openRejectModal('{{ seller.id }}')" class="click-shrink w-9 h-9 flex items-center justify-center rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white transition-all shadow-sm shadow-rose-100" title="Reject Seller">
+                                    <span class="material-icons-outlined text-lg">cancel</span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="px-8 py-20 text-center">
+                            <div class="flex flex-col items-center">
+                                <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center text-slate-200 mb-4">
+                                    <span class="material-icons-outlined text-4xl">inventory</span>
+                                </div>
+                                <p class="text-slate-400 font-black uppercase text-xs tracking-[0.2em]">No pending verifications</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+<script>
+    // Placeholder for rejection logic
+    function openRejectModal(sellerId) {
+        if(confirm("Are you sure you want to reject this seller application?")) {
+            // Trigger rejection flow
+        }
+    }
+</script>
+{% endblock %}
