@@ -242,6 +242,10 @@ class ProductVariant(models.Model):
     def is_in_stock(self):
         return self.stock_quantity > 0
 
+    @property
+    def primary_image(self):
+        return self.images.filter(is_primary=True).first() or self.images.first()
+
 
 class ProductImage(models.Model):
 

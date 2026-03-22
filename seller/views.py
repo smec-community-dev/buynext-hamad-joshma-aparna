@@ -5,13 +5,15 @@ from bnadmin.models import *
 from django.contrib import messages
 from django.contrib.auth import login
 from core.decorator import seller_profile_required,verified_seller_required
-from django.db.models import Sum, Count, Q, F  
-from .models import SellerProfile, Product, ProductVariant, Order, InventoryLog
-from django.db.models import Avg, Count
-from django.contrib import messages
+from django.db.models import Sum, Count, Q, F, Avg
+from .models import SellerProfile, Product, ProductVariant, InventoryLog
 from django.http import JsonResponse
-from customer.models import Review
-
+from customer.models import Review, Order as CustomerOrder, OrderItem as CustomerOrderItem
+from decimal import Decimal
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.timezone import now
+from datetime import timedelta
+import json
 
 
 
@@ -85,13 +87,18 @@ def seller_registration(request):
          seller_profile.save()
          return redirect('seller_profile')
     return render(request,"seller/seller_registration.html",{"data":request.POST})
+
+
 @verified_seller_required
 def seller_dashboard(request):
 
     seller = request.user.seller_profile
 
     total_products = Product.objects.filter(seller=seller).count()
-    total_orders = Order.objects.filter(seller=seller).count()
+    total_orders = CustomerOrderItem.objects.filter(
+        Q(seller=seller)
+        | Q(seller__isnull=True, variant__product__seller=seller)
+    ).values("order_id").distinct().count()
 
     context = {
         "total_products": total_products,
@@ -99,6 +106,7 @@ def seller_dashboard(request):
     }
 
     return render(request, "seller/dashboard.html", context)
+    
     
 @verified_seller_required
 def seller_products(request):
@@ -129,6 +137,8 @@ def seller_products(request):
      return render(request,"seller/product.html",{"products": products,"products_pending_count": products_pending_count,
         "products_approved_count": products_approved_count,
         "products_rejected_count": products_rejected_count,})
+
+        
 @verified_seller_required
 def deactivate_product(request, id):
     product = Product.objects.get(id=id, seller=request.user.seller_profile)
@@ -428,28 +438,74 @@ def adjust_inventory(request):
 
     return redirect("seller_inventory")
 
-
 @verified_seller_required
 def seller_order(request):
 
-    orders = Order.objects.all()
+    seller = request.user.seller_profile
 
-    active_orders = orders.filter(status="processing").count()
+    order_items = OrderItem.objects.filter(
+        variant__product__seller=seller
+    ).select_related(
+        "order",
+        "variant",
+        "variant__product",
+    )
 
-    returns_pending = orders.filter(status="return_requested").count()
+    query = request.GET.get("q")
+    if query:
+        order_items = order_items.filter(
+            Q(order__order_number__icontains=query) |
+            Q(order__user__username__icontains=query)
+        )
 
-    total_revenue = orders.aggregate(
-        total=Sum("amount")
+    status = request.GET.get("status")
+
+    active_statuses = [
+        "PLACED",
+        "CONFIRMED",
+        "PROCESSING",
+        "SHIPPED",
+        "OUT_FOR_DELIVERY",
+    ]
+
+    if status == "active":
+        order_items = order_items.filter(order__order_status__in=active_statuses)
+
+    elif status == "returns":
+        order_items = order_items.filter(order__order_status="RETURN_REQUESTED")
+
+    elif status == "cancelled":
+        order_items = order_items.filter(order__order_status="CANCELLED")
+
+
+    active_orders = OrderItem.objects.filter(
+        variant__product__seller=seller,
+        order__order_status__in=active_statuses
+    ).values("order_id").distinct().count()
+
+
+    returns_pending = OrderItem.objects.filter(
+        variant__product__seller=seller,
+        order__order_status="RETURN_REQUESTED"
+    ).values("order_id").distinct().count()
+
+
+    total_revenue = OrderItem.objects.filter(
+        variant__product__seller=seller
+    ).aggregate(
+        total=Sum(F("price_at_purchase") * F("quantity"))
     )["total"] or 0
+
 
     context = {
         "active_orders": active_orders,
         "returns_pending": returns_pending,
         "total_revenue": total_revenue,
-        "orders": orders
+        "order_items": order_items,
     }
 
     return render(request, "seller/seller_order.html", context)
+
 
 
 @verified_seller_required
@@ -457,23 +513,57 @@ def earnings_view(request):
 
     seller = request.user.seller_profile
 
+    # ✅ FIXED QUERY
     order_items = OrderItem.objects.filter(
-        seller=seller,
-        item_status="delivered"
-    )
-    total_earnings = order_items.aggregate(
-    total=Sum(F("price_at_purchase") * F("quantity")))["total"] or 0
+        seller=seller
+    ).select_related("order", "variant")
 
-    orders_count = order_items.count()
+    COMMISSION_RATE = Decimal("10.0")
+
+    completed_items = order_items.filter(item_status="completed")
+
+    gross_revenue = completed_items.aggregate(
+        total=Sum (F("price_at_purchase") * F("quantity"))
+    )["total"] or 0
+
+    total_commission = completed_items.aggregate(
+        total=Sum(
+            F("price_at_purchase") * F("quantity") * (COMMISSION_RATE / 100)
+        )
+    )["total"] or 0
+
+    total_net = gross_revenue - total_commission
+
+    pending_items = completed_items.filter(
+        order__updated_at__gte=now() - timedelta(days=7)
+    )
+
+    pending_settlement = pending_items.aggregate(
+        total=Sum(F("price_at_purchase") * F("quantity"))
+    )["total"] or 0
+
+    settled_items = completed_items.filter(
+        order__updated_at__lt=now() - timedelta(days=7)
+    )
+
+    settled_amount = settled_items.aggregate(
+        total=Sum(
+            (F("price_at_purchase")* F("quantity")) * (1 - COMMISSION_RATE / 100)
+        )
+    )["total"] or 0
 
     context = {
         "order_items": order_items,
-        "total_earnings": total_earnings,
-        "orders_count": orders_count
+        "total_commission": round(total_commission, 2),
+        "total_net": round(total_net, 2),
+        "pending_settlement": pending_settlement,
+        "settled_amount": settled_amount,
+        "commission_rate": COMMISSION_RATE,
     }
 
     return render(request, "seller/earnings.html", context)
-    
+
+
 
 
 @verified_seller_required
@@ -556,3 +646,73 @@ def seller_profile(request):
 def seller_settings(request):
      return render(request,"seller/seller_settings.html")
 
+
+@verified_seller_required
+def update_order_status(request, order_id):
+
+    if request.method != "POST":
+        return JsonResponse({
+            "success": False,
+            "error": "Invalid request method"
+        })
+
+    try:
+        data = json.loads(request.body)
+        status = (data.get("status") or "").strip().lower()
+
+        status_map = {
+            "placed": "PLACED",
+            "confirmed": "CONFIRMED",
+            "processing": "PROCESSING",
+            "shipped": "SHIPPED",
+            "out_for_delivery": "OUT_FOR_DELIVERY",
+            "delivered": "DELIVERED",
+            "cancelled": "CANCELLED",
+            "return_requested": "RETURN_REQUESTED",
+            "returned": "RETURNED",
+            "refunded": "REFUNDED",
+        }
+
+        if status not in status_map:
+            return JsonResponse({
+                "success": False,
+                "error": "Invalid status"
+            })
+
+    
+        order = get_object_or_404(CustomerOrder, order_number=order_id)
+
+        seller = request.user.seller_profile
+
+     
+        has_items = OrderItem.objects.filter(
+            order=order,
+            variant__product__seller=seller
+        ).exists()
+
+        if not has_items:
+            return JsonResponse({
+                "success": False,
+                "error": "Not authorized for this order"
+            })
+
+       
+        order.order_status = status_map[status]
+        order.save(update_fields=["order_status"])
+
+        return JsonResponse({
+            "success": True,
+            "message": "Order status updated successfully"
+        })
+
+    except json.JSONDecodeError:
+        return JsonResponse({
+            "success": False,
+            "error": "Invalid JSON data"
+        })
+
+    except Exception as e:
+        return JsonResponse({
+            "success": False,
+            "error": str(e)
+        })

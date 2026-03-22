@@ -12,7 +12,7 @@
             </div>
             <div>
                 <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Active Orders</p>
-                <h3 class="text-2xl font-black text-slate-800">12</h3>
+                <h3 class="text-2xl font-black text-slate-800">{{ active_orders }}</h3>
             </div>
         </div>
     </div>
@@ -23,7 +23,7 @@
             </div>
             <div>
                 <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Returns Pending</p>
-                <h3 class="text-2xl font-black text-slate-800">3</h3>
+                <h3 class="text-2xl font-black text-slate-800">{{ returns_pending }}</h3>
             </div>
         </div>
     </div>
@@ -34,7 +34,7 @@
             </div>
             <div>
                 <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Revenue</p>
-                <h3 class="text-2xl font-black text-slate-800">$4,280.50</h3>
+                <h3 class="text-2xl font-black text-slate-800">INR {{ total_revenue }}</h3>
             </div>
         </div>
     </div>
@@ -81,120 +81,57 @@
                 </tr>
             </thead>
             <tbody class="divide-y divide-slate-50">
-                <tr class="hover:bg-slate-50/50 transition-all">
-                    <td class="px-8 py-5">
-                        <span class="text-sm font-black text-slate-800">#ORD-9921</span>
-                        <p class="text-[10px] text-slate-400 font-bold uppercase mt-1">Today, 10:45 AM</p>
-                    </td>
-                    <td class="px-8 py-5">
-                        <p class="font-bold text-slate-700 text-sm">Lakshmi</p>
-                        <p class="text-[10px] text-slate-400">lakshmi@email.com</p>
-                    </td>
-                    <td class="px-8 py-5">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-slate-100 rounded-lg overflow-hidden flex-shrink-0">
-                                <img src=https://images.unsplash.com/photo-1542496658-e33a6d0d50f6 class="w-full h-full object-cover">
-                            </div>
-                            <span class="text-sm font-bold text-slate-700">Sonata Men's Poze Analog Watch</span>
-                        </div>
-                    </td>
-                    <td class="px-8 py-5 text-sm font-black text-slate-600">x1</td>
-                    <td class="px-8 py-5 text-sm font-black text-brand-blue">₹4000.00</td>
-                    <td class="px-8 py-5">
-                        <span class="px-3 py-1 bg-blue-50 text-brand-blue rounded-lg text-[10px] font-black uppercase tracking-wider">Processing</span>
-                    </td>
-                   <td class="px-8 py-5 text-center">
-                    <button 
-                    onclick="openOrderDetails('{{ item.order.order_id }}','{{ item.order.customer_name }}','{{ item.order.status }}')"
-                    class="w-10 h-10 bg-slate-50 text-slate-400 hover:bg-brand-blue hover:text-white rounded-xl transition-all">
-                    <span class="material-icons-outlined text-xl">visibility</span>
-                </button>
-            </td>
-                </tr>
-
-                <tr class="hover:bg-slate-50/50 transition-all">
-                    <td class="px-8 py-5">
-                        <span class="text-sm font-black text-slate-800">#ORD-9840</span>
-                        <p class="text-[10px] text-slate-400 font-bold uppercase mt-1">Yesterday</p>
-                    </td>
-                    <td class="px-8 py-5">
-                        <p class="font-bold text-slate-700 text-sm">Akhila</p>
-                    </td>
-                    <td class="px-8 py-5">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-slate-100 rounded-lg overflow-hidden flex-shrink-0">
-                                <img src=https://images.unsplash.com/photo-1641893843833-a006778dc00b class="w-full h-full object-cover">
-                            </div>
-                            <span class="text-sm font-bold text-slate-700">Mens Shoe</span>
-                        </div>
-                    </td>
-                    <td class="px-8 py-5 text-sm font-black text-slate-600">x1</td>
-                    <td class="px-8 py-5 text-sm font-black text-brand-blue">$1450.00</td>
-                    <td class="px-8 py-5">
-                        <span class="px-3 py-1 bg-orange-50 text-brand-orange rounded-lg text-[10px] font-black uppercase tracking-wider">Return Requested</span>
-                    </td>
-                   <td class="px-8 py-5 text-center">
-                    <button 
-                    onclick="openOrderDetails('ORD-9840','Akhila','return')"
-                    class="w-10 h-10 bg-slate-50 text-slate-400 hover:bg-brand-blue hover:text-white rounded-xl transition-all">
-                    <span class="material-icons-outlined text-xl">visibility</span>
-                </button>
-            </td>
-                </tr>
-
                 {% for item in order_items %}
                 <tr class="hover:bg-slate-50/50 transition-all">
                     <td class="px-8 py-5">
                         <span class="text-sm font-black text-slate-800">#{{ item.order.order_number }}</span>
-                        <p class="text-[10px] text-slate-400 font-bold uppercase mt-1">{{ item.order.created_at|date:"d M, Y" }}</p>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase mt-1">{{ item.order.ordered_at|date:"d M, Y" }}</p>
                     </td>
                     <td class="px-8 py-5">
-                        <p class="font-bold text-slate-700 text-sm">{{ item.order.customer_name }}</p>
+                        <p class="font-bold text-slate-700 text-sm">{{ item.order.user.username }}</p>
                     </td>
                     <td class="px-8 py-5">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 bg-slate-100 rounded-lg overflow-hidden flex-shrink-0">
-                                <img src="{{ item.product.primary_image.url|default:'/static/images/no-product.png' }}">
+                                {% if item.variant.primary_image %}
+                                <img src="{{ item.variant.primary_image.image.url }}" class="w-full h-full object-cover">
+                                {% else %}
+                                <img src="/static/images/no-product.png" class="w-full h-full object-cover">
+                                {% endif %}
                             </div>
-                            <span class="text-sm font-bold text-slate-700">{{ item.product.name }}</span>
+                            <span class="text-sm font-bold text-slate-700">{{ item.variant.product.name }}</span>
                         </div>
                     </td>
                     <td class="px-8 py-5 text-sm font-black text-slate-600">x{{ item.quantity }}</td>
                     <td class="px-8 py-5 text-sm font-black text-brand-blue">${{ item.price_at_purchase }}</td>
                     <td class="px-8 py-5">
-                        {% if item.order.status == "pending" %}
-                        <span class="px-3 py-1 bg-yellow-50 text-yellow-600 rounded-lg text-[10px] font-black uppercase">
-                            Pending
-                        </span>
-                        {% elif item.order.status == "processing" %}
-                        <span class="px-3 py-1 bg-blue-50 text-brand-blue rounded-lg text-[10px] font-black uppercase">
-                            Processing
-                        </span>
-                        {% elif item.order.status == "shipped" %}
-                        <span class="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-[10px] font-black uppercase">
-                            Shipped
-                        </span>
-                        {% elif item.order.status == "cancelled" %}
-                        <span class="px-3 py-1 bg-red-50 text-red-500 rounded-lg text-[10px] font-black uppercase">
-                            Cancelled
-                        </span>
+                        {% if item.order.order_status == "PLACED" %}
+                        <span class="px-3 py-1 bg-yellow-50 text-yellow-600 rounded-lg text-[10px] font-black uppercase">Placed</span>
+                        {% elif item.order.order_status == "PROCESSING" %}
+                        <span class="px-3 py-1 bg-blue-50 text-brand-blue rounded-lg text-[10px] font-black uppercase">Processing</span>
+                        {% elif item.order.order_status == "SHIPPED" %}
+                        <span class="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-[10px] font-black uppercase">Shipped</span>
+                        {% elif item.order.order_status == "OUT_FOR_DELIVERY" %}
+                        <span class="px-3 py-1 bg-indigo-50 text-indigo-600 rounded-lg text-[10px] font-black uppercase">Out for Delivery</span>
+                        {% elif item.order.order_status == "DELIVERED" %}
+                        <span class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-lg text-[10px] font-black uppercase">Delivered</span>
+                        {% elif item.order.order_status == "CANCELLED" %}
+                        <span class="px-3 py-1 bg-red-50 text-red-500 rounded-lg text-[10px] font-black uppercase">Cancelled</span>
+                        {% elif item.order.order_status == "RETURN_REQUESTED" %}
+                        <span class="px-3 py-1 bg-orange-50 text-orange-600 rounded-lg text-[10px] font-black uppercase">Return Requested</span>
+                        {% else %}
+                        <span class="px-3 py-1 bg-slate-100 text-slate-600 rounded-lg text-[10px] font-black uppercase">{{ item.order.order_status|title }}</span>
                         {% endif %}
                     </td>
 
 <td class="px-8 py-5 text-center">
 <button 
-onclick="openOrderDetails('{{ item.order.order_id }}','{{ item.order.customer_name }}','{{ item.order.status }}')"
+onclick="openOrderDetails('{{ item.order.order_number }}','{{ item.order.user.username }}','{{ item.order.order_status|lower }}')"
 class="w-10 h-10 bg-slate-50 text-slate-400 hover:bg-brand-blue hover:text-white rounded-xl transition-all">
 <span class="material-icons-outlined text-xl">visibility</span>
 </button>
 </td>
-                        <td class="px-8 py-5 text-center">
-                            <button>
-                            onclick="openOrderDetails('{{ item.order.order_id }}','{{ item.order.customer_name }}','{{ item.order.status }}')"
-                            class="w-10 h-10 bg-slate-50 text-slate-400 hover:bg-brand-blue hover:text-white rounded-xl transition-all">
-                            <span class="material-icons-outlined text-xl">visibility</span>
-                        </button>
-                    </td>
+                       
                 </tr>
                 {% empty %}
                 <tr>
@@ -300,39 +237,74 @@ function closeOrderDetails() {
 
 
 function saveChanges(){
+    if (!currentOrderId) {
+        alert("Invalid order selected. Please open order details again.");
+        return;
+    }
 
     const statusSelect = document.getElementById("orderStatusSelect");
     const status = statusSelect.value;
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
 
     fetch("/update-order-status/" + currentOrderId + "/", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "X-CSRFToken": "{{ csrf_token }}"
+            "X-CSRFToken": getCookie("csrftoken")
         },
         body: JSON.stringify({
             status: status
         })
     })
-    .then(response => response.json())
-    .then(data => {
-
-        if(data.success){
-            location.reload();   
-        }else{
-            alert("Failed to update order");
+    .then(response => {
+        if (!response.ok) {
+            return response.text().then(body => {
+                throw new Error(`HTTP ${response.status}: ${body}`);
+            });
         }
 
+        const contentType = response.headers.get("Content-Type") || "";
+        if (!contentType.includes("application/json")) {
+            return response.text().then(body => {
+                throw new Error("Expected JSON response, got: " + body);
+            });
+        }
+
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            const msg = data.error || "Failed to update order";
+            alert(msg);
+        }
     })
     .catch(error => {
         console.error("Error:", error);
-        alert("Something went wrong");
+        alert("Something went wrong: " + error.message);
     });
-
 }
 
 </script>
 
 {% endblock %}
+
+
+
 
 

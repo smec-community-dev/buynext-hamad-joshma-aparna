@@ -4,151 +4,129 @@
 {% block header_title %}Financial Overview{% endblock %}
 
 {% block content %}
+
+<!-- TOP CARDS (UNCHANGED) -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-    <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden group">
-        <div class="absolute -right-4 -top-4 w-24 h-24 bg-red-50 rounded-full transition-transform group-hover:scale-110"></div>
-        <p class="relative z-10 text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2">Platform Fees</p>
-        <h3 class="relative z-10 text-3xl font-black text-slate-800">${{ total_commission|default:"0.00" }}</h3>
-        <p class="relative z-10 text-[10px] text-red-500 font-bold mt-2 uppercase tracking-tighter">Total Deducted</p>
+
+    <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+        <p class="text-[10px] font-black text-slate-400 uppercase mb-2">Platform Fees</p>
+        <h3 class="text-3xl font-black text-slate-800">
+            ${{ total_commission|default:"0.00" }}
+        </h3>
     </div>
 
-    <div class="bg-brand-blue p-8 rounded-[2.5rem] shadow-xl shadow-blue-100 relative overflow-hidden group">
-        <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full transition-transform group-hover:scale-110"></div>
-        <p class="relative z-10 text-[10px] font-black text-white/70 uppercase tracking-[0.15em] mb-2">Net Earnings</p>
-        <h3 class="relative z-10 text-3xl font-black text-white">${{ total_net|default:"0.00" }}</h3>
-        <p class="relative z-10 text-[10px] text-white/90 font-bold mt-2 uppercase tracking-tighter">After Commission</p>
+    <div class="bg-brand-blue p-8 rounded-[2.5rem] shadow-xl">
+        <p class="text-[10px] font-black text-white/70 uppercase mb-2">Net Earnings</p>
+        <h3 class="text-3xl font-black text-white">
+            ${{ total_net|default:"0.00" }}
+        </h3>
     </div>
 
-    <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden group">
-        <div class="absolute -right-4 -top-4 w-24 h-24 bg-orange-50 rounded-full transition-transform group-hover:scale-110"></div>
-        <p class="relative z-10 text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2">In Transit</p>
-        <h3 class="relative z-10 text-3xl font-black text-slate-800">${{ pending_settlement|default:"0.00" }}</h3>
-        <p class="relative z-10 text-[10px] text-brand-orange font-bold mt-2 uppercase tracking-tighter">Pending Settlement</p>
+    <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+        <p class="text-[10px] font-black text-slate-400 uppercase mb-2">In Transit</p>
+        <h3 class="text-3xl font-black text-slate-800">
+            ${{ pending_settlement|default:"0.00" }}
+        </h3>
     </div>
 
-    <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden group">
-        <div class="absolute -right-4 -top-4 w-24 h-24 bg-emerald-50 rounded-full transition-transform group-hover:scale-110"></div>
-        <p class="relative z-10 text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2">Paid to Bank</p>
-        <h3 class="relative z-10 text-3xl font-black text-slate-800">${{ settled_amount|default:"0.00" }}</h3>
-        <p class="relative z-10 text-[10px] text-emerald-500 font-bold mt-2 uppercase tracking-tighter">Settled Amount</p>
+    <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+        <p class="text-[10px] font-black text-slate-400 uppercase mb-2">Paid to Bank</p>
+        <h3 class="text-3xl font-black text-slate-800">
+            ${{ settled_amount|default:"0.00" }}
+        </h3>
     </div>
+
 </div>
 
+
+<!-- TRANSACTION TABLE -->
 <div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
+
     <div class="px-8 py-8 border-b border-slate-50 flex items-center justify-between">
         <h3 class="text-lg font-black text-slate-800">Transaction History</h3>
-        <button class="flex items-center gap-2 px-6 py-3 bg-slate-50 text-slate-600 rounded-2xl text-xs font-bold hover:bg-slate-100 transition-all">
-            <span class="material-icons-outlined text-sm">file_download</span>
-            Export CSV
-        </button>
     </div>
-    
+
     <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse">
-            <thead class="bg-slate-50/50 text-[10px] uppercase font-black text-slate-400 tracking-[0.15em]">
+
+            <thead class="bg-slate-50 text-[10px] uppercase font-black text-slate-400">
                 <tr>
-                    <th class="px-8 py-6">Order Item</th>
+                    <th class="px-8 py-6">Product</th>
                     <th class="px-8 py-6">Rate</th>
-                    <th class="px-8 py-6">Fee Amount</th>
+                    <th class="px-8 py-6">Fee</th>
                     <th class="px-8 py-6">Status</th>
-                    <th class="px-8 py-6">Settled Date</th>
+                    <th class="px-8 py-6">Date</th>
                 </tr>
             </thead>
+
             <tbody class="divide-y divide-slate-50">
+
+                {% for item in order_items %}
                 <tr class="hover:bg-slate-50/30 transition-all">
+
+                    <!-- Product -->
                     <td class="px-8 py-5">
                         <div class="flex flex-col">
-                            <span class="text-sm font-black text-slate-800">Studio Wireless Pro</span>
-                            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">ORD-9921-ITM</span>
+                            <span class="text-sm font-black text-slate-800">
+                                {{ item.product.name }}
+                            </span>
+                            <span class="text-[10px] text-slate-400 font-bold uppercase">
+                                {{ item.order.order_id }}
+                            </span>
                         </div>
                     </td>
+
+                    <!-- Commission Rate -->
                     <td class="px-8 py-5">
-                        <span class="text-xs font-bold text-slate-600">10%</span>
-                    </td>
-                    <td class="px-8 py-5">
-                        <span class="text-sm font-black text-red-500">-$20.00</span>
-                    </td>
-                    <td class="px-8 py-5">
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-600 rounded-lg">
-                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                            <span class="text-[10px] font-black uppercase tracking-wider">Settled</span>
+                        <span class="text-xs font-bold text-slate-600">
+                            {{ commission_rate }}%
                         </span>
                     </td>
-                    <td class="px-8 py-5">
-                        <span class="text-sm font-bold text-slate-700">28 Feb, 2026</span>
-                    </td>
-                </tr>
 
-                <tr class="hover:bg-slate-50/30 transition-all">
+                    <!-- Fee -->
                     <td class="px-8 py-5">
-                        <div class="flex flex-col">
-                            <span class="text-sm font-black text-slate-800">Minimalist Quartz</span>
-                            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">ORD-9840-ITM</span>
-                        </div>
-                    </td>
-                    <td class="px-8 py-5">
-                        <span class="text-xs font-bold text-slate-600">12%</span>
-                    </td>
-                    <td class="px-8 py-5">
-                        <span class="text-sm font-black text-red-500">-$17.40</span>
-                    </td>
-                    <td class="px-8 py-5">
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-orange-50 text-brand-orange rounded-lg">
-                            <span class="w-1.5 h-1.5 rounded-full bg-brand-orange animate-pulse"></span>
-                            <span class="text-[10px] font-black uppercase tracking-wider">Pending</span>
+                        <span class="text-sm font-black text-red-500">
+                            -${{ item.price|floatformat:2 }}
                         </span>
                     </td>
-                    <td class="px-8 py-5 text-slate-300 italic text-xs">
-                        Processing...
-                    </td>
-                </tr>
 
-                {% for commission in commissions %}
-                <tr class="hover:bg-slate-50/30 transition-all">
+                    <!-- Status -->
                     <td class="px-8 py-5">
-                        <div class="flex flex-col">
-                            <span class="text-sm font-black text-slate-800">{{ commission.order_item.product.name }}</span>
-                            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">ID: {{ commission.order_item.id }}</span>
-                        </div>
-                    </td>
-                    <td class="px-8 py-5">
-                        <span class="text-xs font-bold text-slate-600">{{ commission.commission_rate }}%</span>
-                    </td>
-                    <td class="px-8 py-5">
-                        <span class="text-sm font-black text-red-500">-${{ commission.commission_amount }}</span>
-                    </td>
-                    <td class="px-8 py-5">
-                        {% if commission.status == 'settled' %}
+                        {% if item.item_status == "completed" %}
                             <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-600 rounded-lg">
                                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                <span class="text-[10px] font-black uppercase tracking-wider">Settled</span>
+                                <span class="text-[10px] font-black uppercase">Settled</span>
                             </span>
                         {% else %}
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-orange-50 text-brand-orange rounded-lg">
-                                <span class="w-1.5 h-1.5 rounded-full bg-brand-orange animate-pulse"></span>
-                                <span class="text-[10px] font-black uppercase tracking-wider">Pending</span>
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-orange-50 text-orange-500 rounded-lg">
+                                <span class="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></span>
+                                <span class="text-[10px] font-black uppercase">Pending</span>
                             </span>
                         {% endif %}
                     </td>
+
+                    <!-- Date -->
                     <td class="px-8 py-5">
                         <span class="text-sm font-bold text-slate-700">
-                            {{ commission.settled_at|date:"d M, Y"|default:"--" }}
+                            {{ item.order.updated_at|date:"d M, Y" }}
                         </span>
+                    </td>
+
+                </tr>
+
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center py-10 text-slate-400 text-sm font-semibold">
+                        No transactions yet
                     </td>
                 </tr>
                 {% endfor %}
+
             </tbody>
+
         </table>
     </div>
+
 </div>
 
-<div class="mt-8 p-6 bg-slate-50 rounded-[2rem] border border-dashed border-slate-200 flex items-center gap-4">
-    <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-slate-400">
-        <span class="material-icons-outlined">info</span>
-    </div>
-    <p class="text-xs text-slate-500 leading-relaxed font-medium">
-        Settlements are processed every <span class="font-bold text-slate-700">Tuesday and Friday</span>. 
-        Earnings from orders delivered within the last 7 days are held in "Pending" to account for the customer return window.
-    </p>
-</div>
 {% endblock %}
