@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Choose Verification | BuyNext</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "brand-bg": "#FAF9EE",
+                        "brand-primary": "#556B2F",
+                        "brandBlue": "#2874F0",
+                        "text-main": "#1A1C19",
+                    },
+                    fontFamily: { "display": ["Plus Jakarta Sans", "sans-serif"] }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(85, 107, 47, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-brand-bg font-display text-text-main antialiased min-h-screen flex items-center justify-center p-6">
+
+    <div class="max-w-2xl w-full">
+        {% if messages %}
+        <div class="mb-6 space-y-2">
+            {% for message in messages %}
+            <div class="p-4 rounded-xl text-sm font-bold tracking-wide {% if message.tags == 'error' %}bg-red-50 text-red-600{% else %}bg-green-50 text-brand-primary{% endif %} shadow-sm">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="text-center mb-10">
+            <h1 class="text-3xl font-extrabold tracking-tight mb-2">Account Verification</h1>
+            <p class="text-gray-500">Welcome to BuyNext! Please choose how you'd like to receive your security code.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <form method="POST" action="{% url 'email_verification' %}" class="h-full">
+                {% csrf_token %}
+                <button type="submit" class="w-full h-full text-left group">
+                    <div class="glass-card rounded-[2.5rem] p-8 h-full flex flex-col items-center text-center transition-all duration-300 group-hover:scale-105 group-hover:shadow-2xl group-hover:border-brandBlue/20">
+                        <div class="w-16 h-16 rounded-2xl bg-brandBlue/10 flex items-center justify-center mb-6 group-hover:bg-brandBlue group-hover:text-white transition-colors">
+                            <span class="material-icons-outlined text-3xl">email</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Verify via Email</h3>
+                        <p class="text-sm text-gray-500 leading-relaxed">We will send a 6-digit OTP to your registered email address.</p>
+                        <div class="mt-6 text-brandBlue text-xs font-black uppercase tracking-widest flex items-center gap-2">
+                            Select Option <span class="material-icons-outlined text-sm">arrow_forward</span>
+                        </div>
+                    </div>
+                </button>
+            </form>
+
+            <form method="POST" action="{% url 'phone_verification' %}" class="h-full">
+                {% csrf_token %}
+                <button type="submit" class="w-full h-full text-left group">
+                    <div class="glass-card rounded-[2.5rem] p-8 h-full flex flex-col items-center text-center transition-all duration-300 group-hover:scale-105 group-hover:shadow-2xl group-hover:border-brand-primary/20">
+                        <div class="w-16 h-16 rounded-2xl bg-brand-primary/10 flex items-center justify-center mb-6 group-hover:bg-brand-primary group-hover:text-white transition-colors">
+                            <span class="material-icons-outlined text-3xl">smartphone</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Verify via Phone</h3>
+                        <p class="text-sm text-gray-500 leading-relaxed">Receive a secure OTP via SMS to your mobile number.</p>
+                        <div class="mt-6 text-brand-primary text-xs font-black uppercase tracking-widest flex items-center gap-2">
+                            Select Option <span class="material-icons-outlined text-sm">arrow_forward</span>
+                        </div>
+                    </div>
+                </button>
+            </form>
+        </div>
+        
+        <div class="mt-10 text-center">
+            <a href="{% url 'login' %}" class="text-sm font-bold text-gray-400 hover:text-brand-primary transition-colors">
+                Back to Login
+            </a>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,4 +1,10 @@
 from django.shortcuts import render,redirect,get_object_or_404
+from django.core.mail import send_mail
+from twilio.rest import Client
+from django.conf import settings
+from django.utils import timezone
+from datetime import timedelta
+import random
 from .models import *
 from seller.models import *
 from customer.models import * 
@@ -12,21 +18,30 @@ from .decorator import _dashboard_for_user,customer_required,admin_not_required
 # Create your views here.
 
 def login_view(request):
-    if request.method=="POST":
-        username_or_email=request.POST.get("username_or_email")
-        password=request.POST.get("password")
+    if request.method == "POST":
+        username_or_email = request.POST.get("username_or_email")
+        password = request.POST.get("password")
         try:
-            user_obj=User.objects.get(email=username_or_email)
-            username=user_obj.username
+            user_obj = User.objects.get(email=username_or_email)
+            username = user_obj.username
         except User.DoesNotExist:
-            username=username_or_email
-        user = authenticate(request,username=username,password=password)
+            username = username_or_email
+
+        user = authenticate(request, username=username, password=password)
+
         if user is not None:
-            login(request,user)
+            if not (user.is_email_verified or user.is_phone_verified):
+                messages.error(request, "Please verify your email or phone before login.")
+                request.session["verify_user"] = user.id
+                return redirect("choose_verification")
+
+            login(request, user)
             return redirect(_dashboard_for_user(request.user))
+
         else:
             messages.error(request, "Invalid username or password")
-    return render(request,"core/login.html")
+
+    return render(request, "core/login.html")
 def register_view(request):
     if request.method=="POST":
         username=request.POST.get("username")
@@ -54,11 +69,197 @@ def register_view(request):
         )
         user.is_active=True
         user.save()
-        login(request, user)
-        messages.success(request, "Registration successful! please login.")
-        return redirect("login")
-        
+        request.session["verify_user"]=user.id
+        return redirect("choose_verification")
     return render(request,"core/register.html")
+def choose_verification(request):
+    user_id = request.session.get("verify_user")
+
+    if not user_id:
+        return redirect("register")
+
+    if request.method == "POST":
+
+        method = request.POST.get("method")
+
+        if method == "email":
+            return redirect("email_verification")
+
+        if method == "phone":
+            return redirect("phone_verification")
+
+    return render(request, "core/choose_verification.html")
+
+
+def email_verification(request):
+
+    user_id = request.session.get("verify_user")
+
+    if user_id:
+        user = User.objects.get(id=user_id)
+    else:
+        if request.user.is_authenticated:
+            user = request.user
+        else:
+            return redirect("login")
+
+    last_otp = OTPVerification.objects.filter(user=user).last()
+
+    if last_otp and timezone.now() < last_otp.created_at + timedelta(seconds=30):
+        messages.info(request, "Please wait before requesting another OTP")
+        return redirect("verify_otp")
+
+    otp = str(random.randint(100000, 999999))
+
+    OTPVerification.objects.filter(user=user).delete()
+
+    OTPVerification.objects.create(
+        user=user,
+        otp=otp,
+        method="email"
+    )
+
+    send_mail(
+        "BuyNext Verification OTP",
+        f"Your OTP is {otp}",
+        "noreply@buynext.com",
+        [user.email]
+    )
+
+    messages.success(request, "OTP sent to your email")
+
+    return redirect("verify_otp")
+
+def phone_verification(request):
+
+    user_id = request.session.get("verify_user")
+    if user_id:
+        user = User.objects.get(id=user_id)
+    else:
+        if request.user.is_authenticated:
+            user = request.user
+        else:
+            return redirect("login")
+
+    last_otp = OTPVerification.objects.filter(user=user).last()
+
+    if last_otp and timezone.now() < last_otp.created_at + timedelta(seconds=30):
+        messages.info(request, "Please wait before requesting another OTP")
+        return redirect("verify_otp")
+
+    otp = str(random.randint(100000, 999999))
+
+    OTPVerification.objects.filter(user=user).delete()
+
+    OTPVerification.objects.create(
+        user=user,
+        otp=otp,
+        method="phone"
+    )
+
+    phone = user.phone_number
+
+    if not phone.startswith("+"):
+        phone = f"+91{phone}"
+
+    try:
+        client = Client(
+            settings.TWILIO_ACCOUNT_SID,
+            settings.TWILIO_AUTH_TOKEN
+        )
+
+        message = client.messages.create(
+            body=f"Your BuyNext OTP is {otp}",
+            from_=settings.TWILIO_PHONE_NUMBER,
+            to=phone
+        )
+
+        print("Twilio SID:", message.sid)
+
+        messages.success(request, "OTP sent to your phone")
+
+    except Exception as e:
+        print("Twilio Error:", e)
+        messages.error(request, "Failed to send OTP")
+
+    return redirect("verify_otp")
+
+def resend_otp(request):
+
+    user_id = request.session.get("verify_user")
+
+    if user_id:
+        user = User.objects.get(id=user_id)
+    else:
+        if request.user.is_authenticated:
+            user = request.user
+        else:
+            return redirect("login")
+
+    last_otp = OTPVerification.objects.filter(user=user).last()
+
+    if not last_otp:
+        return redirect("choose_verification")
+
+    if last_otp.method == "email":
+        return redirect("email_verification")
+
+    elif last_otp.method == "phone":
+        return redirect("phone_verification")
+
+    return redirect("verify_otp")
+
+
+def verify_otp(request):
+
+    user_id = request.session.get("verify_user")
+
+    if user_id:
+        user = User.objects.get(id=user_id)
+    else:
+        if request.user.is_authenticated:
+            user = request.user
+        else:
+            return redirect("login")
+
+    if request.method == "POST":
+
+        otp = request.POST.get("otp")
+
+        record = OTPVerification.objects.filter(
+            user=user,
+            otp=otp
+        ).last()
+
+        if not record:
+            messages.error(request, "Invalid OTP")
+            return redirect("verify_otp")
+
+        if record.is_expired():
+            record.delete()
+            messages.error(request, "OTP expired. Request new OTP.")
+            return redirect("choose_verification")
+        if record.method == "email":
+            user.is_email_verified = True
+
+        elif record.method == "phone":
+            user.is_phone_verified = True
+
+        user.save()
+        record.delete()
+        if request.session.get("verify_user"):
+            request.session.pop("verify_user", None)
+            messages.success(request, "Account verified. Please login.")
+            return redirect("login")
+        else:
+            messages.success(request, "Verification successful.")
+            return redirect("profile")
+
+    return render(request, "core/verify_otp.html")
+
+
+
+
 @admin_not_required
 def home_view(request):
     show_all = request.GET.get('show_all', False)

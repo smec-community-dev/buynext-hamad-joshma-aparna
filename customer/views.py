@@ -10,26 +10,50 @@ from core.decorator import customer_required
 # Create your views here.
 @login_required
 def user_profile_view(request):
-    user_obj =request.user
-    if request.method=="POST":
-        user_obj.first_name=request.POST.get("firstname")
-        user_obj.last_name=request.POST.get("lastname")
-        pro_image=request.FILES.get("profile_image")
+    user_obj = request.user
 
+    if request.method == "POST":
+
+        user_obj.first_name = request.POST.get("firstname")
+        user_obj.last_name = request.POST.get("lastname")
+
+        new_email = request.POST.get("email")
+        if new_email and new_email != user_obj.email:
+            if User.objects.filter(email=new_email).exclude(id=user_obj.id).exists():
+                messages.error(request, "Email already exists")
+                return redirect("profile")
+
+            user_obj.email = new_email
+            user_obj.is_email_verified = False  
+
+        new_phone = request.POST.get("phone_number")
+        if new_phone and new_phone != user_obj.phone_number:
+            if User.objects.filter(phone_number=new_phone).exclude(id=user_obj.id).exists():
+                messages.error(request, "Phone number already exists")
+                return redirect("profile")
+
+            user_obj.phone_number = new_phone
+            user_obj.is_phone_verified = False  
+
+        pro_image = request.FILES.get("profile_image")
         if pro_image:
             if user_obj.profile_image:
                 user_obj.profile_image.delete(save=False)
-            user_obj.profile_image=pro_image
+            user_obj.profile_image = pro_image
+
         user_obj.save()
-        messages.success(request,"Profile Updated Successfully.")
+
+        messages.success(request, "Profile updated. Please verify updated details if changed.")
         return redirect("profile")
-    addresses =Address.objects.filter(user=request.user)
-    context={
-        "addresses":addresses,
-        "user":user_obj,
-        }
-    
-    return render(request,"customer/profile.html",context)
+
+    addresses = Address.objects.filter(user=request.user)
+
+    context = {
+        "addresses": addresses,
+        "user": user_obj,
+    }
+
+    return render(request, "customer/profile.html", context)
 @customer_required
 def set_default_address(request,address_id):
     address = get_object_or_404(Address, id=address_id, user=request.user)

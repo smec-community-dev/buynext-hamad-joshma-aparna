@@ -114,7 +114,7 @@
                 </span>
             </a>
 
-            {% if request.user.is_authenticated %}
+            
             <div class="hidden lg:flex items-center gap-8 flex-shrink-0">
                 <a href="{% url 'home' %}" id="homeBtn"
                     class="home-btn text-xs font-bold uppercase tracking-widest text-brand-primary hover:opacity-70 transition-all">
@@ -131,7 +131,7 @@
                     Exclusive Deals
                 </a>
             </div>
-            {% endif %}
+           
 
             <div class="flex-1 max-w-md relative hidden md:block">
                 <input type="text" placeholder="Search brands..."

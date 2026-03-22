@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Verify OTP | BuyNext</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "brand-bg": "#FAF9EE",
+                        "brand-primary": "#556B2F",
+                        "brandBlue": "#2874F0",
+                        "text-main": "#1A1C19",
+                    },
+                    fontFamily: { "display": ["Plus Jakarta Sans", "sans-serif"] }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .otp-input:focus {
+            letter-spacing: 0.75rem;
+            padding-left: 0.75rem;
+        }
+    </style>
+</head>
+
+<body class="bg-brand-bg font-display text-text-main antialiased min-h-screen flex items-center justify-center p-6">
+
+    <div class="max-w-md w-full">
+        {% if messages %}
+        <div class="mb-6 space-y-2">
+            {% for message in messages %}
+            <div
+                class="p-4 rounded-xl text-sm font-bold tracking-wide {% if message.tags == 'error' %}bg-red-50 text-red-600{% else %}bg-green-50 text-brand-primary{% endif %} shadow-sm">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="glass-card rounded-[3rem] p-10 lg:p-12 shadow-2xl border-white relative overflow-hidden">
+            <div class="absolute -top-10 -right-10 w-32 h-32 bg-brandBlue/5 rounded-full"></div>
+
+            <div class="text-center relative z-10">
+                <div
+                    class="w-20 h-20 rounded-3xl bg-brand-primary text-white flex items-center justify-center mx-auto mb-8 shadow-lg shadow-brand-primary/20">
+                    <span class="material-icons-outlined text-4xl">verified_user</span>
+                </div>
+
+                <h1 class="text-3xl font-extrabold tracking-tight mb-3">Verify Your Account</h1>
+                <p class="text-sm text-gray-500 mb-10 px-4">
+                    Enter the 6-digit OTP sent to your device to secure your account.
+                </p>
+
+                <form method="POST" class="space-y-8">
+                    {% csrf_token %}
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">One-Time
+                            Password</label>
+                        <input type="text" name="otp" maxlength="6" required placeholder="······"
+                            class="otp-input w-full bg-brand-bg/50 border-none rounded-2xl py-5 text-center text-3xl font-extrabold tracking-[0.5rem] focus:ring-4 focus:ring-brandBlue/10 transition-all placeholder-gray-300">
+                    </div>
+
+                    <button type="submit"
+                        class="w-full bg-brandBlue text-white py-5 rounded-[1.5rem] font-bold text-xs uppercase tracking-widest hover:bg-blue-700 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-blue-200">
+                        Verify OTP
+                    </button>
+                </form>
+
+                <div class="mt-10 pt-8 border-t border-gray-100">
+                    <p class="text-sm text-gray-400 font-medium">
+                        Didn't receive the code? <br class="sm:hidden">
+                        <a href="{% url 'resend_otp' %}" class="text-brandBlue hover:underline font-bold ml-1">Resend
+                            OTP</a>
+                    </p>
+                </div>
+                <div class="mt-6 text-center">
+
+                    {% if request.user.is_authenticated %}
+                    <a href="{% url 'profile' %}"
+                        class="inline-block bg-brandBlue text-white px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-blue-700 hover:scale-105 transition-all shadow-lg shadow-blue-200">
+                        ← Back to Profile
+                    </a>
+                    {% else %}
+                    <a href="{% url 'choose_verification' %}"
+                        class="inline-block bg-brandBlue text-white px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-blue-700 hover:scale-105 transition-all shadow-lg shadow-blue-200">
+                        ← Choose Another Method
+                    </a>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+
+        <p class="mt-8 text-center text-xs text-gray-400 font-bold uppercase tracking-widest">
+            BuyNext Secure Verification
+        </p>
+    </div>
+
+</body>
+
+</html>
