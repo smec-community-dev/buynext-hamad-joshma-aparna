@@ -1,0 +1,298 @@
+{% extends "core/base.html" %}
+
+{% block title %} New Arrivals | BuyNext {% endblock %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+    body { font-family: 'Inter', sans-serif; }
+    .product-card { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+    @media (min-width: 1024px) {
+        .product-card:hover { transform: translateY(-5px); }
+        .product-card:hover .hover-image { transform: scale(1.08); }
+    }
+    .glass-effect { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+    .custom-scrollbar::-webkit-scrollbar { height: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+    
+    /* Mobile Filter Drawer Animation */
+    @media (max-width: 1023px) {
+        #filterSidebar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            top: 0;
+            z-index: 50;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #filterSidebar.active { transform: translateY(0); }
+    }
+</style>
+
+<div class="bg-[#f5f5f7] min-h-screen pb-24 md:pb-20">
+    <div class="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-30 py-4 md:py-6 mb-4 md:mb-8">
+        <div class="container mx-auto px-4 md:px-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h1 class="text-xl md:text-3xl font-[900] tracking-tight text-black">NEW ARRIVALS</h1>
+                    <p class="text-gray-500 text-[10px] md:text-xs font-semibold uppercase tracking-[0.2em] mt-1">The Latest Collections • 2026</p>
+                </div>
+
+                <div class="flex gap-2 overflow-x-auto pb-2 md:pb-0 custom-scrollbar no-scrollbar">
+                    <a href="?sort=newest" class="px-4 py-2 md:px-5 md:py-2.5 rounded-full border border-gray-200 bg-white text-[10px] md:text-[11px] font-bold text-gray-700 hover:border-black hover:bg-black hover:text-white transition-all shadow-sm whitespace-nowrap">🔥 NEWEST DROPS</a>
+                    <a href="?rating=4" class="px-4 py-2 md:px-5 md:py-2.5 rounded-full border border-gray-200 bg-white text-[10px] md:text-[11px] font-bold text-gray-700 hover:border-black hover:bg-black hover:text-white transition-all shadow-sm whitespace-nowrap">⭐ TOP RATED</a>
+                    <a href="?in_stock=true" class="px-4 py-2 md:px-5 md:py-2.5 rounded-full border border-gray-200 bg-white text-[10px] md:text-[11px] font-bold text-gray-700 hover:border-black hover:bg-black hover:text-white transition-all shadow-sm whitespace-nowrap">📦 READY TO SHIP</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-4 md:px-6">
+        <div class="flex flex-col lg:flex-row gap-6 md:gap-10">
+
+            <aside id="filterSidebar" class="w-full lg:w-72 flex-shrink-0">
+                <div class="bg-black/20 absolute inset-0 lg:hidden" onclick="toggleFilters()"></div>
+                <form method="GET" class="bg-white h-full lg:h-auto overflow-y-auto lg:overflow-visible p-6 md:p-8 rounded-t-[2.5rem] lg:rounded-[2rem] shadow-2xl lg:shadow-[0_10px_40px_rgba(0,0,0,0.03)] border border-gray-200 sticky top-28 z-10">
+                    <div class="flex items-center justify-between mb-8">
+                        <h3 class="text-xs font-[800] uppercase tracking-widest text-black">Filter Suite</h3>
+                        <button type="button" onclick="toggleFilters()" class="lg:hidden p-2">
+                            <span class="material-icons text-gray-400">close</span>
+                        </button>
+                        <span class="hidden lg:block material-icons-outlined text-gray-400">tune</span>
+                    </div>
+
+                    <div class="mb-8">
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 block">Perspective</label>
+                        <select name="sort" onchange="this.form.submit()"
+                            class="w-full bg-gray-50 border border-gray-100 rounded-2xl text-xs font-bold p-4 outline-none focus:ring-2 focus:ring-black transition-all appearance-none cursor-pointer">
+                            <option value="newest" {% if current_sort == 'newest' %}selected{% endif %}>Latest Arrivals</option>
+                            <option value="price_low" {% if current_sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+                            <option value="price_high" {% if current_sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+                            <option value="rating" {% if current_sort == 'rating' %}selected{% endif %}>Highest Rated</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-10">
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4 block">Categories</label>
+                        <div class="space-y-3">
+                            {% for cat in categories %}
+                            <label class="flex items-center group cursor-pointer">
+                                <input type="radio" name="category" value="{{ cat.slug }}" class="hidden" onchange="this.form.submit()" {% if request.GET.category == cat.slug %}checked{% endif %}>
+                                <div class="w-5 h-5 rounded-full border-2 border-gray-200 flex items-center justify-center group-hover:border-black transition-all mr-3 {% if request.GET.category == cat.slug %}border-black{% endif %}">
+                                    <div class="w-2.5 h-2.5 rounded-full bg-black scale-0 transition-transform {% if request.GET.category == cat.slug %}scale-100{% endif %}"></div>
+                                </div>
+                                <span class="text-xs font-bold {% if request.GET.category == cat.slug %}text-black{% else %}text-gray-500{% endif %} group-hover:text-black transition-colors">{{ cat.name }}</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <button type="submit"
+                        class="w-full bg-black text-white py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-800 transition-all shadow-xl shadow-gray-200">
+                        Update Results
+                    </button>
+                </form>
+            </aside>
+
+            <main class="flex-1">
+                {% if products %}
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-8">
+                    {% for product in products %}
+                    <div class="product-card group relative bg-white rounded-[2rem] md:rounded-[2.5rem] p-4 md:p-5 shadow-[0_4px_20px_rgba(0,0,0,0.04)] border border-gray-200">
+                        
+                        <div class="absolute top-4 left-4 md:top-6 md:left-6 z-20 flex flex-col gap-2">
+                            {% if product.created_at > seven_days_ago %}
+                            <span class="bg-black text-white text-[8px] md:text-[9px] font-bold uppercase px-2 py-1 md:px-3 md:py-1.5 rounded-full shadow-lg">New</span>
+                            {% endif %}
+                            {% if product.total_stock < 10 and product.total_stock > 0 %}
+                            <span class="glass-effect text-orange-600 text-[8px] md:text-[9px] font-bold uppercase px-2 py-1 md:px-3 md:py-1.5 rounded-full border border-orange-100 shadow-sm">
+                                Limited: {{ product.total_stock }}
+                            </span>
+                            {% endif %}
+                        </div>
+
+                        <button onclick="event.preventDefault(); event.stopPropagation(); toggleWishlistNew(event, this)" 
+                            class="wishlist-btn absolute top-4 right-4 md:top-6 md:right-6 w-9 h-9 md:w-11 md:h-11 glass-effect border border-gray-100 rounded-full flex items-center justify-center shadow-sm z-20 hover:scale-110 active:scale-95 transition-all
+                            {% if product.is_in_wishlist %}text-red-500{% else %}text-gray-400{% endif %}" 
+                            {% if product.variant_id %}data-variant-id="{{ product.variant_id }}"{% endif %}>
+                            <span class="material-icons text-base md:text-lg">
+                                {% if product.is_in_wishlist %}favorite{% else %}favorite_border{% endif %}
+                            </span>
+                        </button>
+
+                        <a href="{% url 'product_details' product.slug %}" class="block">
+                            <div class="relative aspect-square mb-4 md:mb-6 flex items-center justify-center rounded-[1.5rem] md:rounded-[2rem] bg-[#f9f9fb] border border-gray-50 overflow-hidden">
+                                {% with product.gallery.first as gallery_item %}
+                                <img src="{{ gallery_item.image.url }}"
+                                    class="hover-image max-w-[85%] max-h-[85%] object-contain transition-transform duration-700 ease-out"
+                                    alt="{{ product.name }}">
+                                {% endwith %}
+                            </div>
+
+                            <div class="px-1 md:px-2">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-[9px] md:text-[10px] text-gray-500 font-[800] uppercase tracking-widest">{{ product.subcategory.name }}</span>
+                                    <div class="flex items-center gap-1">
+                                        <span class="material-icons text-orange-400 text-[12px] md:text-[14px]">star</span>
+                                        <span class="text-[10px] md:text-[11px] font-black text-black">{{ product.avg_rating }}</span>
+                                    </div>
+                                </div>
+                                 
+                                <h3 class="text-xs md:text-sm font-bold text-gray-900 line-clamp-1 mb-2 md:mb-4 group-hover:text-black transition-colors">
+                                    {{ product.name }}
+                                </h3>
+
+                                <div class="flex items-end justify-between">
+                                    <div class="flex flex-col">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-lg md:text-xl font-[900] text-black">₹{{ product.min_selling_price }}</span>
+                                            <span class="text-[10px] md:text-xs text-gray-400 line-through font-medium">₹{{ product.min_mrp }}</span>
+                                        </div>
+                                        <span class="text-[9px] md:text-[10px] font-black text-emerald-600 uppercase tracking-tight mt-0.5 md:mt-1">
+                                            Save ₹{{ product.save_amount }} ({{ product.discount_percent }}% Off)
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="hidden md:flex w-10 h-10 rounded-full bg-black text-white items-center justify-center opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-4 transition-all duration-300 shadow-xl">
+                                        <span class="material-icons text-sm">arrow_forward</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="mt-12 md:mt-20 flex justify-center pb-10">
+                    <nav class="flex items-center gap-4 bg-white px-5 py-2.5 rounded-full shadow-sm border border-gray-200">
+                        {% if products.has_previous %}
+                        <a href="?page={{ products.previous_page_number }}" class="hover:text-black transition-colors">
+                            <span class="material-icons text-lg align-middle">west</span>
+                        </a>
+                        {% endif %}
+
+                        <span class="text-[10px] md:text-[11px] font-black text-gray-900 uppercase tracking-widest">
+                            {{ products.number }} / {{ products.paginator.num_pages }}
+                        </span>
+
+                        {% if products.has_next %}
+                        <a href="?page={{ products.next_page_number }}" class="hover:text-black transition-colors">
+                            <span class="material-icons text-lg align-middle">east</span>
+                        </a>
+                        {% endif %}
+                    </nav>
+                </div>
+
+                {% else %}
+                <div class="bg-white rounded-[2rem] md:rounded-[3rem] p-12 md:p-24 text-center border border-gray-200 shadow-sm">
+                    <div class="w-20 h-20 md:w-24 md:h-24 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-8">
+                        <span class="material-icons-outlined text-4xl md:text-5xl text-gray-200">auto_awesome</span>
+                    </div>
+                    <h2 class="text-xl md:text-2xl font-black text-black tracking-tight">STAY TUNED</h2>
+                    <p class="text-gray-500 text-xs md:text-sm mt-3 max-w-sm mx-auto leading-relaxed">Our designers are currently curating the next drop of premium arrivals.</p>
+                </div>
+                {% endif %}
+            </main>
+        </div>
+    </div>
+</div>
+
+<div class="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] z-40">
+    <div class="bg-black/90 backdrop-blur-xl border border-white/10 rounded-2xl flex items-center justify-center p-1 shadow-2xl">
+        <button onclick="toggleFilters()" class="flex-1 flex items-center justify-center gap-2 py-3 text-white">
+            <span class="material-icons text-sm">tune</span>
+            <span class="text-[11px] font-black uppercase tracking-widest">Filter & Sort</span>
+        </button>
+    </div>
+</div>
+
+<form style="display:none;">{% csrf_token %}</form>
+
+<script>
+function toggleFilters() {
+    const sidebar = document.getElementById('filterSidebar');
+    sidebar.classList.toggle('active');
+    document.body.classList.toggle('overflow-hidden');
+}
+
+function toggleWishlistNew(event, button) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (button.disabled) return;
+    button.disabled = true;
+
+    const variantId = button.dataset.variantId;
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    const icon = button.querySelector('span.material-icons');
+
+    if (!variantId) {
+        showWishlistToastNew("Variant not available");
+        button.disabled = false;
+        return;
+    }
+
+    fetch(`/wishlist/add/${variantId}/`, {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": csrfToken,
+            "X-Requested-With": "XMLHttpRequest"
+        }
+    })
+    .then(response => {
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+            window.location.href = "/login/";
+            return;
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (!data) return;
+        if (data.status === "login_required") {
+            window.location.href = data.redirect_url;
+            return;
+        }
+
+       if (data.status === "added") {
+            icon.textContent = 'favorite';
+            button.classList.remove('text-gray-400');
+            button.classList.add('text-red-500');
+            showWishlistToastNew("Added to Wishlist ❤️");
+        } else if (data.status === "removed") {
+            icon.textContent = 'favorite_border';
+            button.classList.remove('text-red-500');
+            button.classList.add('text-gray-400');
+            showWishlistToastNew("Removed from Wishlist");
+        }
+    })
+   .catch(() => showWishlistToastNew("Something went wrong"))
+    .finally(() => button.disabled = false);
+}
+
+function showWishlistToastNew(message) {
+    let toast = document.getElementById("wishlist-toast-new");
+
+    if (!toast) {
+        toast = document.createElement("div");
+        toast.id = "wishlist-toast-new";
+        toast.className = "fixed top-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-6 py-3 rounded shadow-2xl flex items-center gap-3 opacity-0 translate-y-[-20px] pointer-events-none transition-all duration-300 z-[100] w-[80%] md:w-auto text-center justify-center";
+        toast.innerHTML = `<span class="material-icons text-green-400">check_circle</span><span id="wishlist-msg-new" class="text-sm font-bold"></span>`;
+        document.body.appendChild(toast);
+    }
+
+    document.getElementById("wishlist-msg-new").textContent = message;
+    toast.classList.remove("opacity-0", "translate-y-[-20px]", "pointer-events-none");
+    toast.classList.add("opacity-100", "translate-y-0");
+
+    setTimeout(() => {
+        toast.classList.add("opacity-0", "translate-y-[-20px]", "pointer-events-none");
+        toast.classList.remove("opacity-100", "translate-y-0");
+    }, 2500);
+}
+</script>
+{% endblock %}

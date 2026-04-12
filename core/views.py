@@ -13,13 +13,14 @@ from django.db.models import Avg, Prefetch,Min,Max,Value,Count,Case,When,Q
 from django.db.models.functions import Coalesce
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
-from django.db.models import Q
+from django.db.models import Q,F
 from django.urls import reverse
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.utils.html import mark_safe
 import re
+from .trending import get_trending_products
 from .decorator import _dashboard_for_user,admin_not_required
 # Create your views here.
 
@@ -514,6 +515,10 @@ def subcategory_view(request, category_slug):
         stock_quantity=Max("variants__stock_quantity"),
         average_rating=Coalesce(Avg("reviews__rating", filter=Q(reviews__is_approved=True)), Value(0.0))
     ,save_price=Min("variants__mrp") - Min("variants__selling_price"))
+    rating_filter = request.GET.get("rating")
+   
+    if rating_filter:
+        products = products.filter(average_rating__gte=float(rating_filter))
 
    
     if sort == "price_low_high":
@@ -527,7 +532,12 @@ def subcategory_view(request, category_slug):
 
  
     for product in products:
-        variant = product.variants.first()
+        variant = product.variants.filter(is_active=True, stock_quantity__gt=0).first()
+
+        if not variant:
+            variant = product.variants.filter(is_active=True).first()
+        product.variant_id = variant.id if variant else None
+        
         gallery = product.gallery.first()
 
         if gallery:
@@ -547,7 +557,7 @@ def subcategory_view(request, category_slug):
             ).exists()
         else:
             product.is_in_wishlist = False
-        # Calculate review count for approved reviews only
+      
         product.review_count = Review.objects.filter(
             product=product,
             is_approved=True
@@ -620,7 +630,6 @@ def product_detail(request, slug):
 
     review_count = reviews.count()
 
-    # Check if current user has reviewed this product
     user_has_reviewed = False
     user_review = None
     if request.user.is_authenticated:
@@ -640,3 +649,176 @@ def product_detail(request, slug):
     }
 
     return render(request, "core/product_detail.html", context)
+
+
+
+@admin_not_required
+def new_arrivals(request):
+
+    sort = request.GET.get("sort", "newest")
+    category_slug = request.GET.get("category")
+    rating_filter = request.GET.get("rating")
+    in_stock = request.GET.get("in_stock")
+
+    products = Product.objects.filter(
+        is_active=True,
+        approval_status="APPROVED"
+    )
+
+    if category_slug:
+        products = products.filter(subcategory__category__slug=category_slug)
+
+    products = products.annotate(
+        min_selling_price=Min("variants__selling_price"),
+        min_mrp=Min("variants__mrp"),
+        total_stock=Max("variants__stock_quantity"),
+        avg_rating=Coalesce(
+            Avg("reviews__rating", filter=Q(reviews__is_approved=True)),
+            Value(0.0)
+        ),
+        save_amount=F("min_mrp") - F("min_selling_price")
+    )
+    if rating_filter:
+        products = products.filter(avg_rating__gte=float(rating_filter))
+
+    if in_stock:
+        products = products.filter(total_stock__gt=0)
+
+    if sort == "price_low":
+        products = products.order_by("min_selling_price")
+    elif sort == "price_high":
+        products = products.order_by("-min_selling_price")
+    elif sort == "rating":
+        products = products.order_by("-avg_rating")
+    else:
+        products = products.order_by("-created_at")  
+
+    products = products.select_related(
+        "seller", "subcategory"
+    ).prefetch_related(
+        "variants", "gallery"
+    ).distinct()
+
+    for product in products:
+        variant = product.variants.first()
+
+        product.variant_id = variant.id if variant else None
+        product.total_stock = variant.stock_quantity if variant else 0
+
+
+        if product.min_mrp and product.min_selling_price and product.min_mrp > 0:
+            product.discount_percent = round(
+        ((product.min_mrp - product.min_selling_price) / product.min_mrp) * 100
+    )
+        else:
+           product.discount_percent = 0
+
+        if request.user.is_authenticated and variant:
+            product.is_in_wishlist = WishlistItem.objects.filter(
+                wishlist__user=request.user,
+                variant=variant
+            ).exists()
+        else:
+            product.is_in_wishlist = False
+
+    seven_days_ago = timezone.now() - timedelta(days=7)
+
+    paginator = Paginator(products, 12)
+    page_number = request.GET.get("page")
+    products = paginator.get_page(page_number)
+
+    context = {
+        "products": products,
+        "categories": Category.objects.filter(is_active=True),
+        "current_sort": sort,
+        "seven_days_ago": seven_days_ago,
+         "is_newest_active": (sort == "newest" and not in_stock),
+    }
+
+    return render(request, "core/new_arrivals.html", context)
+
+@admin_not_required
+def trending_products_page(request):
+
+    trending_raw = get_trending_products(days=7, limit=50)
+
+    trending_products = []
+
+    if trending_raw:
+
+        product_ids = [item['variant__product'] for item in trending_raw]
+        trending_variants = ProductVariant.objects.filter(
+            product__id__in=product_ids,
+            is_active=True,
+            product__is_active=True,
+            product__approval_status="APPROVED",
+            stock_quantity__gt=0
+        ).select_related(
+            'product__seller',
+            'product__subcategory',
+        ).annotate(
+            avg_rating=Coalesce(
+                Avg(
+                    "product__reviews__rating",
+                    filter=Q(product__reviews__is_approved=True)
+                ),
+                Value(0.0)
+            )
+        ).prefetch_related(
+            'images'
+        )
+        wishlist_ids = set()
+        if request.user.is_authenticated:
+            wishlist_ids = set(
+                WishlistItem.objects.filter(
+                    wishlist__user=request.user
+                ).values_list("variant_id", flat=True)
+            )
+        variant_map = {}
+        for v in trending_variants:
+            if v.product.id not in variant_map:
+                variant_map[v.product.id] = v
+        ordered_variants = [
+            variant_map[p_id]
+            for p_id in product_ids
+            if p_id in variant_map
+        ]
+
+
+        for variant in ordered_variants:
+
+
+            primary_img = variant.images.filter(is_primary=True).first()
+            variant.display_image = primary_img if primary_img else variant.images.first()
+
+            variant.discount = variant.mrp - variant.selling_price
+
+            variant.is_in_wishlist = variant.id in wishlist_ids
+
+            variant.avg_rating = round(variant.avg_rating, 1)
+
+            for item in trending_raw:
+                if item['variant__product'] == variant.product.id:
+                    variant.trending_rank = item['order_count']
+                    break
+
+            trending_products.append(variant)
+
+    sort = request.GET.get('sort', 'trending')
+
+    if sort == 'price_low':
+        trending_products.sort(key=lambda v: float(v.selling_price))
+
+    elif sort == 'price_high':
+        trending_products.sort(key=lambda v: float(v.selling_price), reverse=True)
+
+    paginator = Paginator(trending_products, 12)
+    page = request.GET.get('page')
+    trending_products_page_obj = paginator.get_page(page)
+
+    return render(request, "core/trending.html", {
+        'trending_products': trending_products_page_obj,
+        'sort': sort,
+        'total_trending': len(trending_products),
+        'live_shoppers': 8200,
+    })

@@ -1,97 +1,131 @@
 {% extends "core/base.html" %}
 
 {% block content %}
-<div class="bg-[#f1f3f6] min-h-screen py-8 font-sans">
-    <div class="container mx-auto px-4 max-w-5xl">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-        <div class="mb-6">
-            <h1 class="text-xl font-bold text-slate-900 uppercase tracking-tight">Order Status</h1>
+<style>
+    body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; -webkit-tap-highlight-color: transparent; }
+    
+    .premium-card { transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+    
+    /* Subtle entrance for the success state */
+    .success-pulse {
+        animation: pulse-soft 2s infinite;
+    }
+    @keyframes pulse-soft {
+        0% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.05); opacity: 0.8; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+</style>
+
+<div class="bg-[#f8f9fa] min-h-screen pb-20">
+    <div class="pt-8 md:pt-16 pb-6 md:pb-10">
+        <div class="container mx-auto px-6 max-w-5xl">
+            <div class="flex flex-col">
+                <h1 class="text-2xl md:text-4xl font-[900] tracking-tighter text-black uppercase leading-tight">Order Status</h1>
+                <p class="text-[10px] font-black text-gray-400 uppercase tracking-[0.4em]">Protocol: Confirmation</p>
+            </div>
         </div>
+    </div>
 
-        <div class="flex flex-col lg:flex-row gap-6 items-start">
-
-            <div class="w-full lg:flex-grow space-y-4">
-
-                <div class="bg-white rounded shadow-sm border border-slate-200 overflow-hidden">
-                    <div class="px-6 py-3 bg-blue-600 flex justify-between items-center">
-                        <h2 class="text-white text-sm font-bold uppercase tracking-wider flex items-center gap-2">
-                            <span class="bg-white text-blue-600 w-5 h-5 rounded-sm flex items-center justify-center text-[10px]">
+    <div class="container mx-auto px-6 max-w-5xl">
+        <div class="flex flex-col lg:flex-row gap-8 items-start">
+            
+            <div class="w-full lg:flex-grow space-y-6">
+                
+                <div class="bg-white rounded-[2.5rem] border border-gray-100 premium-card overflow-hidden shadow-sm">
+                    <div class="px-8 py-4 bg-black flex justify-between items-center">
+                        <h2 class="text-white text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-3">
+                            <span class="bg-white text-black w-5 h-5 rounded-full flex items-center justify-center">
                                 <span class="material-icons text-[12px]">done</span>
                             </span>
-                            Order Placed Successfully
+                            Transaction Verified
                         </h2>
                     </div>
 
-                    <div class="p-8 text-center sm:text-left flex flex-col sm:flex-row items-center gap-6 border-b border-slate-100">
-                        <div class="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center flex-shrink-0">
-                            <span class="material-icons text-green-600 text-5xl">verified</span>
+                    <div class="p-8 md:p-12 text-center md:text-left flex flex-col md:flex-row items-center gap-8 border-b border-gray-50">
+                        <div class="w-24 h-24 bg-gray-50 rounded-[2rem] flex items-center justify-center flex-shrink-0 success-pulse">
+                            <span class="material-icons text-black text-5xl">verified</span>
                         </div>
                         
-                        <div>
-                            <h2 class="text-xl font-black text-slate-900 mb-1">Thank you, {{ user.username|title }}!</h2>
-                            <p class="text-sm text-slate-500 leading-relaxed">
-                                Your order has been confirmed. We'll send you an update as soon as your items ship. 
-                                A confirmation has been sent to your registered email.
+                        <div class="space-y-2">
+                            <h2 class="text-2xl md:text-3xl font-[900] text-black tracking-tight uppercase">Success, {{ user.username|title }}</h2>
+                            <p class="text-sm text-gray-500 leading-relaxed font-medium max-w-md">
+                                Your acquisition is complete. A digital manifest has been dispatched to your registered secure email.
                             </p>
                         </div>
                     </div>
 
-                    <div class="p-6 grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50/50">
-                        <div class="p-4 bg-white border border-slate-200 rounded">
-                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Order ID</p>
-                            <p class="text-sm font-black text-slate-900">#{{ order.order_number }}</p>
+                    <div class="p-8 grid grid-cols-1 sm:grid-cols-2 gap-6 bg-gray-50/30">
+                        <div class="space-y-1">
+                            <label class="text-[9px] font-black uppercase text-gray-400 tracking-widest ml-1">Registry ID</label>
+                            <div class="p-5 bg-white border border-gray-100 rounded-2xl shadow-sm">
+                                <p class="text-sm font-black text-black tracking-wider">#{{ order.order_number }}</p>
+                            </div>
                         </div>
-                        <div class="p-4 bg-white border border-slate-200 rounded">
-                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Payment Method</p>
-                            <p class="text-sm font-black text-slate-900 uppercase">{{ order.payment_method|title }}</p>
+                        <div class="space-y-1">
+                            <label class="text-[9px] font-black uppercase text-gray-400 tracking-widest ml-1">Payment Method</label>
+                            <div class="p-5 bg-white border border-gray-100 rounded-2xl shadow-sm">
+                                <p class="text-sm font-black text-black uppercase tracking-wider">{{ order.payment_method }}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="flex flex-col sm:flex-row gap-4">
                     <a href="{% url 'all_products' %}" 
-                       class="flex-1 bg-[#fb641b] text-white font-black py-4 rounded shadow-lg text-center uppercase text-sm tracking-wide hover:bg-[#e65a17] transition-all">
-                        Continue Shopping
+                       class="group relative flex-1 overflow-hidden rounded-[2rem] bg-black p-[1px] transition-all hover:scale-[1.02] active:scale-[0.98]">
+                        <div class="relative flex items-center justify-center bg-black py-6 rounded-[2rem]">
+                            <span class="text-[11px] font-black text-white uppercase tracking-[0.3em]">Continue Shopping</span>
+                        </div>
                     </a>
+                    
                     <a href="{% url 'my_orders' %}" 
-                       class="flex-1 bg-white border border-slate-200 text-slate-700 font-black py-4 rounded shadow-sm text-center uppercase text-sm tracking-wide hover:bg-slate-50 transition-all">
+                       class="flex-1 bg-white border border-gray-200 text-black font-black py-6 rounded-[2rem] shadow-sm text-center uppercase text-[11px] tracking-[0.3em] hover:bg-gray-50 transition-all active:scale-[0.98]">
                         View My Orders
                     </a>
                 </div>
             </div>
 
-            <aside class="w-full lg:w-[380px] sticky top-24">
-                <div class="bg-white rounded shadow-sm border border-slate-200 overflow-hidden">
-                    <div class="px-6 py-4 border-b border-slate-100">
-                        <h2 class="text-xs font-bold uppercase tracking-widest text-slate-400">Order Summary</h2>
+            <aside class="w-full lg:w-[360px] lg:sticky lg:top-10">
+                <div class="bg-white rounded-[2.5rem] border border-gray-100 premium-card overflow-hidden shadow-sm">
+                    <div class="px-8 py-6 border-b border-gray-50 bg-gray-50/40">
+                        <h2 class="text-[10px] font-black uppercase tracking-widest text-black flex items-center gap-3">
+                            <span class="material-icons text-sm">receipt_long</span>
+                            Financial Summary
+                        </h2>
                     </div>
                     
-                    <div class="p-6 space-y-4">
+                    <div class="p-8 space-y-6">
                         <div class="flex justify-between items-center">
-                            <span class="text-sm text-slate-600">Items Ordered</span>
-                            <span class="text-slate-900 font-bold">{{ order.items.count }}</span>
+                            <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Quantity</span>
+                            <span class="text-black font-black">{{ order.items.count }} Units</span>
                         </div>
 
-                        <div class="pt-4 border-t border-dashed border-slate-200 flex justify-between items-center">
-                            <span class="text-base font-black text-slate-900 uppercase">Total Paid</span>
-                            <span class="text-lg font-black text-slate-900">
+                        <div class="pt-6 border-t border-dashed border-gray-100 flex justify-between items-center">
+                            <div class="flex flex-col">
+                                <span class="text-[10px] font-black text-black uppercase tracking-widest">Total Settled</span>
+                                <span class="text-[8px] font-bold text-gray-400 uppercase tracking-widest">Tax Inclusive</span>
+                            </div>
+                            <span class="text-2xl font-[900] text-black">
                                 ₹{{ order.final_amount }}
                             </span>
                         </div>
                     </div>
 
-                    <div class="p-4 bg-slate-50 border-t border-slate-100">
-                        <p class="flex items-center justify-center gap-2 text-[10px] text-slate-400 font-bold uppercase">
-                            <span class="material-icons text-xs">verified_user</span>
-                            100% Genuine Products
+                    <div class="p-5 bg-gray-50/80 border-t border-gray-100">
+                        <p class="flex items-center justify-center gap-3 text-[9px] text-gray-400 font-black uppercase tracking-widest">
+                            <span class="material-icons text-[14px]">shield</span>
+                            Authenticity Guaranteed
                         </p>
                     </div>
                 </div>
 
-                <div class="mt-4 p-6 bg-white rounded shadow-sm border border-slate-200 text-center">
-                    <p class="text-xs font-bold text-slate-600 mb-2">Need help with your order?</p>
-                    <a href="#" class="text-blue-600 text-xs font-black uppercase tracking-tighter hover:underline">
-                        Contact BuyNext Support
+                <div class="mt-6 p-8 bg-white rounded-[2.5rem] border border-gray-100 text-center shadow-sm">
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Assistance Required?</p>
+                    <a href="#" class="inline-block bg-gray-50 px-6 py-3 rounded-xl text-black text-[10px] font-black uppercase tracking-tighter hover:bg-black hover:text-white transition-all">
+                        Contact Support Protocol
                     </a>
                 </div>
             </aside>
@@ -99,15 +133,4 @@
         </div>
     </div>
 </div>
-
-<style>
-    /* Smooth entrance animation for the card */
-    .animate-fade-in {
-        animation: fadeIn 0.4s ease-out;
-    }
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-</style>
 {% endblock %}

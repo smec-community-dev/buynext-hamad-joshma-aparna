@@ -1,116 +1,167 @@
 {% extends "core/base.html" %}
 
 {% block content %}
-<div class="bg-[#f1f3f6] min-h-screen py-8 font-sans">
-    <div class="container mx-auto px-4 max-w-3xl">
-        
-        <div class="flex items-center gap-4 mb-6">
-            <a href="{% url 'select_address' %}" class="w-9 h-9 flex items-center justify-center rounded bg-white shadow-sm border border-slate-200 text-slate-600 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all">
-                <span class="material-icons text-sm">arrow_back</span>
-            </a>
-            <h1 class="text-xl font-bold text-slate-900 uppercase tracking-tight">Add New Address</h1>
-        </div>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-        <div class="bg-white rounded shadow-sm border border-slate-200 overflow-hidden">
-            <div class="px-6 py-3 bg-blue-600">
-                <h2 class="text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2">
+<style>
+    body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; -webkit-tap-highlight-color: transparent; }
+    
+    /* Premium Interaction Logic */
+    .premium-input {
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid #e5e7eb;
+    }
+    .premium-input:focus {
+        border-color: #000;
+        box-shadow: 0 0 0 1px #000;
+    }
+    .premium-card { transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+
+    /* Custom Premium Toast */
+    #toast-container {
+        visibility: hidden;
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #000;
+        color: #fff;
+        padding: 14px 28px;
+        border-radius: 100px;
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        z-index: 1000;
+        box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        white-space: nowrap;
+    }
+    #toast-container.show { visibility: visible; animation: slideUp 0.4s forwards, fadeOut 0.4s 2.6s forwards; }
+    #toast-container.error { background: #ef4444; }
+
+    @keyframes slideUp { from { opacity: 0; bottom: 0; } to { opacity: 1; bottom: 30px; } }
+    @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+</style>
+
+<div id="toast-container">Invalid Entry Detected</div>
+
+<div class="bg-[#f8f9fa] min-h-screen pb-20">
+    <div class="pt-8 md:pt-16 pb-6 md:pb-10">
+        <div class="container mx-auto px-6 max-w-3xl">
+            <div class="flex items-center gap-6">
+                <a href="{% url 'select_address' %}" class="w-12 h-12 flex items-center justify-center rounded-2xl bg-white border border-gray-100 text-black shadow-sm active:scale-90 transition-transform">
+                    <span class="material-icons text-sm">arrow_back</span>
+                </a>
+                <div class="flex flex-col">
+                    <h1 class="text-2xl md:text-4xl font-[900] tracking-tighter text-black uppercase leading-tight">New Destination</h1>
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-[0.4em]">Secure Registry</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-6 max-w-3xl">
+        <div class="bg-white rounded-[2.5rem] border border-gray-100 premium-card overflow-hidden shadow-sm">
+            <div class="px-8 py-6 border-b border-gray-50 bg-gray-50/40">
+                <h2 class="text-[10px] font-black uppercase tracking-widest text-black flex items-center gap-3">
                     <span class="material-icons text-sm">location_on</span>
-                    Shipping Information
+                    Shipping Logistics
                 </h2>
             </div>
             
-            <form action="{% url 'save_address' %}?next=checkout" method="POST" class="p-6 sm:p-8 space-y-5">
+            <form action="{% url 'save_address' %}?next=checkout" method="POST" class="p-8 md:p-10 space-y-8">
                 {% csrf_token %}
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div class="space-y-1">
-                        <label class="text-[11px] font-bold uppercase text-slate-500 ml-1 tracking-wide">Full Name</label>
-                        <input type="text" name="full_name" required placeholder="Enter your full name"
-                            class="w-full bg-white border border-slate-200 rounded px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all">
-                    </div>
-                    <div class="space-y-1">
-                        <label class="text-[11px] font-bold uppercase text-slate-500 ml-1 tracking-wide">Phone Number</label>
-                        <input type="text" name="phone_number" required placeholder="10-digit mobile number"
-                            class="w-full bg-white border border-slate-200 rounded px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div class="space-y-1 relative">
-                        <label class="text-[11px] font-bold uppercase text-slate-500 ml-1 tracking-wide">Pincode</label>
-                        <input type="text" name="pincode" id="pincode" required maxlength="6" placeholder="6-digit pincode"
-                            class="w-full bg-white border border-slate-200 rounded px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all">
-                        <div id="pincode-loader" class="hidden absolute right-3 bottom-2.5">
-                            <div class="animate-spin h-4 w-4 border-2 border-blue-600 border-t-transparent rounded-full"></div>
-                        </div>
-                    </div>
-                    <div class="space-y-1">
-                        <label class="text-[11px] font-bold uppercase text-slate-500 ml-1 tracking-wide">Locality</label>
-                        <input type="text" name="locality" id="locality" required placeholder="Colony / Street / Area"
-                            class="w-full bg-white border border-slate-200 rounded px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all">
-                    </div>
-                </div>
-
-                <div class="space-y-1">
-                    <label class="text-[11px] font-bold uppercase text-slate-500 ml-1 tracking-wide">Address (House No, Building, Area)</label>
-                    <textarea name="house_info" required rows="3" placeholder="Apartment Name, House Number, etc."
-                        class="w-full bg-white border border-slate-200 rounded px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all resize-none"></textarea>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div class="space-y-1">
-                        <label class="text-[11px] font-bold uppercase text-slate-500 ml-1 tracking-wide">City / District</label>
-                        <input type="text" name="city" id="city" required readonly class="w-full bg-slate-50 border border-slate-200 rounded px-4 py-2.5 text-sm cursor-not-allowed text-slate-500 font-medium">
-                    </div>
-                    <div class="space-y-1">
-                        <label class="text-[11px] font-bold uppercase text-slate-500 ml-1 tracking-wide">State</label>
-                        <input type="text" name="state" id="state" required readonly class="w-full bg-slate-50 border border-slate-200 rounded px-4 py-2.5 text-sm cursor-not-allowed text-slate-500 font-medium">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div class="space-y-1">
-                        <label class="text-[11px] font-bold uppercase text-slate-500 ml-1 tracking-wide">Country</label>
-                        <input type="text" name="country" id="country" readonly class="w-full bg-slate-50 border border-slate-200 rounded px-4 py-2.5 text-sm cursor-not-allowed text-slate-500 font-medium">
-                    </div>
-                    <div class="space-y-1">
-                        <label class="text-[11px] font-bold uppercase text-slate-500 ml-1 tracking-wide">Landmark (Optional)</label>
-                        <input type="text" name="landmark" placeholder="e.g. Near School, Hospital"
-                            class="w-full bg-white border border-slate-200 rounded px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all">
-                    </div>
-                </div>
-
-                <div class="pt-4 border-t border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="space-y-2">
-                        <label class="text-[11px] font-bold uppercase text-slate-500 tracking-wider">Address Type</label>
+                        <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Full Name</label>
+                        <input type="text" name="full_name" required placeholder="Receiver Name"
+                            class="w-full bg-white premium-input rounded-2xl px-6 py-4.5 text-sm font-semibold outline-none">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Contact Phone</label>
+                        <input type="text" name="phone_number" required placeholder="10-digit mobile"
+                            class="w-full bg-white premium-input rounded-2xl px-6 py-4.5 text-sm font-semibold outline-none">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2 relative">
+                        <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Postal Code</label>
+                        <input type="text" name="pincode" id="pincode" required maxlength="6" placeholder="Pincode"
+                            class="w-full bg-white premium-input rounded-2xl px-6 py-4.5 text-sm font-black tracking-[0.2em] outline-none">
+                        <div id="pincode-loader" class="hidden absolute right-5 bottom-4">
+                            <div class="animate-spin h-4 w-4 border-2 border-black border-t-transparent rounded-full"></div>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Locality</label>
+                        <input type="text" name="locality" id="locality" required placeholder="Area/Street"
+                            class="w-full bg-white premium-input rounded-2xl px-6 py-4.5 text-sm font-semibold outline-none">
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Infrastructure Details</label>
+                    <textarea name="house_info" required rows="3" placeholder="House No, Building, Floor..."
+                        class="w-full bg-white premium-input rounded-[2rem] px-6 py-5 text-sm font-semibold outline-none resize-none"></textarea>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Landmark (Optional)</label>
+                    <input type="text" name="landmark" placeholder="e.g. Near Apollo Hospital"
+                        class="w-full bg-white premium-input rounded-2xl px-6 py-4.5 text-sm font-semibold outline-none">
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-6 bg-gray-50/60 p-7 rounded-[2rem] border border-gray-100">
+                    <div class="space-y-1">
+                        <label class="text-[9px] font-black uppercase text-gray-300 tracking-widest">City</label>
+                        <input type="text" name="city" id="city" readonly class="w-full bg-transparent border-none p-0 text-sm font-bold text-black cursor-not-allowed outline-none">
+                    </div>
+                    <div class="space-y-1 border-l border-gray-100 pl-6">
+                        <label class="text-[9px] font-black uppercase text-gray-300 tracking-widest">State</label>
+                        <input type="text" name="state" id="state" readonly class="w-full bg-transparent border-none p-0 text-sm font-bold text-black cursor-not-allowed outline-none">
+                    </div>
+                    <div class="space-y-1 border-l border-gray-100 pl-6 hidden md:block">
+                        <label class="text-[9px] font-black uppercase text-gray-300 tracking-widest">Country</label>
+                        <input type="text" name="country" id="country" readonly value="INDIA" class="w-full bg-transparent border-none p-0 text-sm font-bold text-black outline-none">
+                    </div>
+                </div>
+
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-8 pt-4">
+                    <div class="space-y-4">
+                        <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Address Protocol</label>
                         <div class="flex gap-4">
-                            <label class="flex items-center gap-2 cursor-pointer group">
-                                <input type="radio" name="address_type" value="Home" checked class="w-4 h-4 text-blue-600 focus:ring-blue-500 border-slate-300">
-                                <span class="text-sm font-medium text-slate-700 group-hover:text-blue-600 transition-colors">Home</span>
+                            <label class="relative flex items-center justify-center px-6 py-3 border border-gray-100 rounded-2xl cursor-pointer hover:bg-gray-50 transition-all">
+                                <input type="radio" name="address_type" value="Home" checked class="sr-only peer">
+                                <span class="text-[10px] font-black uppercase tracking-widest text-gray-400 peer-checked:text-black transition-colors">Home</span>
+                                <div class="absolute inset-0 rounded-2xl border-2 border-transparent peer-checked:border-black transition-all"></div>
                             </label>
-                            <label class="flex items-center gap-2 cursor-pointer group">
-                                <input type="radio" name="address_type" value="Work" class="w-4 h-4 text-blue-600 focus:ring-blue-500 border-slate-300">
-                                <span class="text-sm font-medium text-slate-700 group-hover:text-blue-600 transition-colors">Work</span>
+                            <label class="relative flex items-center justify-center px-6 py-3 border border-gray-100 rounded-2xl cursor-pointer hover:bg-gray-50 transition-all">
+                                <input type="radio" name="address_type" value="Work" class="sr-only peer">
+                                <span class="text-[10px] font-black uppercase tracking-widest text-gray-400 peer-checked:text-black transition-colors">Work</span>
+                                <div class="absolute inset-0 rounded-2xl border-2 border-transparent peer-checked:border-black transition-all"></div>
                             </label>
-                            <label class="flex items-center gap-2 cursor-pointer group">
-                                <input type="radio" name="address_type" value="Other" class="w-4 h-4 text-blue-600 focus:ring-blue-500 border-slate-300">
-                                <span class="text-sm font-medium text-slate-700 group-hover:text-blue-600 transition-colors">Other</span>
+                            <label class="relative flex items-center justify-center px-6 py-3 border border-gray-100 rounded-2xl cursor-pointer hover:bg-gray-50 transition-all">
+                                <input type="radio" name="address_type" value="Other" class="sr-only peer">
+                                <span class="text-[10px] font-black uppercase tracking-widest text-gray-400 peer-checked:text-black transition-colors">Other</span>
+                                <div class="absolute inset-0 rounded-2xl border-2 border-transparent peer-checked:border-black transition-all"></div>
                             </label>
                         </div>
                     </div>
 
-                    <label class="flex items-center gap-3 cursor-pointer group">
+                    <label class="flex items-center gap-4 cursor-pointer group bg-white border border-gray-100 p-5 rounded-3xl shadow-sm">
                         <div class="relative">
                             <input type="checkbox" name="is_default" class="sr-only peer">
-                            <div class="w-9 h-5 bg-slate-200 rounded-full peer-checked:bg-blue-600 transition-all"></div>
-                            <div class="absolute left-1 top-1 w-3 h-3 bg-white rounded-full peer-checked:translate-x-4 transition-all shadow-sm"></div>
+                            <div class="w-11 h-6 bg-gray-100 rounded-full peer-checked:bg-black transition-all"></div>
+                            <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full peer-checked:translate-x-5 transition-all"></div>
                         </div>
-                        <span class="text-[11px] font-bold uppercase text-slate-500 tracking-wide">Set as Default</span>
+                        <span class="text-[10px] font-black uppercase text-gray-400 tracking-widest">Set as Primary</span>
                     </label>
                 </div>
 
-                <button type="submit" class="w-full bg-[#fb641b] text-white font-bold py-3.5 rounded shadow-md hover:bg-[#e65a16] transition-all uppercase tracking-widest text-xs">
-                    Save and Deliver Here
+                <button type="submit" class="w-full bg-black text-white font-[900] py-7 md:py-8 rounded-[2rem] shadow-2xl shadow-gray-400 hover:bg-gray-800 active:scale-[0.97] transition-all uppercase tracking-[0.4em] text-[12px] mt-10">
+                    Commit & Continue
                 </button>
             </form>
         </div>
@@ -118,6 +169,16 @@
 </div>
 
 <script>
+    function showToast(message, isError = false) {
+        const toast = document.getElementById("toast-container");
+        toast.innerText = message;
+        toast.classList.remove("error", "show");
+        void toast.offsetWidth; // Trigger reflow
+        if (isError) toast.classList.add("error");
+        toast.classList.add("show");
+        setTimeout(() => toast.classList.remove("show"), 3000);
+    }
+
     const pincodeInput = document.getElementById('pincode');
     const loader = document.getElementById('pincode-loader');
 
@@ -134,16 +195,16 @@
                         document.getElementById('city').value = details.District;
                         document.getElementById('state').value = details.State;
                         document.getElementById('locality').value = details.Name;
-                        document.getElementById('country').value = "India";
+                        document.getElementById('country').value = "INDIA";
                     } else {
-                        alert("Invalid Pincode! Please check again.");
+                        showToast("Invalid Postal Code", true);
                         document.getElementById('city').value = "";
                         document.getElementById('state').value = "";
                     }
                 })
                 .catch(err => {
                     loader.classList.add('hidden');
-                    console.error("Pincode API Error:", err);
+                    showToast("Server Connection Failed", true);
                 });
         }
     });

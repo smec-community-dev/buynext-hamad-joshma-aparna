@@ -1,217 +1,180 @@
 {% extends "core/base.html" %}
 
 {% block content %}
-<div class="bg-gray-50 min-h-screen py-8 px-4">
-    <div class="max-w-4xl mx-auto">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+    body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; -webkit-tap-highlight-color: transparent; }
+    .premium-card { transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+    @media (min-width: 768px) {
+        .premium-card:hover { transform: translateY(-1px); box-shadow: 0 12px 24px rgba(0,0,0,0.02); border-color: #e5e7eb; }
+    }
+    .glass-effect { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+    .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+</style>
 
-        <div class="flex items-center justify-between mb-8">
-            <div>
-                <h1 class="text-2xl font-bold text-gray-900">My Reviews</h1>
-                <p class="text-sm text-gray-500 mt-1">You have shared {{ total_count }} reviews</p>
+<div class="bg-[#f8f9fa] min-h-screen pb-20">
+    <div class="pt-8 md:pt-12 pb-6 md:pb-10">
+        <div class="container mx-auto px-5 max-w-4xl">
+            <div class="flex flex-row items-center justify-between gap-4">
+                <div class="flex flex-col gap-1">
+                    <h1 class="text-2xl md:text-4xl font-[900] tracking-tighter text-black uppercase">My Reviews</h1>
+                    <p class="text-[9px] font-black text-gray-400 uppercase tracking-[0.3em]">
+                        {{ total_count }} Entries Verified
+                    </p>
+                </div>
+                
+                <a href="{% url 'product_list' %}" class="flex items-center gap-2 px-5 py-3 md:px-6 md:py-3.5 bg-white border border-gray-100 rounded-full shadow-sm hover:bg-black hover:text-white transition-all duration-300 group">
+                    <span class="material-icons text-sm md:text-base group-hover:rotate-12 transition-transform">shopping_bag</span>
+                    <span class="text-[9px] md:text-[10px] font-black uppercase tracking-widest">Continue Shopping</span>
+                </a>
             </div>
-            {% if total_count == 0 %}
-            <a href="{% url 'product_list' %}"
-                class="bg-blue-600 text-white px-6 py-2 rounded-sm font-bold text-sm uppercase shadow-md hover:bg-blue-700 transition-all">
-                Start Shopping
-            </a>
-            {% endif %}
         </div>
+    </div>
 
-        <div class="space-y-6">
+    <div class="container mx-auto px-5 max-w-4xl">
+        <div class="space-y-4">
             {% for review in reviews %}
-            <div
-                class="bg-white border border-gray-100 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden group">
-                <div class="p-6">
-                    <div class="flex flex-col md:flex-row gap-6">
-
-                        <div
-                            class="w-20 h-20 flex-shrink-0 bg-gray-50 rounded-md border border-gray-100 overflow-hidden">
-                            {% if review.product.gallery.all %}
-                            <img src="{{ review.product.gallery.all.0.image.url }}" alt="{{ review.product.name }}"
-                                class="w-full h-full object-contain p-1">
-                            {% else %}
-                            <img src="/static/images/no-image.png" alt="No image"
-                                class="w-full h-full object-contain p-1">
-                            {% endif %}
+            <div class="bg-white rounded-[1.5rem] border border-gray-100 premium-card overflow-hidden shadow-sm md:shadow-none">
+                <div class="p-5 md:p-6">
+                    <div class="flex flex-col md:flex-row gap-4 md:gap-6 items-start">
+                        
+                        <div class="flex flex-row md:flex-col gap-4 w-full md:w-auto items-center md:items-start">
+                            <div class="relative flex-shrink-0">
+                                <div class="w-16 h-16 md:w-20 md:h-20 bg-[#f9f9fb] rounded-2xl p-2 border border-gray-50 flex items-center justify-center overflow-hidden">
+                                    {% if review.product.gallery.all %}
+                                    <img src="{{ review.product.gallery.all.0.image.url }}" alt="{{ review.product.name }}" class="w-full h-full object-contain mix-blend-multiply transition-transform duration-500 hover:scale-110">
+                                    {% else %}
+                                    <img src="/static/images/no-image.png" alt="No image" class="w-full h-full object-contain opacity-20">
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="flex-1 md:hidden min-w-0">
+                                <span class="text-[8px] font-black text-blue-600 uppercase tracking-widest block mb-0.5">{{ review.product.brand|default:"Standard" }}</span>
+                                <h2 class="text-sm font-bold text-black tracking-tight truncate mb-1">
+                                    {{ review.product.name }}
+                                </h2>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[9px] font-bold text-gray-300 uppercase">{{ review.created_at|date:"d M Y" }}</span>
+                                    {% if review.is_verified_purchase %}
+                                    <span class="bg-emerald-50 text-emerald-600 text-[7px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-full">Verified</span>
+                                    {% endif %}
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="flex-1">
-                            <div class="flex flex-wrap items-start justify-between gap-2 mb-2">
-                                <div>
-                                    <nav class="text-[10px] text-gray-400 uppercase tracking-widest mb-1">{{ review.product.brand|default:"Unknown Brand" }}</nav>
-                                    <a href="{{ review.product.get_absolute_url }}"
-                                        class="text-gray-900 font-bold hover:text-blue-600 transition-colors leading-tight">
-                                        {{ review.product.name }}
-                                    </a>
+                        <div class="flex-1 min-w-0 w-full">
+                            <div class="hidden md:flex items-center justify-between gap-1 mb-2">
+                                <div class="truncate">
+                                    <span class="text-[8px] font-black text-blue-600 uppercase tracking-widest block">{{ review.product.brand|default:"Standard Collection" }}</span>
+                                    <h2 class="text-base font-bold text-black tracking-tight truncate">
+                                        <a href="{{ review.product.get_absolute_url }}" class="hover:text-blue-600 transition-colors">{{ review.product.name }}</a>
+                                    </h2>
                                 </div>
-                                <div class="text-right">
-                                    <span class="text-xs text-gray-400 block">{{ review.created_at|date:"d M, Y" }}</span>
-                                </div>
+                                <span class="text-[9px] font-bold text-gray-300 uppercase tracking-tighter">{{ review.created_at|date:"d M Y" }}</span>
                             </div>
 
-                            <div class="flex items-center gap-1 mb-3">
-                                <div class="flex text-[#ff9f00]">
+                            <div class="bg-gray-50/50 md:bg-transparent rounded-2xl md:rounded-none p-4 md:p-0 mb-3">
+                                <div class="flex gap-0.5 text-orange-400 mb-2">
                                     {% for i in "12345" %}
-                                    {% if forloop.counter <= review.rating %} <span class="material-icons text-sm">
-                                        star</span>
-                                        {% else %}
-                                        <span class="material-icons text-sm">star_outline</span>
-                                        {% endif %}
-                                        {% endfor %}
+                                        <span class="material-icons text-[12px]">{% if forloop.counter <= review.rating %}star{% else %}star_outline{% endif %}</span>
+                                    {% endfor %}
                                 </div>
-                                {% if review.is_verified_purchase %}
-                                <span
-                                    class="flex items-center gap-1 text-[10px] font-bold text-green-700 bg-green-50 px-2 py-0.5 rounded-full border border-green-100 ml-2">
-                                    <span class="material-icons text-[10px]">check_circle</span> VERIFIED PURCHASE
-                                </span>
-                                {% endif %}
+                                <p class="text-[11px] md:text-xs text-gray-500 font-medium line-clamp-2 italic md:border-l md:pl-4 border-gray-100">
+                                    "{{ review.comment }}"
+                                </p>
                             </div>
 
-                            <h4 class="font-bold text-gray-900 mb-1">{{ review.title }}</h4>
-                            <p class="text-sm text-gray-600 leading-relaxed mb-4">
-                                {{ review.comment }}
-                            </p>
-
-                            {% if review.images.all %}
-                            <div class="flex flex-wrap gap-2 mb-4">
-                                {% for r_img in review.images.all %}
-                                <div class="w-16 h-16 rounded border border-gray-200 overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
-                                    onclick="openImageModal('{{ r_img.image.url }}')">
-                                    <img src="{{ r_img.image.url }}" class="w-full h-full object-cover">
+                            <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-50">
+                                <div class="flex gap-1.5">
+                                    {% for r_img in review.images.all|slice:":3" %}
+                                    <button onclick="openImageModal('{{ r_img.image.url }}')" class="w-8 h-8 md:w-7 md:h-7 rounded-lg overflow-hidden border border-gray-100 active:scale-95 transition-transform">
+                                        <img src="{{ r_img.image.url }}" class="w-full h-full object-cover">
+                                    </button>
+                                    {% endfor %}
+                                    {% if review.images.all.count > 3 %}
+                                    <div class="w-8 h-8 md:w-7 md:h-7 rounded-lg bg-gray-50 flex items-center justify-center text-[8px] font-bold text-gray-400">+{{ review.images.all.count|add:"-3" }}</div>
+                                    {% endif %}
                                 </div>
-                                {% endfor %}
-                            </div>
-                            {% endif %}
 
-                            <div class="flex items-center gap-4 pt-4 border-t border-gray-50">
-                                <a href="{% url 'edit_review' review.id %}"
-                                    class="flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-800 transition-colors">
-                                    <span class="material-icons text-sm">edit</span> EDIT
-                                </a>
-                                <button onclick="confirmDelete('{{ review.id }}')"
-                                    class="flex items-center gap-1.5 text-xs font-bold text-gray-400 hover:text-red-600 transition-colors">
-                                    <span class="material-icons text-sm">delete</span> DELETE
-                                </button>
+                                <div class="flex items-center gap-5">
+                                    <a href="{% url 'edit_review' review.id %}" class="text-[10px] md:text-[9px] font-black text-gray-400 uppercase tracking-widest hover:text-black active:text-blue-600 transition-all p-2 -m-2">Edit</a>
+                                    <button onclick="confirmDelete('{{ review.id }}')" class="text-[10px] md:text-[9px] font-black text-red-400 uppercase tracking-widest hover:text-red-600 active:text-red-800 transition-all p-2 -m-2">Remove</button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             {% empty %}
-            <div class="text-center py-20 bg-white rounded-xl border-2 border-dashed border-gray-200">
-                <div class="inline-flex items-center justify-center w-20 h-20 bg-gray-50 rounded-full mb-4">
-                    <span class="material-icons text-gray-300 text-4xl">rate_review</span>
+            <div class="py-24 text-center bg-white rounded-[2.5rem] border border-gray-100 px-8 shadow-sm">
+                <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <span class="material-icons text-gray-200 text-3xl">auto_stories</span>
                 </div>
-                <h3 class="text-lg font-bold text-gray-900">You haven't reviewed any products yet</h3>
-                <p class="text-gray-500 text-sm mt-2 max-w-xs mx-auto">Share your experience with others and help them
-                    make better choices!</p>
-                <a href="/"
-                    class="mt-6 inline-block bg-blue-600 text-white px-8 py-3 rounded-sm font-bold text-xs uppercase tracking-widest shadow-lg shadow-blue-100 hover:shadow-xl transition-all">
-                    Start Shopping
+                <h3 class="text-xl font-black text-black tracking-tighter uppercase mb-2">No Reviews Found</h3>
+                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-10">You haven't documented any experiences yet.</p>
+                <a href="{% url 'product_list' %}" class="inline-flex items-center justify-center bg-black text-white px-10 py-5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] hover:bg-gray-800 transition-all shadow-xl shadow-gray-200">
+                    Continue Shopping
                 </a>
             </div>
             {% endfor %}
         </div>
-
-        {% if page_obj.has_other_pages %}
-        <div class="flex justify-center mt-12 gap-2">
-            {% if page_obj.has_previous %}
-            <a href="?page={{ page_obj.previous_page_number }}"
-                class="p-2 border border-gray-200 rounded hover:bg-gray-100 text-gray-600 transition-colors">
-                <span class="material-icons">chevron_left</span>
-            </a>
-            {% endif %}
-
-            <span class="px-4 py-2 text-sm font-bold text-gray-700 bg-white border border-gray-200 rounded">
-                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-            </span>
-
-            {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}"
-                class="p-2 border border-gray-200 rounded hover:bg-gray-100 text-gray-600 transition-colors">
-                <span class="material-icons">chevron_right</span>
-            </a>
-            {% endif %}
-        </div>
-        {% endif %}
     </div>
 </div>
 
-<div id="image-modal" class="fixed inset-0 bg-black/90 z-[100] hidden items-center justify-center p-4 backdrop-blur-sm">
-    <button onclick="closeImageModal()" class="absolute top-6 right-6 text-white hover:text-gray-300 transition-colors">
-        <span class="material-icons text-4xl">close</span>
+<div id="image-modal" class="fixed inset-0 bg-white/95 z-[100] hidden items-center justify-center p-4 glass-effect">
+    <button onclick="closeImageModal()" class="absolute top-6 right-6 text-black active:scale-90 transition-transform">
+        <span class="material-icons text-3xl">close</span>
     </button>
-    <img id="modal-img" src="" class="max-w-full max-h-[90vh] object-contain rounded shadow-2xl">
+    <img id="modal-img" src="" class="max-w-full max-h-[75vh] object-contain rounded-2xl shadow-2xl">
 </div>
 
-<div id="delete-modal"
-    class="fixed inset-0 bg-black/60 z-[100] hidden items-center justify-center p-4 backdrop-blur-sm">
-    <div class="bg-white rounded-xl max-w-sm w-full p-8 text-center shadow-2xl transform transition-all scale-95 opacity-0 duration-300"
-        id="delete-content">
-        <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span class="material-icons text-red-500 text-3xl">delete_outline</span>
+<div id="delete-modal" class="fixed inset-0 bg-black/40 z-[100] hidden items-end md:items-center justify-center glass-effect">
+    <div id="delete-content" class="w-full max-w-sm md:max-w-xs bg-white rounded-t-[2.5rem] md:rounded-[2rem] p-8 md:p-10 text-center transform translate-y-full md:translate-y-0 md:scale-95 opacity-0 transition-all duration-500 ease-out">
+        <div class="w-12 h-12 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
+            <span class="material-icons text-2xl">delete_sweep</span>
         </div>
-        <h3 class="text-xl font-bold text-gray-900 mb-2">Delete Review?</h3>
-        <p class="text-sm text-gray-500 mb-8">This action cannot be undone. Are you sure you want to remove this review?
-        </p>
-        <div class="flex gap-3">
-            <button onclick="closeDeleteModal()"
-                class="flex-1 px-4 py-3 border border-gray-200 text-gray-600 font-bold rounded hover:bg-gray-50 transition-colors">CANCEL</button>
-            <form id="delete-form" method="POST" class="flex-1">
+        <h3 class="text-xl font-black text-black tracking-tighter uppercase mb-2">Remove Entry?</h3>
+        <p class="text-[10px] text-gray-400 mb-8 font-bold uppercase tracking-[0.1em] leading-relaxed px-4">This action will permanently remove this insight from your record.</p>
+        <div class="flex flex-col gap-3">
+            <form id="delete-form" method="POST" class="w-full">
                 {% csrf_token %}
-                <button type="submit"
-                    class="w-full px-4 py-3 bg-red-600 text-white font-bold rounded hover:bg-red-700 transition-colors shadow-lg shadow-red-100">DELETE</button>
+                <button type="submit" class="w-full py-5 bg-red-600 text-white text-[10px] font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-red-100">Confirm Deletion</button>
             </form>
+            <button onclick="closeDeleteModal()" class="w-full py-5 bg-gray-50 text-gray-400 text-[10px] font-black uppercase tracking-widest rounded-2xl">Cancel</button>
         </div>
     </div>
 </div>
 
 <script>
-    // Image Modal Logic
     function openImageModal(url) {
         const modal = document.getElementById('image-modal');
         document.getElementById('modal-img').src = url;
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
+        modal.classList.replace('hidden', 'flex');
         document.body.style.overflow = 'hidden';
     }
 
     function closeImageModal() {
         const modal = document.getElementById('image-modal');
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
+        modal.classList.replace('flex', 'hidden');
         document.body.style.overflow = 'auto';
     }
 
-    // Delete Modal Logic
     function confirmDelete(reviewId) {
         const modal = document.getElementById('delete-modal');
         const content = document.getElementById('delete-content');
-        const form = document.getElementById('delete-form');
-
-        form.action = `/review/${reviewId}/delete/`;
-
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-
-        // Trigger Animation
-        setTimeout(() => {
-            content.classList.remove('scale-95', 'opacity-0');
-            content.classList.add('scale-100', 'opacity-100');
-        }, 10);
+        document.getElementById('delete-form').action = `/review/${reviewId}/delete/`;
+        modal.classList.replace('hidden', 'flex');
+        requestAnimationFrame(() => {
+            content.classList.remove('translate-y-full', 'md:scale-95', 'opacity-0');
+        });
     }
 
     function closeDeleteModal() {
         const modal = document.getElementById('delete-modal');
         const content = document.getElementById('delete-content');
-
-        content.classList.add('scale-95', 'opacity-0');
-        content.classList.remove('scale-100', 'opacity-100');
-
-        setTimeout(() => {
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }, 300);
+        content.classList.add('translate-y-full', 'md:scale-95', 'opacity-0');
+        setTimeout(() => modal.classList.replace('flex', 'hidden'), 500);
     }
 </script>
 {% endblock %}

@@ -1,78 +1,74 @@
 {% extends "core/base.html" %}
 
 {% block content %}
-<div class="bg-[#f1f3f6] min-h-screen py-8 font-sans">
-    <div class="container mx-auto px-4 max-w-7xl">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-        {% if messages %}
-        <div id="alert-container" class="fixed top-24 right-6 z-50 space-y-3 w-80">
-            {% for message in messages %}
-            <div class="alert-message flex items-center justify-between px-4 py-3 rounded shadow-xl bg-white border-l-4 
-                {% if message.tags == 'success' %} border-emerald-500 text-emerald-700
-                {% elif message.tags == 'error' %} border-red-500 text-red-700
-                {% else %} border-blue-500 text-blue-700 {% endif %}">
-                <div class="flex items-center gap-3 text-sm font-bold">
-                    {{ message }}
-                </div>
-                <button onclick="this.parentElement.remove()" class="text-slate-400 hover:text-slate-900">
-                    <span class="material-icons text-sm">close</span>
-                </button>
-            </div>
-            {% endfor %}
-        </div>
-        {% endif %}
+<style>
+    body { font-family: 'Inter', sans-serif; background-color: #f5f5f7; }
+    .wishlist-card { transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); border: 1px solid rgba(0,0,0,0.05); }
+    .wishlist-card:hover { transform: translateY(-8px); box-shadow: 0 40px 80px rgba(0,0,0,0.08); border-color: #000; }
+    .glass-effect { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+    .active-collection { background: #000; color: #fff !important; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+    
+    #new-collection-modal.active { opacity: 1; pointer-events: auto; }
+    #new-collection-modal.active .modal-content { transform: scale(1); opacity: 1; }
+</style>
 
-        <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+<div class="bg-[#f5f5f7] min-h-screen pb-24">
+    <div class="container mx-auto px-6 max-w-[1440px] pt-12">
+
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
             <div>
-                <h1 class="text-xl font-bold text-slate-900 flex items-center gap-2">
-                    My Wishlist
+                <h1 class="text-4xl font-[900] tracking-tighter text-black uppercase leading-none mb-2">
+                    The Vault
                     {% if active_collection %}
-                    <span class="text-slate-400 font-medium">/ {{ active_collection.wishlist_name }}</span>
+                    <span class="text-gray-300 font-light"> / {{ active_collection.wishlist_name }}</span>
                     {% endif %}
                 </h1>
+                <p class="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em]">Curation & Collections • 2026</p>
             </div>
             <button onclick="toggleModal('new-collection-modal')"
-                class="flex items-center justify-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded font-bold text-xs uppercase tracking-wide hover:bg-blue-700 transition-all shadow-md">
-                <span class="material-icons text-sm">add</span> Create New Collection
+                class="flex items-center justify-center gap-3 bg-black text-white px-8 py-4 rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-gray-800 transition-all shadow-xl shadow-gray-200">
+                <span class="material-icons text-sm">add</span> New Collection
             </button>
         </div>
 
-        <div class="flex flex-col lg:flex-row gap-6">
-            <aside class="w-full lg:w-72 flex-shrink-0">
-                <div class="bg-white rounded shadow-sm border border-slate-200 overflow-hidden sticky top-24">
-                    <div class="px-5 py-4 border-b border-slate-100 bg-slate-50">
-                        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500">My Collections</h2>
+
+
+        <div class="flex flex-col lg:flex-row gap-12">
+            <aside class="w-full lg:w-80 flex-shrink-0">
+                <div class="bg-white rounded-[3rem] shadow-sm border border-gray-100 overflow-hidden sticky top-28">
+                    <div class="px-8 py-8 border-b border-gray-50">
+                        <h2 class="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400">Your Directories</h2>
                     </div>
 
-                    <div class="divide-y divide-slate-100">
+                    <div class="p-4 space-y-2">
                         {% for collection in collections %}
-                        <div
-                            class="group flex items-center justify-between p-4 transition-all hover:bg-slate-50
-                            {% if active_collection and collection.id == active_collection.id %} bg-blue-50/50 {% endif %}">
-
-                            <a href="?collection={{ collection.id }}" class="flex-1">
-                                <span
-                                    class="text-sm font-bold block {% if active_collection and collection.id == active_collection.id %} text-blue-600 {% else %} text-slate-700 {% endif %}">
+                        <div class="group relative flex items-center rounded-[2rem] transition-all hover:bg-blue-500 
+                            {% if active_collection and collection.id == active_collection.id %} active-collection {% endif %}">
+                            
+                            <a href="?collection={{ collection.id }}" class="flex-grow px-6 py-5">
+                                <span class="text-xs font-[800] uppercase tracking-wider block">
                                     {{ collection.wishlist_name }}
                                 </span>
-                                <span class="text-[11px] font-medium text-slate-400">
-                                    {{ collection.items.count }} Items
+                                <span class="text-[9px] font-bold opacity-60 uppercase tracking-widest">
+                                    {{ collection.items.count }} Objects
                                 </span>
                             </a>
 
-                            <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div class="flex items-center gap-1 pr-4 opacity-0 group-hover:opacity-100 transition-opacity">
                                 <form method="POST" action="{% url 'set_default_collection' collection.id %}">
                                     {% csrf_token %}
                                     <button type="submit" {% if collection.is_default %}disabled{% endif %}
-                                        class="p-1 rounded hover:bg-white {% if collection.is_default %} text-orange-500 {% else %} text-slate-300 hover:text-orange-500 {% endif %}">
-                                        <span class="material-icons text-sm">{% if collection.is_default %}push_pin{%   else %}outline_push_pin{% endif %}</span>
-                                         
+                                        class="w-8 h-8 rounded-full flex items-center justify-center transition-all
+                                        {% if collection.is_default %} text-orange-400 bg-white shadow-sm {% else %} text-gray-300 hover:text-orange-400 hover:bg-white {% endif %}">
+                                        <span class="material-icons text-sm">push_pin</span>
                                     </button>
                                 </form>
 
                                 <form method="POST" action="{% url 'remove_wishlist_collection' collection.id %}">
                                     {% csrf_token %}
-                                    <button class="p-1 text-slate-300 hover:text-red-500 hover:bg-white rounded">
+                                    <button class="w-8 h-8 text-gray-300 hover:text-red-500 hover:bg-white rounded-full flex items-center justify-center transition-all">
                                         <span class="material-icons text-sm">delete</span>
                                     </button>
                                 </form>
@@ -85,54 +81,48 @@
 
             <main class="flex-grow">
                 {% if wishlist_items %}
-                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
                     {% for item in wishlist_items %}
-                    <div
-                        class="bg-white rounded border border-slate-200 shadow-sm hover:shadow-md transition-all group overflow-hidden flex flex-col">
-                        <div class="aspect-square bg-white p-6 relative border-b border-slate-50">
-                            <a href="{% url 'product_details' item.variant.product.slug %}" class="block h-full">
+                    <div class="wishlist-card group bg-white rounded-[3rem] p-3 flex flex-col relative overflow-hidden">
+                        
+                        <div class="aspect-square bg-[#f9f9fb] rounded-[2.5rem] p-8 relative flex items-center justify-center overflow-hidden">
+                            <a href="{% url 'product_details' item.variant.product.slug %}" class="block h-full w-full">
                                 <img src="{{ item.variant.images.first.image.url }}"
                                     alt="{{ item.variant.product.name }}"
-                                    class="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105">
+                                    class="w-full h-full object-contain mix-blend-multiply transition-transform duration-700 group-hover:scale-105">
                             </a>
 
-                            <form method="POST" action="{% url 'remove_wishlist_item' item.id %}"
-                                class="absolute top-3 right-3">
+                            <form method="POST" action="{% url 'remove_wishlist_item' item.id %}" class="absolute top-6 right-6">
                                 {% csrf_token %}
-                                <button
-                                    class="w-8 h-8 bg-white border border-slate-100 rounded-full flex items-center justify-center text-slate-300 hover:text-red-500 shadow-sm transition-all">
-                                    <span class="material-icons text-lg">delete</span>
+                                <button class="w-10 h-10 glass-effect border border-gray-100 rounded-full flex items-center justify-center text-gray-400 hover:text-red-500 shadow-sm transition-all hover:scale-110">
+                                    <span class="material-icons text-lg">close</span>
                                 </button>
                             </form>
                         </div>
 
-                        <div class="p-4 flex-grow flex flex-col">
-                            <h4 class="text-sm font-medium text-slate-900 line-clamp-2 mb-1">
-                                <a href="{% url 'product_details' item.variant.product.slug %}"
-                                    class="hover:text-blue-600">
+                        <div class="p-6 flex-grow flex flex-col">
+                            <div class="flex items-center gap-2 mb-3">
+                                <div class="flex items-center bg-black text-white px-2 py-0.5 rounded-full text-[9px] font-black">
+                                    4.5 <span class="material-icons text-[10px] ml-1">star</span>
+                                </div>
+                                <span class="text-[9px] text-gray-300 font-black uppercase tracking-widest">(1.2k Reviews)</span>
+                            </div>
+
+                            <h4 class="text-sm font-bold text-black tracking-tight mb-4 leading-snug line-clamp-2">
+                                <a href="{% url 'product_details' item.variant.product.slug %}" class="hover:underline decoration-gray-200">
                                     {{ item.variant.product.name }}
                                 </a>
                             </h4>
 
-                            <div class="flex items-center gap-2 mb-3">
-                                <div
-                                    class="flex items-center bg-green-600 text-white px-1.5 py-0.5 rounded text-[10px] font-bold">
-                                    4.5 <span class="material-icons text-[10px] ml-0.5">star</span>
-                                </div>
-                                <span class="text-[11px] text-slate-400 font-medium">(1,240)</span>
-                            </div>
-
                             <div class="mt-auto">
-                                <div class="flex items-baseline gap-2 mb-4">
-                                    <span class="text-lg font-bold text-slate-900">₹{{ item.variant.selling_price    }}</span>
-                                    
-
-                                    <span class="text-xs text-slate-400 line-through">₹{{ item.variant.mrp }}</span>
+                                <div class="flex items-baseline gap-3 mb-6">
+                                    <span class="text-2xl font-[900] text-black tracking-tighter">₹{{ item.variant.selling_price }}</span>
+                                    <span class="text-xs text-gray-300 line-through font-bold">₹{{ item.variant.mrp }}</span>
                                 </div>
 
                                 <button onclick="addToCartFromWishlist('{{ item.variant.id }}', '{{ item.id }}', this)"
-                                    class="w-full bg-[#fb641b] text-white py-2 rounded text-xs font-bold uppercase tracking-wide hover:bg-[#e65a16] transition-colors">
-                                    Add to Cart
+                                    class="w-full bg-black text-white py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-gray-800 transition-all shadow-lg hover:shadow-black/20">
+                                    Move to Cart
                                 </button>
                             </div>
                         </div>
@@ -140,15 +130,15 @@
                     {% endfor %}
                 </div>
                 {% else %}
-                <div class="bg-white rounded border border-slate-200 py-20 text-center shadow-sm">
-                    <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <span class="material-icons text-slate-200 text-4xl">favorite_border</span>
+                <div class="bg-white rounded-[4rem] border border-gray-50 py-32 text-center shadow-sm">
+                    <div class="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-8">
+                        <span class="material-icons text-gray-200 text-5xl">inventory_2</span>
                     </div>
-                    <h3 class="text-lg font-bold text-slate-900">Empty Wishlist</h3>
-                    <p class="text-slate-500 text-sm mb-6 px-4">You haven't added anything to this collection yet.</p>
+                    <h3 class="text-2xl font-[900] text-black uppercase tracking-tighter">Vault Empty</h3>
+                    <p class="text-gray-400 text-[10px] font-black uppercase tracking-[0.2em] mt-4 mb-10">This collection contains no curated artifacts.</p>
                     <a href="{% url 'all_products' %}"
-                        class="inline-block bg-blue-600 text-white px-8 py-3 rounded font-bold text-xs uppercase tracking-widest hover:bg-blue-700 transition-all shadow-md">
-                        Start Shopping
+                        class="inline-block bg-black text-white px-10 py-5 rounded-full font-black text-[10px] uppercase tracking-[0.3em] hover:bg-gray-800 transition-all shadow-2xl">
+                        Explore Catalog
                     </a>
                 </div>
                 {% endif %}
@@ -158,69 +148,70 @@
 </div>
 
 <div id="new-collection-modal"
-    class="fixed inset-0 bg-slate-900/60 backdrop-blur-[2px] z-[100] flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300">
-    <div
-        class="bg-white w-full max-w-sm rounded shadow-2xl translate-y-4 transition-all duration-300 modal-content overflow-hidden">
-        <div class="flex justify-between items-center px-6 py-4 border-b border-slate-100 bg-slate-50">
-            <h3 class="text-sm font-bold uppercase tracking-wider text-slate-700">New Collection</h3>
-            <button onclick="toggleModal('new-collection-modal')"
-                class="text-slate-400 hover:text-slate-900 transition-colors">
-                <span class="material-icons text-base">close</span>
+    class="fixed inset-0 bg-black/60 backdrop-blur-md z-[100] flex items-center justify-center opacity-0 pointer-events-none transition-all duration-500">
+    <div class="bg-white w-full max-w-md rounded-[3.5rem] shadow-2xl scale-90 opacity-0 transition-all duration-500 modal-content overflow-hidden p-12">
+        <div class="flex justify-between items-center mb-10">
+            <h3 class="text-[10px] font-black uppercase tracking-[0.4em] text-black">New Directory</h3>
+            <button onclick="toggleModal('new-collection-modal')" class="text-gray-300 hover:text-black transition-colors">
+                <span class="material-icons">close</span>
             </button>
         </div>
 
-        <form action="{% url 'add_collection' %}" method="POST" class="p-6">
+        <form action="{% url 'add_collection' %}" method="POST">
             {% csrf_token %}
-            <div class="mb-6">
-                <label class="text-[11px] font-bold uppercase text-slate-500 block mb-2">Collection Name</label>
-                <input type="text" name="name" required placeholder="e.g. Birthday Wishlist"
-                    class="w-full border border-slate-200 rounded px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all">
+            <div class="mb-10">
+                <label class="text-[9px] font-black uppercase text-gray-400 tracking-widest block mb-4">Collection Title</label>
+                <input type="text" name="name" required placeholder="E.G. SUMMER CURATION"
+                    class="w-full border-b-2 border-gray-100 py-4 text-sm font-bold focus:border-black outline-none transition-all placeholder:text-gray-200 uppercase tracking-tight">
             </div>
 
             <button type="submit"
-                class="w-full bg-blue-600 text-white font-bold py-3 rounded hover:bg-blue-700 transition-all shadow-md uppercase tracking-wide text-xs">
-                Create Collection
+                class="w-full bg-black text-white font-black py-5 rounded-2xl hover:bg-gray-800 transition-all shadow-xl uppercase tracking-[0.2em] text-[10px]">
+                Initialize Collection
             </button>
-        </form>
-        <form style="display:none;">
-            {% csrf_token %}
         </form>
     </div>
 </div>
-<div id="cart-toast"
-    class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-6 py-3 rounded shadow-2xl flex items-center gap-3 opacity-0 translate-y-6 pointer-events-none transition-all duration-300 z-[100]">
 
-    <span id="cart-toast-icon" class="material-icons text-green-400">check_circle</span>
-    <span id="cart-toast-msg" class="text-sm font-bold"></span>
+<div id="cart-toast"
+    class="fixed bottom-12 left-1/2 -translate-x-1/2 bg-black text-white px-8 py-5 rounded-full shadow-[0_30px_60px_rgba(0,0,0,0.3)] flex items-center gap-4 opacity-0 translate-y-8 pointer-events-none transition-all duration-500 z-[100]">
+    <span id="cart-toast-icon" class="material-icons text-emerald-400 text-lg">check_circle</span>
+    <span id="cart-toast-msg" class="text-[10px] font-black uppercase tracking-widest"></span>
 </div>
+
+<form style="display:none;">{% csrf_token %}</form>
 
 <script>
     function toggleModal(modalId) {
         const modal = document.getElementById(modalId);
         const content = modal.querySelector('.modal-content');
-
+        
         if (modal.classList.contains('opacity-0')) {
             modal.classList.remove('opacity-0', 'pointer-events-none');
-            content.classList.remove('translate-y-4');
+            content.classList.remove('scale-90', 'opacity-0');
+            content.classList.add('scale-100', 'opacity-100');
         } else {
             modal.classList.add('opacity-0', 'pointer-events-none');
-            content.classList.add('translate-y-4');
+            content.classList.add('scale-90', 'opacity-0');
+            content.classList.remove('scale-100', 'opacity-100');
         }
     }
 
-    // Auto hide messages
     setTimeout(() => {
         const alerts = document.querySelectorAll(".alert-message");
         alerts.forEach(alert => {
-            alert.style.transition = "all 0.4s ease";
+            alert.style.transition = "all 0.6s cubic-bezier(0.16, 1, 0.3, 1)";
             alert.style.opacity = "0";
-            alert.style.transform = "translateX(20px)";
-            setTimeout(() => alert.remove(), 400);
+            alert.style.transform = "translateX(40px)";
+            setTimeout(() => alert.remove(), 600);
         });
-    }, 3000);
+    }, 4000);
 
     function addToCartFromWishlist(variantId, wishlistItemId, button) {
         const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        const originalText = button.textContent;
+        button.disabled = true;
+        button.textContent = "PROCESSING...";
 
         fetch(`/product/addcart/${variantId}/`, {
             method: "POST",
@@ -229,55 +220,62 @@
                 "X-Requested-With": "XMLHttpRequest"
             }
         })
-            .then(res => res.json())
-            .then(data => {
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === "success") {
+                showCartToast("Object Moved to Cart 🛒");
+                
+                fetch(`/wishlist/remove/wishlist-item/${wishlistItemId}/`, {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": csrfToken,
+                        "X-Requested-With": "XMLHttpRequest"
+                    }
+                });
 
-                if (data.status === "success") {
-                    showCartToast("Added to cart 🛒");
-
-
-                    fetch(`/wishlist/remove/wishlist-item/${wishlistItemId}/`, {
-                        method: "POST",
-                        headers: {
-                            "X-CSRFToken": csrfToken,
-                            "X-Requested-With": "XMLHttpRequest"
-                        }
-                    });
-
-
-                    button.closest('.group').remove();
-                }
-                else {
-                    showCartToast(data.message || "Error", true);
-                }
-
-            })
-            .catch(() => showCartToast("Network error", true));
+                const card = button.closest('.wishlist-card');
+                card.style.opacity = "0";
+                card.style.transform = "scale(0.95)";
+                setTimeout(() => {
+                    card.remove();
+                    if (document.querySelectorAll('.wishlist-card').length === 0) {
+                        location.reload();
+                    }
+                }, 500);
+            } else {
+                showCartToast(data.message || "Operation Failed", true);
+                button.disabled = false;
+                button.textContent = originalText;
+            }
+        })
+        .catch(() => {
+            showCartToast("Connection Interrupted", true);
+            button.disabled = false;
+            button.textContent = originalText;
+        });
     }
+
     function showCartToast(message, isError = false) {
         const toast = document.getElementById("cart-toast");
         const msg = document.getElementById("cart-toast-msg");
         const icon = document.getElementById("cart-toast-icon");
 
         msg.textContent = message;
-
         if (isError) {
             icon.textContent = "error";
-            icon.classList.remove("text-green-400");
-            icon.classList.add("text-red-400");
+            icon.className = "material-icons text-red-500 text-lg";
         } else {
             icon.textContent = "check_circle";
-            icon.classList.remove("text-red-400");
-            icon.classList.add("text-green-400");
+            icon.className = "material-icons text-emerald-400 text-lg";
         }
 
-        toast.classList.remove("opacity-0", "translate-y-6", "pointer-events-none");
+        toast.classList.remove("opacity-0", "translate-y-8", "pointer-events-none");
         toast.classList.add("opacity-100", "translate-y-0");
 
         setTimeout(() => {
-            toast.classList.add("opacity-0", "translate-y-6", "pointer-events-none");
+            toast.classList.add("opacity-0", "translate-y-8", "pointer-events-none");
             toast.classList.remove("opacity-100", "translate-y-0");
-        }, 2500);
+        }, 3000);
     }
 </script>
 {% endblock %}

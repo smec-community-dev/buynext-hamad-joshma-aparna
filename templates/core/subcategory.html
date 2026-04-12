@@ -1,21 +1,48 @@
 {% extends "core/base.html" %}
 
-{% block content %}
-<div class="bg-[#f1f3f6] min-h-screen font-sans text-slate-900">
+{% block title %} BuyNext | {{ active_category.name }} {% endblock %}
 
-    <nav class="bg-white border-b border-slate-200 shadow-sm sticky top-20 z-40">
-        <div class="container mx-auto">
-            <div class="flex items-center justify-start gap-8 overflow-x-auto no-scrollbar px-4 py-3">
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+    body { font-family: 'Inter', sans-serif; background-color: #f5f5f7; }
+    .product-card { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+    @media (min-width: 1024px) {
+        .product-card:hover { transform: translateY(-5px); }
+    }
+    .glass-effect { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    
+    /* Mobile Sidebar Transition */
+    @media (max-width: 1023px) {
+        #filterDrawer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #filterDrawer.active { transform: translateY(0); }
+    }
+</style>
+
+<div class="bg-[#f5f5f7] min-h-screen pb-24 lg:pb-20">
+    <nav class="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-40">
+        <div class="container mx-auto px-4 md:px-6">
+            <div class="flex items-center gap-6 md:gap-8 overflow-x-auto no-scrollbar py-4 md:py-5">
                 {% for cat in all_categories %}
                 <a href="{% url 'subcategory' cat.slug %}"
                     class="group flex flex-col items-center min-w-fit transition-all relative">
-                    <span
-                        class="text-[13px] font-medium transition-colors mb-1
-                        {% if cat == active_category %} text-blue-600 font-bold {% else %} text-slate-700 hover:text-blue-600 {% endif %}">
+                    <span class="text-[10px] md:text-[11px] font-[800] uppercase tracking-[0.2em] transition-colors mb-2
+                        {% if cat == active_category %} text-black {% else %} text-gray-400 hover:text-black {% endif %}">
                         {{ cat.name }}
                     </span>
                     {% if cat == active_category %}
-                    <div class="absolute -bottom-3 w-full h-[3px] bg-blue-600 rounded-t-full"></div>
+                    <div class="absolute -bottom-[17px] md:-bottom-[21px] w-full h-[3px] bg-black rounded-full"></div>
                     {% endif %}
                 </a>
                 {% endfor %}
@@ -23,28 +50,25 @@
         </div>
     </nav>
 
-    <div class="container mx-auto px-4 py-6">
-
-        <div class="bg-white rounded-lg shadow-sm p-6 mb-6 overflow-hidden">
-            <h2 class="text-sm font-bold text-slate-800 mb-6 flex items-center gap-2">
-                <span class="w-1 h-4 bg-blue-600 rounded-full"></span>
-                Shop by Collection
+    <div class="container mx-auto px-4 md:px-6 pt-6 md:pt-10">
+        <div class="bg-white rounded-[1.5rem] md:rounded-[2.5rem] p-5 md:p-8 mb-6 md:mb-10 shadow-[0_10px_40px_rgba(0,0,0,0.03)] border border-gray-100">
+            <h2 class="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mb-6 md:mb-8 flex items-center gap-3">
+                <span class="w-6 md:w-8 h-[1px] bg-gray-200"></span>
+                Collections
             </h2>
-            <div class="flex items-start gap-10 overflow-x-auto no-scrollbar pb-2">
+            <div class="flex items-start gap-6 md:gap-10 overflow-x-auto no-scrollbar pb-2">
                 {% for sub in subcategories %}
-                <a href="?subcategory={{ sub.slug }}" class="flex flex-col items-center gap-3 min-w-[80px] group">
-                    <div
-                        class="w-16 h-16 rounded-full bg-slate-50 border border-slate-100 transition-all overflow-hidden flex items-center justify-center p-1
-                        {% if selected_subcategory and sub.id == selected_subcategory.id %} ring-2 ring-blue-600 border-transparent {% else %} group-hover:border-blue-400 {% endif %}">
+                <a href="?subcategory={{ sub.slug }}" class="flex flex-col items-center gap-3 md:gap-4 min-w-[70px] md:min-w-[90px] group">
+                    <div class="w-16 h-16 md:w-20 md:h-20 rounded-full bg-[#f9f9fb] border border-gray-100 transition-all overflow-hidden flex items-center justify-center p-2
+                        {% if selected_subcategory and sub.id == selected_subcategory.id %} ring-2 ring-black border-white shadow-xl scale-110 {% else %} group-hover:border-black group-hover:scale-105 {% endif %}">
                         {% if sub.image %}
-                        <img src="{{ sub.image.url }}" class="w-full h-full object-contain">
+                        <img src="{{ sub.image.url }}" class="w-full h-full object-contain mix-blend-multiply">
                         {% else %}
-                        <span class="material-icons text-slate-300">category</span>
+                        <span class="material-icons text-gray-300">category</span>
                         {% endif %}
                     </div>
-                    <span
-                        class="text-[11px] font-bold text-center leading-tight transition-colors
-                        {% if selected_subcategory and sub.id == selected_subcategory.id %} text-blue-600 {% else %} text-slate-500 group-hover:text-blue-600 {% endif %}">
+                    <span class="text-[9px] md:text-[10px] font-black text-center uppercase tracking-wider leading-tight transition-colors
+                        {% if selected_subcategory and sub.id == selected_subcategory.id %} text-black {% else %} text-gray-400 group-hover:text-black {% endif %}">
                         {{ sub.name }}
                     </span>
                 </a>
@@ -52,184 +76,175 @@
             </div>
         </div>
 
-        <div class="flex flex-col lg:flex-row gap-4">
-            <aside class="w-full lg:w-72 flex-shrink-0">
-                <div class="bg-white rounded-lg shadow-sm border border-slate-200 sticky top-24">
-                    <div class="p-4 border-b border-slate-100">
-                        <h3 class="text-base font-bold text-slate-900">Filters</h3>
+        <div class="flex flex-col lg:flex-row gap-6 md:gap-10">
+            <aside id="filterDrawer" class="w-full lg:w-72 flex-shrink-0">
+                <div class="bg-black/20 absolute inset-0 lg:hidden" onclick="toggleFilters()"></div>
+                <div class="bg-white p-6 md:p-8 rounded-t-[2rem] lg:rounded-[2rem] shadow-2xl lg:shadow-[0_10px_40px_rgba(0,0,0,0.03)] border border-gray-200 lg:sticky lg:top-28 h-[70vh] lg:h-auto overflow-y-auto">
+                    <div class="flex items-center justify-between mb-8">
+                        <h3 class="text-xs font-black uppercase tracking-widest text-black">Refine Results</h3>
+                        <button onclick="toggleFilters()" class="lg:hidden p-2"><span class="material-icons">close</span></button>
                     </div>
-
-                    <div class="p-4 border-b border-slate-100">
-                        <h4 class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-4">Categories</h4>
-                        <ul class="space-y-3">
+                    
+                    <div class="mb-8">
+                        <div class="space-y-4">
                             {% for sub in subcategories %}
-                            <li>
-                                <a href="?subcategory={{ sub.slug }}" class="flex items-center gap-3 group">
-                                    <div
-                                        class="w-4 h-4 border rounded flex items-center justify-center transition-colors
-                                        {% if selected_subcategory and sub.id == selected_subcategory.id %} bg-blue-600 border-blue-600 {% else %} border-slate-300 group-hover:border-blue-500 {% endif %}">
-                                        {% if selected_subcategory and sub.id == selected_subcategory.id %}
-                                        <span class="material-icons text-white text-[10px]">check</span>
-                                        {% endif %}
-                                    </div>
-                                    <span
-                                        class="text-sm {% if selected_subcategory and sub.id == selected_subcategory.id %} font-bold text-blue-600 {% else %} text-slate-600 group-hover:text-slate-900 {% endif %}">
-                                        {{ sub.name }}
-                                    </span>
-                                </a>
-                            </li>
+                            <a href="?subcategory={{ sub.slug }}" class="flex items-center group gap-3">
+                                <div class="w-5 h-5 rounded border-2 transition-all flex items-center justify-center 
+                                    {% if selected_subcategory and sub.id == selected_subcategory.id %} bg-black border-black {% else %} border-gray-200 group-hover:border-black {% endif %}">
+                                    {% if selected_subcategory and sub.id == selected_subcategory.id %}
+                                    <span class="material-icons text-white text-[12px]">check</span>
+                                    {% endif %}
+                                </div>
+                                <span class="text-xs font-bold transition-colors {% if selected_subcategory and sub.id == selected_subcategory.id %} text-black {% else %} text-gray-500 group-hover:text-black {% endif %}">
+                                    {{ sub.name }}
+                                </span>
+                            </a>
                             {% endfor %}
-                        </ul>
+                        </div>
                     </div>
 
-                    <div class="p-4">
-                        <h4 class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-4">Customer Ratings
-                        </h4>
-                        <div class="space-y-2">
-                            <div class="flex items-center gap-2 cursor-pointer group">
-                                <div class="w-4 h-4 border border-slate-300 rounded"></div>
-                                <div class="flex text-amber-400">
-                                    <span class="material-icons text-sm">star</span>
-                                    <span class="material-icons text-sm">star</span>
-                                    <span class="material-icons text-sm">star</span>
-                                    <span class="material-icons text-sm">star</span>
-                                    <span class="material-icons text-sm text-slate-200">star</span>
-                                </div>
-                                <span class="text-xs text-slate-600">& Up</span>
-                            </div>
-                        </div>
+                    <div class="pt-8 border-t border-gray-100">
+                        <h4 class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Rating</h4>
+<a href="?rating=4{% if selected_subcategory %}&subcategory={{ selected_subcategory.slug }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}"
+   class="flex items-center gap-2 group p-3 rounded-xl border transition-all
+   {% if request.GET.rating == '4' %} bg-black text-white border-black {% else %} bg-gray-50 hover:border-gray-200 {% endif %}">
+    <div class="flex text-orange-400">
+        <span class="material-icons text-sm">star</span>
+        <span class="material-icons text-sm">star</span>
+        <span class="material-icons text-sm">star</span>
+        <span class="material-icons text-sm">star</span>
+        <span class="material-icons text-sm text-gray-200">star</span>
+    </div>
+    <span class="text-[10px] font-black uppercase">& Up</span>
+</a>
                     </div>
                 </div>
             </aside>
 
             <main class="flex-grow">
-                <div
-                    class="bg-white p-4 rounded-lg shadow-sm border border-slate-200 mb-4 flex flex-col md:flex-row justify-between items-center">
-                    <div class="text-sm">
-                        <span class="font-bold">Showing items for</span>
-                        <span class="text-blue-600 font-bold ml-1">"{% if selected_subcategory %}
-                           {{ selected_subcategory.name }}{% else %}{{ active_category.name }}{% endif %}"</span>
+                <div class="bg-white/80 backdrop-blur-md p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border border-gray-200 mb-6 md:mb-8 flex flex-col md:flex-row justify-between items-center gap-4 shadow-sm">
+                    <div class="text-[10px] md:text-xs font-bold uppercase tracking-widest text-gray-400">
+                        <span class="hidden md:inline">Showing</span> <span class="text-black">"{% if selected_subcategory %}{{ selected_subcategory.name }}{% else %}{{ active_category.name }}{% endif %}"</span>
                     </div>
-                    <div class="flex items-center gap-6 mt-3 md:mt-0">
-                        <span class="text-xs font-bold text-slate-500 uppercase">Sort By</span>
-                        <div class="flex gap-4">
-                            <a href="?sort=newest{% if selected_subcategory %}&subcategory={{ selected_subcategory.slug }}{% endif %}"
-                                class="text-xs font-bold {% if sort == 'newest' %}text-blue-600 border-b-2 border-blue-600{% else %}text-slate-500{% endif %} pb-1">
-                                Newest
-                            </a>
-
-                            <a href="?sort=price_low_high{% if selected_subcategory %}&subcategory={{ selected_subcategory.slug }}{% endif %}"
-                                class="text-xs font-bold {% if sort == 'price_low_high' %}text-blue-600 border-b-2 border-blue-600{% else %}text-slate-500{% endif %}">
-                                Price: Low
-                            </a>
-
-                            <a href="?sort=price_high_low{% if selected_subcategory %}&subcategory={{ selected_subcategory.slug }}{% endif %}"
-                                class="text-xs font-bold {% if sort == 'price_high_low' %}text-blue-600 border-b-2 border-blue-600{% else %}text-slate-500{% endif %}">
-                                Price: High
-                            </a>
-                        </div>
+                    <div class="flex items-center gap-2 md:gap-4 overflow-x-auto no-scrollbar w-full md:w-auto">
+                        {% with sub_slug=selected_subcategory.slug %}
+                        <a href="?sort=newest{% if sub_slug %}&subcategory={{ sub_slug }}{% endif %}"
+                            class="whitespace-nowrap px-4 py-2 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all border
+                            {% if sort == 'newest' %} bg-black text-white border-black {% else %} bg-white text-gray-500 border-gray-100 hover:border-black {% endif %}">
+                            Newest
+                        </a>
+                        <a href="?sort=price_low_high{% if sub_slug %}&subcategory={{ sub_slug }}{% endif %}"
+                            class="whitespace-nowrap px-4 py-2 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all border
+                            {% if sort == 'price_low_high' %} bg-black text-white border-black {% else %} bg-white text-gray-500 border-gray-100 hover:border-black {% endif %}">
+                            Price: Low
+                        </a>
+                        <a href="?sort=price_high_low{% if sub_slug %}&subcategory={{ sub_slug }}{% endif %}"
+                            class="whitespace-nowrap px-4 py-2 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all border
+                            {% if sort == 'price_high_low' %} bg-black text-white border-black {% else %} bg-white text-gray-500 border-gray-100 hover:border-black {% endif %}">
+                            Price: High
+                        </a>
+                        {% endwith %}
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-8">
                     {% for product in products %}
-                    <a href="{% url 'product_details' product.slug %}"
-                        class="group relative bg-white border border-slate-100 hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] transition-all duration-300 flex flex-col">
+                    <div class="product-card group relative bg-white rounded-[2rem] p-4 md:p-5 shadow-[0_4px_20px_rgba(0,0,0,0.04)] border border-gray-200">
+                        
+                        <button onclick="event.preventDefault(); event.stopPropagation(); toggleWishlistSubcat(event, this)"
+                            class="wishlist-btn absolute top-4 right-4 md:top-6 md:right-6 w-10 h-10 md:w-11 md:h-11 glass-effect border border-gray-100 rounded-full flex items-center justify-center shadow-sm z-20 hover:scale-110 transition-all
+                            {% if product.is_in_wishlist %}text-red-500{% else %}text-gray-400{% endif %}"
+                            data-variant-id="{{ product.variant_id }}">
+                            <span class="material-icons text-base md:text-lg">{% if product.is_in_wishlist %}favorite{% else %}favorite_border{% endif %}</span>
+                        </button>
 
-                        <div class="relative aspect-[3/4] p-4 flex items-center justify-center overflow-hidden">
-                            {% if product.primary_image %}
-                            <img src="{{ product.primary_image.url }}" alt="{{ product.name }}"
-                                class="w-full h-full object-contain transform group-hover:scale-105 transition-transform duration-500">
-                            {% endif %}
-
-                            <button onclick="event.stopPropagation(); toggleWishlistSubcat(event, this)"
-                                class="wishlist-btn absolute top-3 right-3 w-8 h-8 bg-white border border-slate-100 rounded-full flex items-center justify-center shadow-sm z-10 hover:bg-slate-50 transition-all {% if product.is_in_wishlist %}text-red-500{% else %}text-slate-300{% endif %}"
-                                {% if product.default_variant %}data-variant-id="{{ product.default_variant.id }}" 
-                               {% endif %}>
-                                <span class="material-icons text-sm">{% if product.is_in_wishlist %}favorite
-                                   {% else %}favorite_border{% endif %}</span>
-                            </button>
-                        </div>
-
-                        <div class="p-4 pt-0 flex-grow">
-                            <h3
-                                class="text-sm font-medium text-slate-800 group-hover:text-blue-600 line-clamp-2 leading-snug mb-2">
-                                {{ product.name }}
-                            </h3>
-
-                            <div class="flex items-center gap-2 mb-2">
-                                <div
-                                    class="bg-green-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5">
-                                    {{ product.average_rating|default:"0.0" }} <span class="material-icons text-[10px]">star</span>
-                                </div>
-                                <span class="text-xs text-slate-400 font-medium">({{ product.review_count }})</span>
-                            </div>
-
-                            <div class="flex items-center gap-2">
-                                <span class="text-lg font-bold text-slate-900">₹{{ product.min_selling_price }}</span>
-                                {% if product.min_mrp > product.min_selling_price %}
-                                <span class="text-xs text-slate-400 line-through">₹{{ product.min_mrp }}</span>
-                                <span class="text-[10px] font-bold text-green-600">Save 
-                                   ₹{{product.save_price }}</span>
+                        <a href="{% url 'product_details' product.slug %}" class="block">
+                            <div class="relative aspect-square mb-4 md:mb-6 flex items-center justify-center rounded-[1.5rem] md:rounded-[2rem] bg-[#f9f9fb] border border-gray-50 overflow-hidden">
+                                {% if product.primary_image %}
+                                <img src="{{ product.primary_image.url }}" class="w-[85%] h-[85%] object-contain transition-transform duration-700 group-hover:scale-110" alt="{{ product.name }}">
                                 {% endif %}
                             </div>
 
-                            <div class="mt-3 flex items-center justify-between">
-                                <span
-                                    class="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded uppercase">
-                                    {{ product.seller.store_name|truncatechars:12 }}
-                                </span>
-                                {% if product.stock_quantity > 0 and product.stock_quantity < 10 %} <span
-                                    class="text-red-500 text-[10px] font-bold">Only {{ product.stock_quantity }}
-                                    left!</span>
-                                    {% endif %}
+                            <div class="px-1 md:px-2">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-[8px] md:text-[9px] text-gray-400 font-black uppercase tracking-widest">{{ product.subcategory.name }}</span>
+                                    <div class="flex items-center gap-1 bg-gray-50 px-2 py-0.5 rounded-full border border-gray-100">
+                                        <span class="material-icons text-orange-400 text-[10px] md:text-[12px]">star</span>
+                                        <span class="text-[9px] md:text-[10px] font-black">{{ product.average_rating|default:"0.0" }}</span>
+                                    </div>
+                                </div>
+                                <h3 class="text-xs md:text-sm font-bold text-gray-900 line-clamp-1 mb-3 md:mb-4 group-hover:text-black transition-colors">{{ product.name }}</h3>
+                                
+                                <div class="flex items-end justify-between">
+                                    <div class="flex flex-col">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-lg md:text-xl font-[900] text-black">₹{{ product.min_selling_price }}</span>
+                                            {% if product.min_mrp > product.min_selling_price %}
+                                            <span class="text-[9px] md:text-[10px] text-gray-300 line-through font-bold">₹{{ product.min_mrp }}</span>
+                                            {% endif %}
+                                        </div>
+                                        <span class="text-[8px] md:text-[9px] font-black text-emerald-500 uppercase mt-1">By {{ product.seller.store_name|truncatechars:15 }}</span>
+                                    </div>
+                                    <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-black text-white flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-4 transition-all shadow-lg">
+                                        <span class="material-icons text-xs md:text-sm">arrow_forward</span>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </a>
+                        </a>
+                    </div>
                     {% empty %}
-                    <div
-                        class="col-span-full py-32 bg-white rounded-lg text-center border border-dashed border-slate-300">
-                        <p class="text-slate-400 font-bold uppercase tracking-widest">No matching products found</p>
+                    <div class="col-span-full py-20 md:py-32 bg-white rounded-[2rem] md:rounded-[3rem] text-center border border-gray-200">
+                        <span class="material-icons text-gray-200 text-5xl md:text-6xl mb-4">inventory_2</span>
+                        <p class="text-[10px] md:text-xs text-gray-400 font-black uppercase tracking-widest">No products in this collection</p>
                     </div>
                     {% endfor %}
                 </div>
 
-                <div class="mt-10 flex justify-center pb-20">
-                    <div class="flex border border-slate-200 rounded overflow-hidden bg-white shadow-sm">
+                {% if products.has_other_pages %}
+                <div class="mt-12 md:mt-20 flex justify-center pb-10">
+                    <nav class="flex items-center gap-4 bg-white px-5 py-2.5 md:px-6 md:py-3 rounded-full shadow-sm border border-gray-200">
                         {% if products.has_previous %}
-                        <a href="?page={{ products.previous_page_number }}"
-                            class="px-4 py-2 text-blue-600 font-bold border-r border-slate-200 hover:bg-slate-50 uppercase text-xs">Previous</a>
-                        {% endif %}
-
-                        {% for num in products.paginator.page_range %}
-                        <a href="?page={{ num }}"
-                            class="px-4 py-2 text-xs font-bold border-r border-slate-200 last:border-0 transition-colors
-                            {% if products.number == num %} bg-blue-600 text-white {% else %} text-slate-700 hover:bg-slate-50 {% endif %}">
-                            {{ num }}
+                        <a href="?page={{ products.previous_page_number }}" class="hover:text-black transition-colors">
+                            <span class="material-icons text-lg align-middle">west</span>
                         </a>
-                        {% endfor %}
-
-                        {% if products.has_next %}
-                        <a href="?page={{ products.next_page_number }}"
-                            class="px-4 py-2 text-blue-600 font-bold hover:bg-slate-50 uppercase text-xs">Next</a>
                         {% endif %}
-                    </div>
+                        <span class="text-[10px] md:text-[11px] font-black text-black uppercase tracking-widest">
+                            {{ products.number }} / {{ products.paginator.num_pages }}
+                        </span>
+                        {% if products.has_next %}
+                        <a href="?page={{ products.next_page_number }}" class="hover:text-black transition-colors">
+                            <span class="material-icons text-lg align-middle">east</span>
+                        </a>
+                        {% endif %}
+                    </nav>
                 </div>
+                {% endif %}
             </main>
         </div>
     </div>
 </div>
 
-<div id="wishlist-toast-subcat"
-    class="fixed top-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-6 py-3 rounded shadow-2xl flex items-center gap-3 opacity-0 translate-y-[-20px] pointer-events-none transition-all duration-300 z-[100]">
-    <span class="material-icons text-green-400">check_circle</span>
-    <span id="wishlist-msg-subcat" class="text-sm font-bold"></span>
+<div class="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-40 w-[90%]">
+    <button onclick="toggleFilters()" class="w-full bg-black/90 backdrop-blur-xl text-white py-4 rounded-2xl flex items-center justify-center gap-3 shadow-2xl border border-white/10">
+        <span class="material-icons text-sm">tune</span>
+        <span class="text-[11px] font-black uppercase tracking-widest">Filters</span>
+    </button>
+</div>
+
+<div id="wishlist-toast-subcat" class="fixed top-10 left-1/2 -translate-x-1/2 bg-black text-white px-8 py-4 rounded-2xl shadow-2xl flex items-center gap-3 opacity-0 translate-y-[-20px] pointer-events-none transition-all duration-500 z-[100] w-[80%] md:w-auto text-center justify-center">
+    <span class="material-icons text-emerald-400">check_circle</span>
+    <span id="wishlist-msg-subcat" class="text-[10px] md:text-xs font-black uppercase tracking-widest"></span>
 </div>
 
 <form style="display:none;">{% csrf_token %}</form>
 
 <script>
-    // Logic preserved as requested
+    function toggleFilters() {
+        const drawer = document.getElementById('filterDrawer');
+        drawer.classList.toggle('active');
+        document.body.style.overflow = drawer.classList.contains('active') ? 'hidden' : '';
+    }
+
     function toggleWishlistSubcat(event, button) {
         event.preventDefault();
         event.stopPropagation();
@@ -241,61 +256,42 @@
         const icon = button.querySelector('span.material-icons');
 
         if (!variantId) {
-            showWishlistToastSubcat("Selection unavailable");
+            showWishlistToastSubcat("Variant unavailable");
             button.disabled = false;
             return;
         }
 
-       fetch(`/wishlist/add/${variantId}/`, {
-    method: "POST",
-    headers: {
-        "X-CSRFToken": csrfToken,
-        "X-Requested-With": "XMLHttpRequest"
-    }
-})
-.then(response => {
-
-    const contentType = response.headers.get("content-type");
-
-    // 🔥 NOT JSON → user not logged in
-    if (!contentType || !contentType.includes("application/json")) {
-        window.location.href = "/login/";
-        return;
-    }
-
-    return response.json();
-})
-.then(data => {
-
-    if (!data) return;
-
-    // 🔥 LOGIN REQUIRED
-    if (data.status === "login_required") {
-        window.location.href = data.redirect_url;
-        return;
-    }
-
-    if (data.status === "added") {
-        icon.textContent = 'favorite';
-        button.classList.add('text-red-500');
-        button.classList.remove('text-slate-300');
-
-        showWishlistToastSubcat("Saved to Wishlist ❤️");
-
-    } else if (data.status === "removed") {
-        icon.textContent = 'favorite_border';
-        button.classList.remove('text-red-500');
-        button.classList.add('text-slate-300');
-
-        showWishlistToastSubcat("Removed from Wishlist");
-
-    } else {
-        showWishlistToastSubcat("Something went wrong");
-    }
-
-})
-.catch(() => showWishlistToastSubcat("Connectivity error"))
-.finally(() => button.disabled = false);
+        fetch(`/wishlist/add/${variantId}/`, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": csrfToken,
+                "X-Requested-With": "XMLHttpRequest"
+            }
+        })
+        .then(response => {
+            const contentType = response.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+                window.location.href = "/login/";
+                return;
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (!data) return;
+            if (data.status === "added") {
+                icon.textContent = 'favorite';
+                button.classList.add('text-red-500');
+                button.classList.remove('text-gray-400');
+                showWishlistToastSubcat("Added to Collection ❤️");
+            } else if (data.status === "removed") {
+                icon.textContent = 'favorite_border';
+                button.classList.remove('text-red-500');
+                button.classList.add('text-gray-400');
+                showWishlistToastSubcat("Removed from Collection");
+            }
+        })
+        .catch(() => showWishlistToastSubcat("Connectivity Error"))
+        .finally(() => button.disabled = false);
     }
 
     function showWishlistToastSubcat(message) {

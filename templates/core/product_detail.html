@@ -1,623 +1,402 @@
 {% extends "core/base.html" %}
 
 {% block content %}
-<div class="bg-gray-100 min-h-screen pb-16 lg:pb-0">
-    <div class="container mx-auto bg-white shadow-sm max-w-[1440px]">
+<div class="bg-gray-50 min-h-screen pb-20 lg:pb-10">
+    <div class="container mx-auto bg-white shadow-sm max-w-[1440px] rounded-b-lg">
         <div class="flex flex-col lg:flex-row">
 
-            <div class="w-full lg:w-[40%] p-4 lg:sticky lg:top-20 h-fit">
-                <div class="flex flex-col-reverse lg:flex-row gap-3">
-                    <div class="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-y-auto no-scrollbar max-h-[500px]">
+            <div class="w-full lg:w-[45%] p-6 lg:sticky lg:top-24 h-fit">
+                <div class="flex flex-col-reverse lg:flex-row gap-4">
+                    <div class="flex lg:flex-col gap-3 overflow-x-auto lg:overflow-y-auto no-scrollbar max-h-[500px] py-2">
                         {% for img in gallery_images %}
-                        <div class="thumb-wrapper generic-thumb border hover:border-blue-600 cursor-pointer p-1 rounded-sm flex-shrink-0 w-16 h-16"
-                            onclick="changeMainImage('{{ img.image.url }}', this)">
-                            <img src="{{ img.image.url }}" class="w-full h-full object-contain">
+                        <div class="thumb-wrapper generic-thumb border-2 border-transparent hover:border-blue-500 cursor-pointer p-1 rounded-md transition-all flex-shrink-0 w-16 h-16 bg-gray-50"
+                             onclick="changeMainImage('{{ img.image.url }}', this)">
+                            <img src="{{ img.image.url }}" class="w-full h-full object-contain mix-blend-multiply">
                         </div>
                         {% endfor %}
+                        
                         {% for variant in variants %}
-                        {% for v_img in variant.images.all %}
-                        <div class="thumb-wrapper variant-thumb border hover:border-blue-600 cursor-pointer p-1 rounded-sm flex-shrink-0 w-16 h-16 hidden"
-                            data-variant="{{ variant.id }}" onclick="changeMainImage('{{ v_img.image.url }}', this)">
-                            <img src="{{ v_img.image.url }}" class="w-full h-full object-contain">
-                        </div>
-                        {% endfor %}
+                            {% for v_img in variant.images.all %}
+                            <div class="thumb-wrapper variant-thumb border-2 border-transparent hover:border-blue-500 cursor-pointer p-1 rounded-md transition-all flex-shrink-0 w-16 h-16 bg-gray-50 hidden"
+                                 data-variant="{{ variant.id }}" onclick="changeMainImage('{{ v_img.image.url }}', this)">
+                                <img src="{{ v_img.image.url }}" class="w-full h-full object-contain mix-blend-multiply">
+                            </div>
+                            {% endfor %}
                         {% endfor %}
                     </div>
 
-                    <div class="flex-1 border border-gray-100 relative group overflow-hidden h-[400px] lg:h-[500px]">
+                    <div class="flex-1 border border-gray-100 rounded-xl relative group overflow-hidden bg-gray-50 h-[450px] lg:h-[550px]">
                         <img id="main-display-image"
-                            src="{{ default_variant.images.all.0.image.url|default:gallery_images.0.image.url }}"
-                            class="w-full h-full object-contain p-4 transition-all duration-300">
-                        <button id="wishlist-btn" onclick="toggleWishlist(this)"
-                            class="absolute top-4 right-4 bg-white shadow-md rounded-full p-2 transition-all duration-200 hover:shadow-xl z-10">
-                            <span
-                                class="material-icons {% if default_variant.is_in_wishlist %}text-red-500{% else %}text-gray-300{% endif %} transition-colors duration-300">
+                             src="{{ default_variant.images.all.0.image.url|default:gallery_images.0.image.url }}"
+                             class="w-full h-full object-contain p-8 transition-transform duration-500 group-hover:scale-105">
+                        
+                        <button id="wishlist-btn" 
+                                data-variant-id="{{ default_variant.id }}"
+                                onclick="toggleWishlist(this)"
+                                class="absolute top-6 right-6 bg-white/80 backdrop-blur-sm shadow-sm rounded-full p-2.5 transition-all duration-300 hover:bg-white hover:shadow-md z-10">
+                            <span class="material-icons wishlist-icon {% if default_variant.is_in_wishlist %}glow-wishlist{% else %}text-gray-400{% endif %}">
                                 {% if default_variant.is_in_wishlist %}favorite{% else %}favorite_border{% endif %}
                             </span>
                         </button>
                     </div>
                 </div>
 
-                <div class="hidden lg:flex gap-3 mt-6">
+                <div class="hidden lg:flex gap-4 mt-8">
                     <button onclick="submitCartForm('add')"
-                        class="flex-1 bg-[#ff9f00] text-white py-4 px-2 rounded-sm font-bold flex items-center justify-center gap-2 hover:shadow-lg transition-all">
-                        <span class="material-icons">shopping_cart</span> ADD TO CART
+                            class="flex-1 group bg-white border-2 border-gray-900 text-gray-900 py-4 rounded-lg font-bold flex items-center justify-center gap-2 hover:bg-gray-900 hover:text-white transition-all duration-300">
+                        <span class="material-icons group-hover:rotate-12 transition-transform">shopping_cart</span> 
+                        ADD TO CART
                     </button>
                     <button onclick="submitCartForm('buy')"
-                        class="flex-1 bg-[#fb641b] text-white py-4 px-2 rounded-sm font-bold flex items-center justify-center gap-2 hover:shadow-lg transition-all">
+                            class="flex-1 bg-blue-600 text-white py-4 rounded-lg font-bold flex items-center justify-center gap-2 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-200 transition-all duration-300">
                         <span class="material-icons">bolt</span> BUY NOW
                     </button>
                 </div>
             </div>
 
-            <div class="w-full lg:w-[60%] p-6 lg:border-l border-gray-100">
-                <nav class="text-xs text-gray-500 mb-2">
-                    Home > {{ product.subcategory.category.name }} > {{ product.subcategory.name }}
+            <div class="w-full lg:w-[55%] p-8 lg:border-l border-gray-50">
+                <nav class="text-[11px] uppercase tracking-widest text-gray-400 mb-4 font-semibold">
+                    Home / {{ product.subcategory.category.name }} / {{ product.subcategory.name }}
                 </nav>
 
-                <div class="mb-4">
-                    <p class="text-gray-500 font-medium">{{ product.brand }}</p>
-                    <h1 class="text-xl lg:text-2xl text-gray-900 mb-2">{{ product.name }}</h1>
+                <div class="mb-8">
+                    <p class="text-blue-600 font-bold text-sm tracking-wide mb-1">{{ product.brand }}</p>
+                    <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 leading-tight mb-4">{{ product.name }}</h1>
 
-                    <div class="flex items-center gap-3">
-                        <span
-                            class="bg-green-700 text-white text-xs font-bold px-2 py-0.5 rounded flex items-center gap-1">
-                            {{ average_rating }} <span class="material-icons text-[10px]">star</span>
-                        </span>
-                        <span class="text-gray-500 font-medium text-sm">{{ review_count }} Ratings & {{ review_count }}
-                            Reviews</span>
+                    <div class="flex items-center gap-4">
+                        <div class="flex items-center bg-green-50 px-2 py-1 rounded">
+                            <span class="text-green-700 text-sm font-bold flex items-center gap-1">
+                                {{ average_rating }} <span class="material-icons text-[14px]">star</span>
+                            </span>
+                        </div>
+                        <span class="text-gray-400 font-medium text-sm">{{ review_count }} Reviews</span>
                     </div>
                 </div>
 
-                <div class="flex items-center gap-3 mb-6">
-                    <span id="price-selling" class="text-3xl font-bold text-gray-900">₹{{ default_variant.selling_price   }}</span>
-                      
-
-
-
-
-
-                    <span id="price-mrp" class="text-gray-500 line-through">₹{{ default_variant.mrp }}</span>
-                    <span id="price-discount" class="text-green-700 font-bold">
-                        {% widthratio default_variant.selling_price default_variant.mrp 100 %}% off</span>
+                <div class="flex items-baseline gap-4 mb-10">
+                    <span id="price-selling" class="text-4xl font-extrabold text-gray-900">₹{{ default_variant.selling_price }}</span>
+                    <span id="price-mrp" class="text-xl text-gray-400 line-through">₹{{ default_variant.mrp }}</span>
+                    <span id="price-discount" class="bg-red-50 text-red-600 text-xs font-bold px-2 py-1 rounded">
+                        {% widthratio default_variant.selling_price default_variant.mrp 100 %}% OFF
+                    </span>
                 </div>
 
-                <div id="variant-selector" class="space-y-6 mb-8">
-                    {% regroup variants by color as color_list %} <div class="space-y-4">
-                        <h3 class="text-sm font-bold text-gray-500 uppercase">Available Variants</h3>
-                        <div class="flex flex-wrap gap-2">
-                            {% for v in variants %}
-                            <button data-variant-id="{{ v.id }}" data-price="{{ v.selling_price }}"
-                                data-mrp="{{ v.mrp }}" data-stock="{{ v.stock_quantity }}"
+                <div id="variant-selector" class="mb-10">
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Select Option</h3>
+                    <div class="flex flex-wrap gap-3">
+                        {% for v in variants %}
+                        <button data-variant-id="{{ v.id }}" 
+                                data-price="{{ v.selling_price }}"
+                                data-mrp="{{ v.mrp }}" 
+                                data-stock="{{ v.stock_quantity }}"
                                 data-img="{% if v.images.all %}{{ v.images.all.0.image.url }}{% endif %}"
-                                class="variant-btn border px-4 py-2 text-sm font-bold rounded-sm hover:border-blue-600 transition-all
-                                {% if v.id == default_variant.id %}border-blue-600 text-blue-600 ring-1 ring-blue-600{% else %}text-gray-900 border-gray-300{% endif %}">
-                                {% if v.variant_attributes.all %}
+                                class="variant-btn min-w-[80px] border-2 px-4 py-3 text-sm font-bold rounded-xl transition-all duration-200
+                                {% if v.id == default_variant.id %}border-blue-600 text-blue-600 bg-blue-50/50{% else %}border-gray-100 text-gray-600 hover:border-gray-300{% endif %}">
+                            {% if v.variant_attributes.all %}
                                 {% for va in v.variant_attributes.all %}
-                                {{ va.option.value }}{% if not forloop.last %} / {% endif %}
+                                    {{ va.option.value }}{% if not forloop.last %} / {% endif %}
                                 {% endfor %}
-                                {% else %}
+                            {% else %}
                                 {{ v.sku_code }}
-                                {% endif %}
-                            </button>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-
-                <div id="variant-attribute-display" class="border-t border-gray-100 pt-4 mb-8">
-                    <h3 class="text-sm font-bold text-gray-500 uppercase mb-2">Selected Variant Attributes</h3>
-                    <div id="attribute-list" class="text-sm text-gray-700 space-y-1">
-                        {% for va in default_variant.variant_attributes.all %}
-                        <div><span class="font-semibold">{{ va.option.attribute.name }}:</span> {{ va.option.value }}
-                        </div>
-                        {% empty %}
-                        <div class="text-gray-400">No attributes added for this variant.</div>
+                            {% endif %}
+                        </button>
                         {% endfor %}
                     </div>
                 </div>
 
-                <div class="mb-8">
-                    <p id="stock-text"
-                        class="text-sm font-bold {% if default_variant.stock_quantity > 0 %}text-green-700{% else %}text-red-500{% endif %}">
-                        {% if default_variant.stock_quantity > 0 %}In Stock{% else %}Out of Stock{% endif %}
+                <div class="mb-8 p-4 rounded-xl {% if default_variant.stock_quantity > 0 %}bg-green-50/50{% else %}bg-red-50/50{% endif %} inline-flex items-center gap-2">
+                    <div class="w-2 h-2 rounded-full {% if default_variant.stock_quantity > 0 %}bg-green-600 animate-pulse{% else %}bg-red-600{% endif %}"></div>
+                    <p id="stock-text" class="text-sm font-bold {% if default_variant.stock_quantity > 0 %}text-green-700{% else %}text-red-700{% endif %}">
+                        {% if default_variant.stock_quantity > 0 %}In Stock (Ready to Ship){% else %}Currently Out of Stock{% endif %}
                     </p>
                 </div>
 
-                <div class="border-t border-gray-100 pt-6 space-y-4">
-                    <h3 class="font-bold text-gray-900">Product Highlights</h3>
-                    <ul class="text-sm text-gray-700 space-y-2">
-                        <li><span class="text-gray-400 w-32 inline-block">Brand</span> {{ product.brand }}</li>
-                        <li><span class="text-gray-400 w-32 inline-block">Seller</span> <span
-                                class="text-blue-600 font-bold">{{ product.seller.store_name }}</span></li>
-                        <li><span class="text-gray-400 w-32 inline-block">Model</span> {{ default_variant.sku_code }}
-                        </li>
-                        <li><span class="text-gray-400 w-32 inline-block">Return Policy</span> 7 Days Replacement</li>
-                    </ul>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 border-t border-gray-100 pt-8">
+                    <div>
+                        <h4 class="text-xs font-bold text-gray-400 uppercase mb-3">Specifications</h4>
+                        <ul class="space-y-3 text-sm">
+                            <li class="flex justify-between border-b border-gray-50 pb-2"><span class="text-gray-500">Brand</span> <span class="font-semibold text-gray-900">{{ product.brand }}</span></li>
+                            <li class="flex justify-between border-b border-gray-50 pb-2"><span class="text-gray-500">Seller</span> <span class="font-semibold text-blue-600">{{ product.seller.store_name }}</span></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-bold text-gray-400 uppercase mb-3">Service</h4>
+                        <ul class="space-y-3 text-sm text-gray-900 font-semibold">
+                            <li class="flex items-center gap-2 text-green-700"><span class="material-icons text-sm">verified_user</span> 1 Year Warranty</li>
+                            <li class="flex items-center gap-2"><span class="material-icons text-sm text-gray-400">sync</span> 7 Days Replacement</li>
+                        </ul>
+                    </div>
                 </div>
 
-                <div class="border-t border-gray-100 mt-6 pt-6 mb-12">
-                    <h3 class="font-bold text-gray-900 mb-2">Description</h3>
-                    <p class="text-sm text-gray-600 leading-relaxed">{{ product.description }}</p>
-                </div>
-
-                <div class="flex items-center justify-between border-t border-gray-100 pt-8 mb-8">
-                    <div class="flex items-center gap-4 mb-4">
-    <div class="flex items-center gap-1.5 bg-green-700 text-white px-3 py-1 rounded-md shadow-sm">
-        <span class="text-lg font-bold">{{ average_rating|default:"0.0" }}</span>
-        <span class="material-icons text-sm">star</span>
-    </div>
-    
-    <div class="flex flex-col">
-        <span class="text-sm font-bold text-gray-900">{{ review_count }} Ratings & {{ review_count }} Reviews</span>
-        <div class="flex items-center gap-1">
-            <div class="flex text-[#ff9f00]">
-                {% for i in "12345" %}
-                    {% if forloop.counter <= average_rating|floatformat:0 %}
-                        <span class="material-icons text-xs">star</span>
-                    {% else %}
-                        <span class="material-icons text-xs text-gray-200">star</span>
-                    {% endif %}
-                {% endfor %}
-            </div>
-            <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider ml-1">Verified Summary</span>
-        </div>
-    </div>
-</div>
-                    {% if user.is_authenticated and not user_has_reviewed %}
-                    <button onclick="window.location.href='{% url 'add_review' product.slug %}'" 
-                        class="bg-white border border-blue-600 text-blue-600 px-4 py-2 rounded-sm font-bold text-xs uppercase hover:bg-blue-50 transition-colors flex items-center gap-2">
-                        <span class="material-icons text-sm">rate_review</span>
-                        Rate Product
-                    </button>
-                    {% elif user.is_authenticated and user_has_reviewed %}
-                    <button onclick="window.location.href='{% url 'edit_review' user_review.id %}'" 
-                        class="bg-white border border-green-600 text-green-600 px-4 py-2 rounded-sm font-bold text-xs uppercase hover:bg-green-50 transition-colors flex items-center gap-2">
-                        <span class="material-icons text-sm">edit</span>
-                        Edit Review
-                    </button>
-                    {% else %}
-                    <button onclick="window.location.href='{% url 'login' %}?next={{ request.get_full_path|urlencode }}'" 
-                        class="bg-white border border-blue-600 text-blue-600 px-4 py-2 rounded-sm font-bold text-xs uppercase hover:bg-blue-50 transition-colors flex items-center gap-2">
-                        <span class="material-icons text-sm">login</span>
-                        Login to Rate
-                    </button>
-                    {% endif %}
-                </div>
-
-                <div class="space-y-8">
-                    {% for review in reviews %}
-                    <div class="border-b border-gray-100 pb-8 last:border-0">
-                        <div class="flex items-center gap-3 mb-3">
-                            <div
-                                class="bg-green-700 text-white text-[11px] font-bold px-2 py-0.5 rounded flex items-center gap-0.5 shadow-sm">
-                                {{ review.rating }} <span class="material-icons text-[10px]">star</span>
-                            </div>
-                            <h4 class="font-bold text-gray-900 text-sm lg:text-base leading-tight">
-                                {{ review.title|default:"Value for Money" }}
-                            </h4>
+                <div id="reviews-section" class="mt-12 border-t border-gray-100 pt-10">
+                    <div class="flex items-center justify-between mb-8">
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-900">Ratings & Reviews</h3>
+                            <p class="text-xs text-gray-500 mt-1">Showing {{ review_count }} verified reviews</p>
                         </div>
+                        
+                        {% if user.is_authenticated %}
+                            {% if not user_has_reviewed %}
+                                <button onclick="window.location.href='{% url 'add_review' product.slug %}'" 
+                                        class="bg-blue-600 text-white px-5 py-2.5 rounded-lg font-bold text-xs uppercase hover:bg-blue-700 transition-all flex items-center gap-2 shadow-sm">
+                                    <span class="material-icons text-sm">rate_review</span> Rate Product
+                                </button>
+                            {% else %}
+                                <button onclick="window.location.href='{% url 'edit_review' user_review.id %}'" 
+                                        class="border border-green-600 text-green-600 px-5 py-2.5 rounded-lg font-bold text-xs uppercase hover:bg-green-50 transition-all flex items-center gap-2">
+                                    <span class="material-icons text-sm">edit</span> Edit Review
+                                </button>
+                            {% endif %}
+                        {% else %}
+                            <button onclick="window.location.href='{% url 'login' %}?next={{ request.get_full_path|urlencode }}'" 
+                                    class="border border-gray-200 text-gray-600 px-5 py-2.5 rounded-lg font-bold text-xs uppercase hover:bg-gray-50 transition-all flex items-center gap-2">
+                                <span class="material-icons text-sm">login</span> Login to Rate
+                            </button>
+                        {% endif %}
+                    </div>
 
-                        <div class="mb-4">
-                            <p class="text-sm text-gray-700 leading-relaxed max-w-3xl">
+                    <div id="reviews-container" class="space-y-10">
+                        {% for review in reviews %}
+                        <div class="review-item group border-b border-gray-50 pb-10 last:border-0 {% if not forloop.first %}hidden{% endif %}">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="bg-green-700 text-white text-[11px] font-bold px-2 py-0.5 rounded flex items-center gap-0.5 shadow-sm">
+                                    {{ review.rating }} <span class="material-icons text-[10px]">star</span>
+                                </div>
+                                <h4 class="font-bold text-gray-900 text-sm leading-tight">
+                                    {{ review.title|default:"Verified Feedback" }}
+                                </h4>
+                            </div>
+
+                            <p class="text-sm text-gray-600 leading-relaxed mb-6">
                                 {{ review.comment }}
                             </p>
-                        </div>
 
-                        {% if review.images.all %}
-                        <div class="flex flex-wrap gap-3 mb-4">
-                            {% for img in review.images.all %}
-                            <div
-                                class="w-16 h-16 lg:w-20 lg:h-20 border border-gray-200 rounded-md overflow-hidden cursor-pointer hover:opacity-90 transition-opacity bg-gray-50">
-                                <img src="{{ img.image.url }}" alt="Review image" class="w-full h-full object-cover"
-                                    onclick="changeMainImage('{{ img.image.url }}', this.parentElement)">
-                            </div>
-                            {% endfor %}
-                        </div>
-                        {% endif %}
-
-                        <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-[11px] lg:text-xs">
-                            <div class="flex items-center gap-2">
-                                <span class="font-bold text-gray-600">{{ review.user.username }}</span>
-                                {% if review.is_verified_purchase %}
-                                <div
-                                    class="flex items-center gap-1 text-green-700 font-bold bg-green-50 px-2 py-0.5 rounded-full border border-green-100">
-                                    <span class="material-icons text-[10px]">check_circle</span>
-                                    <span class="uppercase tracking-wider">Verified Purchase</span>
+                            {% if review.images.all %}
+                            <div class="flex flex-wrap gap-3 mb-6">
+                                {% for img in review.images.all %}
+                                <div class="w-16 h-16 border border-gray-100 rounded-lg overflow-hidden cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all bg-gray-50"
+                                     onclick="changeMainImage('{{ img.image.url }}', this)">
+                                    <img src="{{ img.image.url }}" class="w-full h-full object-cover">
                                 </div>
-                                {% endif %}
+                                {% endfor %}
                             </div>
-                            <div class="flex items-center gap-2 text-gray-400">
-                                <span class="hidden sm:block text-gray-300">|</span>
-                                <span class="font-medium uppercase tracking-tighter">{{ review.created_at|date:"d M,Y"}}</span>
-                                    
+                            {% endif %}
 
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                <div class="flex items-center gap-3 text-[11px]">
+                                    <span class="font-bold text-gray-900">{{ review.user.username }}</span>
+                                    <span class="text-gray-300">|</span>
+                                    <span class="text-gray-400 font-medium uppercase">{{ review.created_at|date:"d M, Y" }}</span>
+                                    {% if review.is_verified_purchase %}
+                                    <span class="flex items-center gap-1 text-green-600 font-bold ml-2">
+                                        <span class="material-icons text-[12px]">verified</span> Verified Purchase
+                                    </span>
+                                    {% endif %}
+                                </div>
                             </div>
                         </div>
-
-                        <div class="mt-4 flex items-center gap-6">
-                            <button
-                                class="flex items-center gap-1.5 text-gray-400 hover:text-blue-600 transition-colors">
-                                <span class="material-icons text-sm">thumb_up</span>
-                                <span class="text-[11px] font-bold uppercase tracking-widest">Helpful</span>
-                            </button>
-                            <button
-                                class="flex items-center gap-1.5 text-gray-400 hover:text-red-500 transition-colors">
-                                <span class="material-icons text-sm">report_problem</span>
-                                <span class="text-[11px] font-bold uppercase tracking-widest">Report</span>
-                            </button>
+                        {% empty %}
+                        <div class="text-center py-16 bg-gray-50/50 rounded-2xl border-2 border-dashed border-gray-100">
+                            <h4 class="text-gray-900 font-bold">No reviews yet</h4>
                         </div>
+                        {% endfor %}
                     </div>
-                    {% empty %}
-                    <div class="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
-                        <span class="material-icons text-gray-300 text-5xl mb-3">rate_review</span>
-                        <h4 class="text-gray-900 font-bold">No reviews yet</h4>
-                        <p class="text-gray-500 text-sm mt-1">Be the first to review this product and help others make a
-                            choice!</p>
-                        <a href="{% url 'add_review' product.slug %}"
-                            class="mt-4 bg-blue-600 text-white px-6 py-2 rounded-sm font-bold text-xs uppercase shadow-lg shadow-blue-100">
-                            Write a Review
-                        </a>
+
+                    {% if reviews|length > 1 %}
+                    <div class="mt-10 text-center">
+                        <button id="toggle-reviews-btn" onclick="toggleReviews()" 
+                                class="inline-flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-900 px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest transition-all">
+                            <span id="toggle-btn-text">Show All Reviews</span>
+                            <span id="toggle-btn-icon" class="material-icons text-sm">expand_more</span>
+                        </button>
                     </div>
-        
-                    {% endfor%}
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
+</div>
+<form style="display:none;">{% csrf_token %}</form>
 
-    <form id="cart-form" method="POST">
-        {% csrf_token %}
-        <input type="hidden" name="variant_id" id="selected-variant-id" value="{{ default_variant.id }}">
-        <input type="hidden" name="action_type" id="action-type" value="add">
-    </form>
+<form id="cart-form" method="POST">
+    {% csrf_token %}
+    <input type="hidden" name="variant_id" id="selected-variant-id" value="{{ default_variant.id }}">
+</form>
 
-    <div
-        class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 grid grid-cols-4 z-50 shadow-2xl">
-
-        <button onclick="toggleWishlist(this)"
-            class="col-span-1 border-r border-gray-100 py-3 flex items-center justify-center text-gray-400">
-
-            <span class="material-icons-outlined">favorite_border</span>
-
-        </button>
-
-        <button onclick="submitCartForm('add')"
-            class="col-span-1.5 bg-white text-gray-900 font-bold text-xs uppercase tracking-tighter py-4">
-
-            Add to Cart
-
-        </button>
-
-        <button onclick="submitCartForm('buy')"
-            class="col-span-1.5 bg-[#fb641b] text-white font-bold text-xs uppercase tracking-tighter py-4">
-
-            Buy Now
-
-        </button>
-
-    </div>
-    <div id="cart-toast"
-        class="fixed top-24 right-6 bg-white border border-green-200 shadow-2xl px-5 py-4 rounded-xl flex items-center gap-3 opacity-0 translate-y-4 pointer-events-none transition-all duration-300 z-50 min-w-[260px]">
-
-        <span class="material-icons text-green-600 text-2xl">
-            check_circle
-        </span>
-
-        <div class="flex flex-col">
-            <span class="text-gray-900 font-semibold text-sm">
-                Added to cart
-            </span>
-            <span class="text-gray-500 text-xs">
-                Item added successfully
-            </span>
-        </div>
-
-    </div>
-    <div id="error-toast"
-        class="fixed top-24 right-6 bg-white border border-red-200 shadow-2xl px-5 py-4 rounded-xl flex items-center gap-3 opacity-0 translate-y-4 pointer-events-none transition-all duration-300 z-50 min-w-[260px]">
-
-        <span class="material-icons text-red-600 text-2xl">
-            error
-        </span>
-
-        <div class="flex flex-col">
-            <span class="text-gray-900 font-semibold text-sm">
-                Action failed
-            </span>
-            <span id="error-message" class="text-gray-500 text-xs">
-                Out of stock
-            </span>
-        </div>
-
-    </div>
-    <div id="wishlist-toast"
-        class="fixed top-24 right-6 bg-white border border-pink-200 shadow-2xl px-5 py-4 rounded-xl flex items-center gap-3 opacity-0 translate-y-4 pointer-events-none transition-all duration-300 z-50 min-w-[260px]">
-
-        <span class="material-icons text-pink-600 text-2xl">
-            favorite
-        </span>
-
-        <div class="flex flex-col">
-            <span id="wishlist-msg" class="text-gray-900 font-semibold text-sm"></span>
-        </div>
-
-    </div>
-
+<div class="lg:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-gray-100 grid grid-cols-2 gap-3 p-4 z-50">
+    <button onclick="submitCartForm('add')" class="bg-gray-100 text-gray-900 font-bold py-4 rounded-xl text-sm">Add to Cart</button>
+    <button onclick="submitCartForm('buy')" class="bg-blue-600 text-white font-bold py-4 rounded-xl text-sm">Buy Now</button>
 </div>
 
+<div id="toast-container" class="fixed top-10 right-10 z-[100] space-y-3"></div>
+
 <script>
-    function changeMainImage(url, thumbElement) {
-        document.getElementById('main-display-image').src = url;
-        // Reset thumb styles
-        document.querySelectorAll('.thumb-wrapper').forEach(el => el.classList.remove('border-blue-600'));
-        thumbElement.classList.add('border-blue-600');
-    }
-    function submitCartForm(type) {
-
-        const variantId = document.getElementById('selected-variant-id').value;
-        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-
-        // 🔥 BUY NOW FUNCTIONALITY
-        if (type === "buy") {
-
-            let quantity = 1; // default
-
-            // Optional: if you add quantity input later
-            const qtyInput = document.getElementById("qty");
-            if (qtyInput) {
-                quantity = parseInt(qtyInput.value) || 1;
-            }
-
-            // 🔥 LIMIT CHECK
-            if (quantity > 3) {
-                showErrorToast("Maximum 3 items allowed");
-                return;
-            }
-
-            // 🔥 REDIRECT TO CHECKOUT
-            window.location.href = `/checkout/?type=buy_now&variant_id=${variantId}&quantity=${quantity}`;
-            return;
-        }
-
-        // 🔥 ADD TO CART (your original logic)
-        fetch(`/product/addcart/${variantId}/`, {
-            method: "POST",
-            headers: {
-                "X-CSRFToken": csrfToken,
-                "X-Requested-With": "XMLHttpRequest"
-            }
-        })
-            .then(response => response.json())
-            .then(data => {
-
-                // 🔥 LOGIN REQUIRED
-                if (data.status === "login_required") {
-                    window.location.href = data.redirect_url;
-                    return;
-                }
-
-                if (data.status === "success") {
-
-                    showCartToast();
-
-                    const cartCount = document.getElementById("cart-count");
-                    if (cartCount) {
-                        cartCount.innerText = data.cart_count;
-                        cartCount.classList.remove("hidden");
-                    }
-
-                } else {
-                    showErrorToast(data.message || "Something went wrong");
-                }
-
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                showErrorToast("Something went wrong");
-            });
-    }
-    function showErrorToast(message) {
-
-        const toast = document.getElementById("error-toast");
-        const msg = document.getElementById("error-message");
-
-        msg.innerText = message;
-
-        toast.classList.remove("opacity-0", "translate-y-4", "pointer-events-none");
-        toast.classList.add("opacity-100", "translate-y-0");
-
+    // TOAST SYSTEM
+    function showToast(title, message, type = 'success') {
+        const container = document.getElementById('toast-container');
+        const icon = type === 'success' ? 'check_circle' : (type === 'error' ? 'error' : 'favorite');
+        const color = type === 'success' ? 'green' : (type === 'error' ? 'red' : 'pink');
+        
+        const toast = document.createElement('div');
+        toast.className = `bg-white border-l-4 border-${color}-500 shadow-2xl p-4 rounded-lg flex items-center gap-4 transition-all duration-500 translate-x-10 opacity-0 min-w-[300px]`;
+        toast.innerHTML = `
+            <span class="material-icons text-${color}-500">${icon}</span>
+            <div>
+                <p class="text-sm font-bold text-gray-900">${title}</p>
+                <p class="text-xs text-gray-500">${message}</p>
+            </div>
+        `;
+        container.appendChild(toast);
+        setTimeout(() => { toast.classList.remove('translate-x-10', 'opacity-0'); }, 100);
         setTimeout(() => {
-
-            toast.classList.remove("opacity-100", "translate-y-0");
-            toast.classList.add("opacity-0", "translate-y-4", "pointer-events-none");
-
+            toast.classList.add('translate-x-10', 'opacity-0');
+            setTimeout(() => toast.remove(), 500);
         }, 3000);
     }
-    function showCartToast() {
 
-        const toast = document.getElementById("cart-toast");
-
-        toast.classList.remove("opacity-0", "translate-y-4", "pointer-events-none");
-        toast.classList.add("opacity-100", "translate-y-0");
-
+    // IMAGE GALLERY
+    function changeMainImage(url, thumbElement) {
+        const main = document.getElementById('main-display-image');
+        main.style.opacity = '0.5';
         setTimeout(() => {
-
-            toast.classList.remove("opacity-100", "translate-y-0");
-            toast.classList.add("opacity-0", "translate-y-4", "pointer-events-none");
-
-        }, 2500);
+            main.src = url;
+            main.style.opacity = '1';
+        }, 150);
+        document.querySelectorAll('.thumb-wrapper').forEach(el => el.classList.remove('border-blue-500'));
+        thumbElement.classList.add('border-blue-500');
     }
-    function toggleWishlist(button) {
 
-        if (button.disabled) return;
-        button.disabled = true;
-
+    // WISHLIST TOGGLE
+    function toggleWishlist(btn) {
         const variantId = document.getElementById('selected-variant-id').value;
+        const icon = btn.querySelector('.wishlist-icon');
         const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-        const icon = button.querySelector("span");
 
         fetch(`/wishlist/add/${variantId}/`, {
             method: "POST",
-            headers: {
-                "X-CSRFToken": csrfToken,
-                "X-Requested-With": "XMLHttpRequest",
-                "Content-Type": "application/json"
+            headers: { "X-CSRFToken": csrfToken, "X-Requested-With": "XMLHttpRequest" }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === "login_required") {
+                window.location.href = data.redirect_url;
+                return;
+            }
+            if (data.status === "added") {
+                icon.textContent = "favorite";
+                icon.classList.remove("text-gray-400");
+                icon.classList.add("glow-wishlist");
+                showToast("Wishlist", "Added to your favorites", "wishlist");
+            } else if (data.status === "removed") {
+                icon.innerText = "favorite_border";
+                icon.classList.remove("glow-wishlist");
+                icon.classList.add("text-gray-400");
+                showToast("Wishlist", "Removed from your favorites", "error");
             }
         })
-            .then(response => response.json())
-            .then(data => {
-
-                // 🔥 HANDLE LOGIN REQUIRED
-                if (data.status === "login_required") {
-                    window.location.href = data.redirect_url;
-                    return;
-                }
-
-                if (data.status === "added") {
-
-                    icon.innerText = "favorite";
-                    icon.classList.remove("text-gray-300");
-                    icon.classList.add("text-red-500", "drop-shadow-lg");
-
-                    showWishlistToast("Added to wishlist ❤️");
-
-                } else if (data.status === "removed") {
-
-                    icon.innerText = "favorite_border";
-                    icon.classList.remove("text-red-500", "drop-shadow-lg");
-                    icon.classList.add("text-gray-300");
-
-                    showWishlistToast("Removed from wishlist");
-
-                } else {
-                    showErrorToast("Something went wrong");
-                }
-
-            })
-            .catch(error => {
-                console.error("Wishlist Error:", error);
-                showErrorToast("Something went wrong");
-            })
-            .finally(() => {
-                button.disabled = false;
-            });
-    }
-    function showWishlistToast(message) {
-
-        const toast = document.getElementById("wishlist-toast");
-        const msg = document.getElementById("wishlist-msg");
-
-        msg.innerText = message;
-
-        toast.classList.remove("opacity-0", "translate-y-4", "pointer-events-none");
-        toast.classList.add("opacity-100", "translate-y-0");
-
-        setTimeout(() => {
-
-            toast.classList.remove("opacity-100", "translate-y-0");
-            toast.classList.add("opacity-0", "translate-y-4", "pointer-events-none");
-
-        }, 2500);
-
+        .catch(err => console.error("Wishlist error:", err));
     }
 
-    const variantAttributesData = {
-        {% for v in variants %}
-    "{{ v.id }}": {
-        {% for va in v.variant_attributes.all %}
-        "{{ va.option.attribute.name|escapejs }}": "{{ va.option.value|escapejs }}"{% if not forloop.last %}, {% endif %}
-        {% endfor %}
-    } {% if not forloop.last %}, {% endif %}
-    {% endfor %}
-    };
+    // CART SUBMISSION
+    function submitCartForm(type) {
+        const variantId = document.getElementById('selected-variant-id').value;
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-    function updateVariantAttributes(variantId) {
-        const container = document.getElementById('attribute-list');
-        container.innerHTML = '';
-
-        const attributes = variantAttributesData[variantId] || {};
-
-        if (!Object.keys(attributes).length) {
-            container.innerHTML = '<div class="text-gray-400">No attributes added for this variant.</div>';
+        if (type === "buy") {
+            window.location.href = `/checkout/?type=buy_now&variant_id=${variantId}&quantity=1`;
             return;
         }
 
-        for (const [name, value] of Object.entries(attributes)) {
-            const row = document.createElement('div');
-            row.innerHTML = `<span class="font-semibold">${name}:</span> ${value}`;
-            container.appendChild(row);
-        }
+        fetch(`/product/addcart/${variantId}/`, {
+            method: "POST",
+            headers: { "X-CSRFToken": csrfToken, "X-Requested-With": "XMLHttpRequest" }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === "login_required") return window.location.href = data.redirect_url;
+            if (data.status === "success") {
+                showToast("Added to Cart", "Product successfully added to your bag");
+                const count = document.getElementById("cart-count");
+                if (count) { count.innerText = data.cart_count; count.classList.remove("hidden"); }
+            } else {
+                showToast("Error", data.message || "Could not add to cart", "error");
+            }
+        });
     }
 
-    // Variant Switching Logic
+    // VARIANT SELECTION LOGIC
     document.querySelectorAll('.variant-btn').forEach(btn => {
         btn.addEventListener('click', function () {
-            // UI Toggle
-            document.querySelectorAll('.variant-btn').forEach(el => el.classList.remove('border-blue-600', 'text-blue-600', 'ring-1', 'ring-blue-600'));
-            this.classList.add('border-blue-600', 'text-blue-600', 'ring-1', 'ring-blue-600');
+            document.querySelectorAll('.variant-btn').forEach(el => el.classList.remove('border-blue-600', 'text-blue-600', 'bg-blue-50/50'));
+            this.classList.add('border-blue-600', 'text-blue-600', 'bg-blue-50/50');
 
-            const data = this.dataset;
+            const d = this.dataset;
+            document.getElementById('price-selling').innerText = `₹${d.price}`;
+            document.getElementById('price-mrp').innerText = `₹${d.mrp}`;
+            document.getElementById('selected-variant-id').value = d.variantId;
+            
+            // Update wishlist button's variant ID
+            document.getElementById('wishlist-btn').dataset.variantId = d.variantId;
 
-            // Update Prices
-            document.getElementById('price-selling').innerText = `₹${data.price}`;
-            document.getElementById('price-mrp').innerText = `₹${data.mrp}`;
-            document.getElementById('selected-variant-id').value = data.variantId;
-            // Update Stock
-            const stockText = document.getElementById('stock-text');
-            if (parseInt(data.stock) > 0) {
-                stockText.innerText = "In Stock";
-                stockText.className = "text-sm font-bold text-green-700";
+            const st = document.getElementById('stock-text');
+            if (parseInt(d.stock) > 0) {
+                st.innerText = "In Stock (Ready to Ship)";
+                st.className = "text-sm font-bold text-green-700";
             } else {
-                stockText.innerText = "Out of Stock";
-                stockText.className = "text-sm font-bold text-red-500";
+                st.innerText = "Currently Out of Stock";
+                st.className = "text-sm font-bold text-red-700";
             }
 
-            // Update Main Image & Filter Thumbnails
-            if (data.img) {
-                document.getElementById('main-display-image').src = data.img;
-            }
+            if (d.img) changeMainImage(d.img, this);
 
-            // Hide all generic gallery thumbs and show only selected variant thumbs
-            document.querySelectorAll('.generic-thumb').forEach(thumb => thumb.classList.add('hidden'));
-            document.querySelectorAll('.variant-thumb').forEach(thumb => {
-                if (thumb.dataset.variant === data.variantId) {
-                    thumb.classList.remove('hidden');
-                } else {
-                    thumb.classList.add('hidden');
-                }
+            document.querySelectorAll('.generic-thumb').forEach(t => t.classList.add('hidden'));
+            document.querySelectorAll('.variant-thumb').forEach(t => {
+                t.classList.toggle('hidden', t.dataset.variant !== d.variantId);
             });
-
-            // Update attributes listing
-            updateVariantAttributes(data.variantId);
         });
     });
 
-    // Initialize variant specific thumbs for default variant
-    window.onload = () => {
-        const defaultId = "{{ default_variant.id }}";
+    // REVIEW TOGGLE
+    function toggleReviews() {
+        const container = document.getElementById('reviews-container');
+        const reviews = container.querySelectorAll('.review-item');
+        const btnText = document.getElementById('toggle-btn-text');
+        const btnIcon = document.getElementById('toggle-btn-icon');
+        const isShowingAll = btnText.innerText.includes("LESS");
 
-        // show default variant thumbnails, hide gallery thumbs (on variant context mode initial setup)
-        document.querySelectorAll('.generic-thumb').forEach(thumb => thumb.classList.add('hidden'));
-        document.querySelectorAll('.variant-thumb').forEach(thumb => {
-            if (thumb.dataset.variant === defaultId) {
-                thumb.classList.remove('hidden');
-            } else {
-                thumb.classList.add('hidden');
+        reviews.forEach((review, index) => {
+            if (index > 0) {
+                if (isShowingAll) review.classList.add('hidden');
+                else review.classList.remove('hidden');
             }
         });
 
-        updateVariantAttributes(defaultId);
+        if (isShowingAll) {
+            btnText.innerText = "Show All Reviews";
+            btnIcon.innerText = "expand_more";
+            document.getElementById('reviews-section').scrollIntoView({ behavior: 'smooth' });
+        } else {
+            btnText.innerText = "Show Less";
+            btnIcon.innerText = "expand_less";
+        }
     }
+
+    window.onload = () => {
+        const defId = "{{ default_variant.id }}";
+        document.querySelectorAll('.generic-thumb').forEach(t => t.classList.add('hidden'));
+        document.querySelectorAll('.variant-thumb').forEach(t => {
+            if (t.dataset.variant === defId) t.classList.remove('hidden');
+        });
+    };
 </script>
 
 <style>
-    .no-scrollbar::-webkit-scrollbar {
-        display: none;
-    }
-
-    #main-display-image {
-        transition: opacity 0.2s ease-in-out;
-    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    #main-display-image { transition: opacity 0.2s ease, transform 0.5s ease; }
+    .glow-wishlist {
+    color: #ef4444; /* red-500 */
+    text-shadow: 0 0 8px rgba(239, 68, 68, 0.6),
+                 0 0 16px rgba(239, 68, 68, 0.4);
+}
 </style>
 {% endblock %}

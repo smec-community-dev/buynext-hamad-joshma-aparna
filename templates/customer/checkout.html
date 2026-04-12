@@ -1,172 +1,164 @@
 {% extends "core/base.html" %}
 
 {% block content %}
-<div class="bg-[#f1f3f6] min-h-screen py-8 font-sans">
-    <div class="container mx-auto px-4 max-w-5xl">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+    body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; -webkit-tap-highlight-color: transparent; }
+    .premium-card { transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+    .glass-effect { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
 
-        <div class="mb-6">
-            <h1 class="text-xl font-bold text-slate-900 uppercase tracking-tight">Checkout</h1>
+<div class="bg-[#f8f9fa] min-h-screen pb-32 md:pb-20">
+    <div class="pt-8 md:pt-12 pb-6 md:pb-8">
+        <div class="container mx-auto px-5 max-w-5xl">
+            <h1 class="text-2xl md:text-4xl font-[900] tracking-tighter text-black uppercase">Secure Checkout</h1>
+            <p class="text-[9px] font-black text-gray-400 uppercase tracking-[0.3em] mt-2">Verified Transaction Protocol</p>
         </div>
+    </div>
 
-        <div class="flex flex-col lg:flex-row gap-6 items-start">
-
-            <div class="w-full lg:flex-grow space-y-4">
-
-                <div class="bg-white rounded shadow-sm border border-slate-200 overflow-hidden">
-                    <div class="px-6 py-3 bg-blue-600 flex justify-between items-center">
-                        <h2 class="text-white text-sm font-bold uppercase tracking-wider flex items-center gap-2">
-                            <span
-                                class="bg-white text-blue-600 w-5 h-5 rounded-sm flex items-center justify-center text-[10px]">1</span>
-                            Delivery Address
-                        </h2>
+    <div class="container mx-auto px-5 max-w-5xl">
+        <div class="flex flex-col lg:flex-row gap-8 items-start">
+            
+            <div class="w-full lg:flex-grow space-y-6">
+                
+                <div class="bg-white rounded-[1.5rem] border border-gray-100 premium-card overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-50 flex justify-between items-center bg-gray-50/30">
+                        <div class="flex items-center gap-3">
+                            <span class="w-6 h-6 rounded-lg bg-black text-white text-[10px] font-black flex items-center justify-center">01</span>
+                            <h2 class="text-[10px] font-black uppercase tracking-widest text-black">Delivery Destination</h2>
+                        </div>
                     </div>
 
                     <div class="p-6">
                         {% if default_address %}
-                        <div class="flex justify-between items-start">
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                             <div class="space-y-1">
-                                <p class="text-sm font-bold text-slate-900">{{ default_address.full_name }}
-                                    <span class="ml-4 text-slate-600">{{ default_address.phone_number }}</span>
+                                <p class="text-sm font-bold text-black uppercase tracking-tight">{{ default_address.full_name }}</p>
+                                <p class="text-[11px] font-medium text-gray-500 leading-relaxed max-w-md italic">
+                                    {{ default_address.house_info }}, {{ default_address.locality }}, 
+                                    {{ default_address.city }}, {{ default_address.state }} — <span class="text-black font-bold">{{ default_address.pincode }}</span>
                                 </p>
-                                <p class="text-sm text-slate-500 leading-relaxed">
-                                    {{ default_address.house_info }}, {{ default_address.locality }},
-                                    {{ default_address.city }}, {{ default_address.state }} -
-                                    <span class="font-bold text-slate-700">{{ default_address.pincode }}</span>
-                                </p>
+                                <p class="text-[10px] font-black text-blue-600 uppercase tracking-widest pt-1">{{ default_address.phone_number }}</p>
                             </div>
-                            <a href="{% url 'select_address' %}"
-                                class="text-blue-600 text-xs font-bold uppercase border border-slate-200 px-4 py-2 rounded hover:bg-slate-50">
+                            <a href="{% url 'select_address' %}" class="w-full md:w-auto text-center px-6 py-3 border border-gray-100 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all">
                                 Change
                             </a>
                         </div>
                         {% else %}
                         <div class="text-center py-4">
-                            <p class="text-slate-500 text-sm mb-4">No delivery address found.</p>
-                            <a href="{% url 'select_address' %}"
-                                class="bg-blue-600 text-white px-6 py-2 rounded font-bold text-xs uppercase">Add
-                                Address</a>
+                            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">No destination recorded</p>
+                            <a href="{% url 'select_address' %}" class="inline-block bg-black text-white px-8 py-4 rounded-2xl text-[9px] font-black uppercase tracking-widest">Add Address</a>
                         </div>
                         {% endif %}
                     </div>
                 </div>
-                <form id="payment-form" method="POST" action="{% url 'place_order' %}" class="p-6 space-y-4">
-                    {% csrf_token %}
-                    <div class="bg-white rounded shadow-sm border border-slate-200 overflow-hidden">
-                        <div class="px-6 py-3 bg-blue-600">
-                            <h2 class="text-white text-sm font-bold uppercase tracking-wider flex items-center gap-2">
-                                <span
-                                    class="bg-white text-blue-600 w-5 h-5 rounded-sm flex items-center justify-center text-[10px]">2</span>
-                                Order Summary
-                            </h2>
-                        </div>
 
-                        <div class="divide-y divide-slate-100">
-                            {% if buy_now_item %}
-                            {% with item=buy_now_item %}
-                            {% include "partials/checkout_item_row.html" %}
-                            {% endwith %}
-                            {% else %}
-                            {% for item in cart_items %}
-                            {% include "partials/checkout_item_row.html" %}
-                            {% endfor %}
-                            {% endif %}
-                        </div>
+                <div class="bg-white rounded-[1.5rem] border border-gray-100 premium-card overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-50 flex items-center gap-3 bg-gray-50/30">
+                        <span class="w-6 h-6 rounded-lg bg-black text-white text-[10px] font-black flex items-center justify-center">02</span>
+                        <h2 class="text-[10px] font-black uppercase tracking-widest text-black">Order Manifest</h2>
                     </div>
 
-                    <div class="bg-white rounded shadow-sm border border-slate-200 overflow-hidden">
-                        <div class="px-6 py-3 bg-blue-600">
-                            <h2 class="text-white text-sm font-bold uppercase tracking-wider flex items-center gap-2">
-                                <span
-                                    class="bg-white text-blue-600 w-5 h-5 rounded-sm flex items-center justify-center text-[10px]">3</span>
-                                Payment Options
-                            </h2>
-                        </div>
+                    <div class="divide-y divide-gray-50">
+                        {% if buy_now_item %}
+                            {% with item=buy_now_item %}
+                                {% include "partials/checkout_item_row.html" %}
+                            {% endwith %}
+                        {% else %}
+                            {% for item in cart_items %}
+                                {% include "partials/checkout_item_row.html" %}
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
 
+                <div class="bg-white rounded-[1.5rem] border border-gray-100 premium-card overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-50 flex items-center gap-3 bg-gray-50/30">
+                        <span class="w-6 h-6 rounded-lg bg-black text-white text-[10px] font-black flex items-center justify-center">03</span>
+                        <h2 class="text-[10px] font-black uppercase tracking-widest text-black">Payment Gateway</h2>
+                    </div>
 
+                    <form id="payment-form" method="POST" action="{% url 'place_order' %}" class="p-6 space-y-3">
+                        {% csrf_token %}
+                        
                         {% if buy_now_item %}
                         <input type="hidden" name="is_buy_now" value="true">
                         <input type="hidden" name="variant_id" value="{{ buy_now_item.variant.id }}">
                         <input type="hidden" name="quantity" id="final-qty" value="{{ buy_now_item.quantity }}">
                         {% endif %}
 
-                        <label
-                            class="flex items-center gap-4 p-4 border border-slate-200 rounded cursor-pointer hover:bg-slate-50 transition-all">
-                            <input type="radio" name="payment_method" value="COD" checked class="w-4 h-4 text-blue-600">
+                        <label class="flex items-center gap-4 p-5 border border-gray-100 rounded-2xl cursor-pointer hover:bg-gray-50 transition-all group">
+                            <input type="radio" name="payment_method" value="COD" checked class="w-4 h-4 text-black border-gray-300 focus:ring-0">
                             <div class="flex flex-col">
-                                <span class="text-sm font-bold text-slate-900 uppercase">Cash on Delivery</span>
-                                <span class="text-[10px] text-slate-500">Pay when you receive the product</span>
+                                <span class="text-[11px] font-black text-black uppercase tracking-widest">Cash on Delivery</span>
+                                <span class="text-[9px] text-gray-400 uppercase font-bold tracking-tighter mt-0.5">Settlement upon physical delivery</span>
                             </div>
                         </label>
 
-                        <label
-                            class="flex items-center gap-4 p-4 border border-slate-200 rounded cursor-pointer hover:bg-slate-50 transition-all">
-                            <input type="radio" name="payment_method" value="RAZORPAY" class="w-4 h-4 text-blue-600">
+                        <label class="flex items-center gap-4 p-5 border border-gray-100 rounded-2xl cursor-pointer hover:bg-gray-50 transition-all group">
+                            <input type="radio" name="payment_method" value="RAZORPAY" class="w-4 h-4 text-black border-gray-300 focus:ring-0">
                             <div class="flex flex-col">
-                                <span class="text-sm font-bold text-slate-900 uppercase">Online Payment
-                                    (Razorpay)</span>
-                                <span class="text-[10px] text-slate-500">Credit/Debit Card, UPI, Netbanking</span>
+                                <span class="text-[11px] font-black text-black uppercase tracking-widest">Digital Transfer</span>
+                                <span class="text-[9px] text-gray-400 uppercase font-bold tracking-tighter mt-0.5">UPI, Cards, or Netbanking (Razorpay)</span>
                             </div>
                         </label>
-                </form>
+                    </form>
+                </div>
             </div>
+
+            <aside class="w-full lg:w-[380px] lg:sticky lg:top-24">
+                <div class="bg-white rounded-[2rem] border border-gray-100 premium-card overflow-hidden shadow-sm">
+                    <div class="px-8 py-6 border-b border-gray-50 bg-gray-50/30">
+                        <h2 class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Cost Breakdown</h2>
+                    </div>
+                    
+                    <div class="p-8 space-y-5">
+                        <div class="flex justify-between items-center">
+                            <span class="text-[11px] font-bold text-gray-500 uppercase tracking-tight">Base Valuation ({{ cart_items|length|default:1 }} Units)</span>
+                            <span id="total-price" class="text-sm font-black text-black">₹{{ total_price }}</span>
+                        </div>
+
+                        <div class="flex justify-between items-center">
+                            <span class="text-[11px] font-bold text-gray-500 uppercase tracking-tight">Logistics Fee</span>
+                            <span class="text-[10px] font-black text-emerald-500 uppercase tracking-widest bg-emerald-50 px-2 py-1 rounded-md">Complimentary</span>
+                        </div>
+
+                        <div class="pt-6 border-t border-dashed border-gray-100 flex justify-between items-end">
+                            <div>
+                                <span class="text-[9px] font-black text-gray-400 uppercase tracking-widest block mb-1">Total Payable</span>
+                                <span id="total-payable" class="text-2xl font-[900] text-black tracking-tighter italic">₹{{ total_price }}</span>
+                            </div>
+                            <span class="text-[8px] font-bold text-gray-300 uppercase mb-1">INC. ALL TAXES</span>
+                        </div>
+                    </div>
+
+                    <div class="p-6 pt-0">
+                        <button type="button" form="payment-form" onclick="handlePlaceOrder()"
+                            class="w-full bg-black text-white font-black py-5 rounded-2xl shadow-xl shadow-gray-200 active:scale-[0.98] transition-all text-[11px] uppercase tracking-[0.2em]">
+                            Place Order
+                        </button> 
+                    </div>
+                </div>
+
+                <div class="mt-6 flex items-center justify-center gap-2 text-[9px] text-gray-400 font-black uppercase tracking-widest">
+                    <span class="material-icons text-xs">shield</span>
+                    End-to-End Encrypted
+                </div>
+            </aside>
         </div>
-
-        <aside class="w-full lg:w-[380px] sticky top-24">
-            <div class="bg-white rounded shadow-sm border border-slate-200 overflow-hidden">
-                <div class="px-6 py-4 border-b border-slate-100">
-                    <h2 class="text-xs font-bold uppercase tracking-widest text-slate-400">Price Details</h2>
-                </div>
-                <div class="p-6 space-y-4">
-
-                    <!-- Price -->
-                    <div class="flex justify-between text-sm">
-                        <span class="text-slate-600">Price ({{ cart_items|length|default:1 }} items)</span>
-                        <span id="total-price" class="text-slate-900 font-medium">
-                            ₹{{ total_price }}
-                        </span>
-                    </div>
-
-                    <!-- Delivery -->
-                    <div class="flex justify-between text-sm">
-                        <span class="text-slate-600">Delivery Charges</span>
-                        <span class="text-green-600 font-bold uppercase text-xs">Free</span>
-                    </div>
-
-                    <!-- Total Payable -->
-                    <div class="pt-4 border-t border-dashed border-slate-200 flex justify-between items-center">
-                        <span class="text-base font-black text-slate-900 uppercase">Total Payable</span>
-                        <span id="total-payable" class="text-lg font-black text-slate-900">
-                            ₹{{ total_price }}
-                        </span>
-                    </div>
-
-                </div>
-                <div class="p-4 bg-slate-50">
-                    <button type="button" form="payment-form" onclick="handlePlaceOrder()"
-                        class="w-full bg-[#fb641b] text-white font-black py-4 rounded shadow-lg">
-                        Place Order
-                </button> 
-                </div>
-                </div>
-                <p class="mt-4 flex items-center gap-2 text-[10px] text-slate-400 font-bold uppercase px-2">
-                    <span class="material-icons text-xs">verified_user</span>
-                    100% Safe and Secure Payments
-                </p>
-        </aside>
     </div>
-</div>
 </div>
 
 <script>
-
     function changeQty(id, delta) {
         const input = document.getElementById('input-' + id);
         const warning = document.getElementById('warn-' + id);
         const plusBtn = document.getElementById('plus-' + id);
-
         const priceEl = document.getElementById('price-' + id);
         const price = parseFloat(priceEl.getAttribute('data-price'));
-
         const max = parseInt(input.getAttribute('data-max'));
 
         let current = parseInt(input.value);
@@ -174,64 +166,56 @@
 
         if (next >= 1 && next <= max) {
             input.value = next;
-
-            // ✅ ADD THIS LINE
-            document.getElementById('hidden-qty-' + id).value = next;
+            const hiddenQty = document.getElementById('hidden-qty-' + id);
+            if (hiddenQty) hiddenQty.value = next;
 
             const finalQtyInput = document.getElementById('final-qty');
             if (finalQtyInput) finalQtyInput.value = next;
 
             let newSubtotal = price * next;
             priceEl.textContent = "₹" + newSubtotal;
+            updateTotal();
         }
 
-        // UI feedback
+        // UI feedback for Premium Aesthetic
         if (parseInt(input.value) === max) {
-            warning.classList.remove('hidden');
-            plusBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            warning?.classList.remove('hidden');
+            plusBtn?.classList.add('opacity-20', 'cursor-not-allowed');
         } else {
-            warning.classList.add('hidden');
-            plusBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            warning?.classList.add('hidden');
+            plusBtn?.classList.remove('opacity-20', 'cursor-not-allowed');
         }
-
-        // ✅ UPDATE TOTAL (IMPORTANT)
-        updateTotal();
     }
+
     function updateTotal() {
         let total = 0;
-
         document.querySelectorAll('[id^="price-"]').forEach(el => {
             let value = el.textContent.replace("₹", "").trim();
             total += parseFloat(value);
         });
-
         document.getElementById('total-price').textContent = "₹" + total;
         document.getElementById('total-payable').textContent = "₹" + total;
     }
 
-    /**
-     * Submit Logic
-     */
     function handlePlaceOrder() {
         const form = document.getElementById('payment-form');
-        const paymentMethod = form.querySelector('input[name="payment_method"]:checked').value;
-
-       if (paymentMethod === 'RAZORPAY') {
-    form.submit();  // ✅ THIS IS THE FIX
-
-        } else {
-            // Standard COD Submit
-            form.submit();
-        }
+        const submitBtn = event.currentTarget;
+        
+        // Visual Feedback
+        submitBtn.innerText = "Processing...";
+        submitBtn.classList.add('opacity-50', 'pointer-events-none');
+        
+        form.submit();
     }
 
-    // Run on load to set initial button states
+    // Initialize States
     document.addEventListener("DOMContentLoaded", () => {
-        document.querySelectorAll('input[data-max="3"]').forEach(input => {
-            if (parseInt(input.value) === 3) {
+        document.querySelectorAll('input[data-max]').forEach(input => {
+            const maxVal = parseInt(input.getAttribute('data-max'));
+            if (parseInt(input.value) >= maxVal) {
                 const id = input.id.split('-')[1];
-                document.getElementById('plus-' + id).classList.add('opacity-50', 'cursor-not-allowed');
-                document.getElementById('warn-' + id).classList.remove('hidden');
+                document.getElementById('plus-' + id)?.classList.add('opacity-20', 'cursor-not-allowed');
+                document.getElementById('warn-' + id)?.classList.remove('hidden');
             }
         });
     });

@@ -15,4 +15,6 @@ urlpatterns = [
     path("home/category/subcategory/<str:category_slug>/", views.subcategory_view,name="subcategory"),  
     path("products/subcategory/<str:slug>/", views.product_detail,name="product_details"),  
     path("search-suggestions/", views.search_suggestions, name="search_suggestions"),
+    path("new-arrivals/", views.new_arrivals, name="new_arrivals"),
+    path("trending/", views.trending_products_page, name="trending"),
     ]

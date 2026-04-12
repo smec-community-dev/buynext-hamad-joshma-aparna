@@ -1,66 +1,88 @@
 {% extends "core/base.html" %}
 
 {% block content %}
-<div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
-    <div class="px-6 py-4 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
-        <h2 class="text-sm font-black uppercase tracking-widest text-slate-700 flex items-center gap-2">
-            <span class="material-icons text-blue-600 text-lg">location_on</span>
-            Select Delivery Address
-        </h2>
-        <a href="{% url 'add_address' %}" class="text-blue-600 text-[11px] font-black uppercase tracking-tighter hover:underline">
-            + Add New Address
-        </a>
-    </div>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+    body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; -webkit-tap-highlight-color: transparent; }
+    .premium-card { transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+    .premium-card:hover { transform: translateY(-1px); box-shadow: 0 12px 24px rgba(0,0,0,0.02); }
+</style>
 
-    <div class="p-6 space-y-4">
-        {% for address in addresses %}
-        <div class="group border border-slate-200 rounded-lg p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 transition-all hover:border-blue-300 hover:bg-blue-50/30">
-            
-            <div class="space-y-1">
-                <div class="flex items-center gap-3">
-                    <p class="font-black text-slate-900 text-sm tracking-tight">{{ address.full_name }}</p>
-                    {% if address.is_default %}
-                    <span class="bg-slate-200 text-slate-600 text-[9px] font-bold px-2 py-0.5 rounded uppercase tracking-tighter">Default</span>
-                    {% endif %}
+<div class="bg-[#f8f9fa] min-h-screen pb-20">
+    <div class="pt-8 md:pt-12 pb-6 md:pb-8">
+        <div class="container mx-auto px-5 max-w-4xl">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div class="flex flex-col gap-2">
+                    <h1 class="text-2xl md:text-4xl font-[900] tracking-tighter text-black uppercase">Saved Addresses</h1>
+                    <p class="text-[9px] font-black text-gray-400 uppercase tracking-[0.3em]">Select a delivery destination</p>
                 </div>
-                
-                <p class="text-xs text-slate-500 leading-relaxed max-w-md">
-                    <span class="font-medium text-slate-700">{{ address.house_info }}</span>, 
-                    {{ address.locality }}, {{ address.city }}, {{ address.state }} - 
-                    <span class="font-bold text-slate-900">{{ address.pincode }}</span>
-                </p>
-                
-                <p class="text-[11px] font-bold text-slate-400 mt-2">
-                    Phone: <span class="text-slate-700">{{ address.phone_number }}</span>
-                </p>
-            </div>
-
-            <div class="flex flex-row sm:flex-col gap-2 w-full sm:w-auto">
-                <a href="{% url 'set_address' address.id %}"
-                   class="flex-1 text-center bg-[#fb641b] text-white px-6 py-2.5 text-[11px] font-black rounded uppercase tracking-widest shadow-md hover:bg-[#e65a16] transition-all">
-                    Deliver Here
-                </a>
-                
-                <a href="{% url 'edit_address' address.id %}"
-                   class="text-center text-slate-400 hover:text-blue-600 text-[10px] font-bold uppercase tracking-tighter transition-colors">
-                    Edit
+                <a href="{% url 'add_address' %}" class="inline-flex items-center gap-2 text-[10px] font-black text-blue-600 uppercase tracking-widest hover:text-black transition-colors">
+                    <span class="material-icons text-sm">add_circle_outline</span>
+                    Add New Entry
                 </a>
             </div>
         </div>
-        {% empty %}
-        <div class="text-center py-10">
-            <span class="material-icons text-slate-200 text-5xl mb-3">home_work</span>
-            <p class="text-slate-500 text-sm font-bold">No saved addresses found.</p>
-            <a href="{% url 'add_address' %}" class="inline-block mt-4 text-blue-600 text-xs font-black uppercase border-b-2 border-blue-600 pb-1">
-                Create your first address
-            </a>
-        </div>
-        {% endfor %}
     </div>
 
-    <div class="px-6 py-3 bg-slate-50 border-t border-slate-100 flex items-center gap-2">
-        <span class="material-icons text-slate-400 text-xs">shield</span>
-        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Your data is encrypted and secure</span>
+    <div class="container mx-auto px-5 max-w-4xl">
+        <div class="space-y-4">
+            {% for address in addresses %}
+            <div class="bg-white rounded-[1.5rem] border border-gray-100 premium-card overflow-hidden shadow-sm md:shadow-none">
+                <div class="p-6 md:p-8">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                        
+                        <div class="space-y-2 flex-1">
+                            <div class="flex items-center gap-3">
+                                <h2 class="font-black text-black text-sm uppercase tracking-tight">{{ address.full_name }}</h2>
+                                {% if address.is_default %}
+                                <span class="bg-black text-white text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest">Default</span>
+                                {% endif %}
+                            </div>
+                            
+                            <p class="text-[11px] md:text-xs text-gray-500 leading-relaxed max-w-md italic">
+                                <span class="text-black font-bold not-italic">{{ address.house_info }}</span>, 
+                                {{ address.locality }}, {{ address.city }}, {{ address.state }} — 
+                                <span class="text-black font-black">{{ address.pincode }}</span>
+                            </p>
+                            
+                            <div class="flex items-center gap-2 pt-1">
+                                <span class="material-icons text-gray-300 text-[12px]">smartphone</span>
+                                <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">{{ address.phone_number }}</span>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-row md:flex-col gap-3 w-full md:w-auto">
+                            <a href="{% url 'set_address' address.id %}"
+                               class="flex-1 md:w-40 text-center bg-black text-white px-6 py-4 text-[9px] font-black rounded-2xl uppercase tracking-[0.2em] shadow-lg shadow-gray-200 hover:bg-gray-800 active:scale-95 transition-all">
+                                Deliver Here
+                            </a>
+                            
+                            <a href="{% url 'edit_address' address.id %}"
+                               class="flex-1 md:w-40 text-center border border-gray-100 text-gray-400 hover:text-black px-6 py-4 text-[9px] font-black rounded-2xl uppercase tracking-[0.2em] hover:bg-gray-50 transition-all">
+                                Edit Entry
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="py-24 text-center bg-white rounded-[2.5rem] border border-gray-100 px-8">
+                <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <span class="material-icons text-gray-200 text-3xl">location_off</span>
+                </div>
+                <h3 class="text-xl font-black text-black tracking-tighter uppercase mb-2">No Records Found</h3>
+                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-10">You haven't added a delivery destination yet.</p>
+                <a href="{% url 'add_address' %}" class="inline-flex items-center justify-center bg-black text-white px-10 py-5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] hover:bg-gray-800 transition-all shadow-xl shadow-gray-200">
+                    Create First Address
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="mt-12 flex items-center justify-center gap-2 text-[9px] text-gray-400 font-black uppercase tracking-widest">
+            <span class="material-icons text-xs">verified_user</span>
+            Cloud-Encrypted Storage
+        </div>
     </div>
 </div>
 {% endblock %}
