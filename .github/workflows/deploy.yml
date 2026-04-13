@@ -38,7 +38,8 @@ jobs:
             python manage.py migrate
 
             echo "Collect static"
-            python manage.py collectstatic --noinput
+            
+            python manage.py collectstatic --settings=BuyNext.settings
 
             echo "Restart Gunicorn"
             sudo systemctl restart gunicorn
