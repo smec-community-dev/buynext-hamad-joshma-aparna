@@ -16,7 +16,7 @@
             <p class="text-xs uppercase tracking-widest text-white/80 font-bold">Total Orders</p>
             <p class="text-2xl font-bold mt-2 text-white">{{ order_stats.total }}</p>
         </div>
-        <div class="bg-[#1B5FCC] rounded-2xl border border-[#1B5FCC] p-5 text-white">
+        <div class="bg-[#F97316] rounded-2xl border border-[#F97316] p-5 text-white">
             <p class="text-xs uppercase tracking-widest text-white/80 font-bold">Revenue</p>
             <p class="text-2xl font-bold mt-2 text-white">Rs {{ order_stats.revenue }}</p>
         </div>
@@ -65,21 +65,21 @@
                         <td class="px-5 py-4">{{ order.user.username }}</td>
                         <td class="px-5 py-4">
                             <span class="px-2.5 py-1 rounded-full text-xs font-semibold
-                                {% if order.order_status == 'DELIVERED' %}bg-emerald-50 text-emerald-700
-                                {% elif order.order_status == 'CANCELLED' %}bg-rose-50 text-rose-700
+                                {% if order.order_status == 'DELIVERED' %}bg-[#EAF1FE] text-[#1B5FCC]
+                                {% elif order.order_status == 'CANCELLED' %}bg-[#FFF0E6] text-[#F97316]
                                 {% else %}bg-primary/10 text-primary{% endif %}">
                                 {{ order.get_order_status_display }}
                             </span>
                         </td>
                         <td class="px-5 py-4">
-                            <span class="px-2.5 py-1 rounded-full text-xs font-semibold {% if order.is_paid %}bg-emerald-50 text-emerald-700{% else %}bg-amber-50 text-amber-700{% endif %}">
+                            <span class="px-2.5 py-1 rounded-full text-xs font-semibold {% if order.is_paid %}bg-[#EAF1FE] text-[#1B5FCC]{% else %}bg-[#FFF0E6] text-[#F97316]{% endif %}">
                                 {% if order.is_paid %}Paid{% else %}Pending{% endif %}
                             </span>
                         </td>
                         <td class="px-5 py-4 font-medium">Rs {{ order.final_amount }}</td>
                         <td class="px-5 py-4 text-slate-500">{{ order.ordered_at|date:"M d, Y H:i" }}</td>
                         <td class="px-5 py-4">
-                            <a href="{% url 'order_detail' order.id %}" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary text-white text-xs font-semibold">
+                            <a href="{% url 'order_detail' order.id %}" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#1B5FCC] text-white text-xs font-semibold hover:bg-[#153A86]">
                                 <span class="material-symbols-outlined text-[16px]">visibility</span>
                                 View
                             </a>

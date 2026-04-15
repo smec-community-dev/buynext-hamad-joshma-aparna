@@ -7,14 +7,14 @@
 <style>
 :root{
 --bn-cream:#FAF9EE;
---bn-sage:#556B2F;
---bn-sage-dark:#556B2F;
+--bn-sage:#1B5FCC;
+--bn-sage-dark:#F97316;
 --bn-text:#1A1C19;
 --bn-muted:#6D7463;
 --bn-line:#DCCFC0;
 --bn-soft:#EEEEEE;
---bn-blue:#3E5572;
---bn-orange:#C57A34;
+--bn-blue:#1B5FCC;
+--bn-orange:#F97316;
 }
 
 .management-shell{
@@ -55,8 +55,8 @@ font-weight:700;
 }
 
 .status-verified{
-background:#e4eed4;
-color:#3f5620;
+background:#EAF1FE;
+color:#1B5FCC;
 padding:4px 12px;
 border-radius:999px;
 font-size:12px;
@@ -149,7 +149,7 @@ background:#f4dddd;
 
 .action-activate{
 color:var(--bn-blue);
-background:#e7edf4;
+background:#EAF1FE;
 }
 
 .action-activate:hover{
@@ -159,7 +159,7 @@ color:#fff;
 
 .action-verify{
 color:var(--bn-blue);
-background:#eef2f7;
+background:#EAF1FE;
 }
 
 .action-verify:hover{
@@ -222,8 +222,8 @@ transition:all 0.2s ease;
 }
 
 .theme-primary-btn:hover{
-background:#354864;
-border-color:#354864;
+background:#153A86;
+border-color:#153A86;
 }
 
 .theme-secondary-btn{
@@ -255,7 +255,7 @@ background:#f8f6ef;
 <div class="space-y-2 mb-4">
 {% for message in messages %}
 <div class="px-4 py-2.5 rounded-xl border text-sm font-semibold
-{% if message.tags == 'success' %}bg-[#e7efda] border-[#cfdcb7] text-[#425a22]
+{% if message.tags == 'success' %}bg-[#EAF1FE] border-[#C7DBFF] text-[#1B5FCC]
 {% elif message.tags == 'warning' or message.tags == 'error' %}bg-[#f9eded] border-[#efd2d1] text-[#9a4745]
 {% else %}bg-[#f4f0e5] border-[#e5dece] text-[#716b5d]{% endif %}">
 {{ message }}
@@ -266,7 +266,7 @@ background:#f8f6ef;
 
 <div class="mb-6">
 <p class="text-[11px] uppercase tracking-[0.2em] font-bold text-[#7b826f]">BuyNext Admin</p>
-<h1 class="text-3xl font-bold text-[#2f3a22]">Seller Management</h1>
+<h1 class="text-3xl font-bold text-[#1B5FCC]">Seller Management</h1>
 <p class="text-sm text-[#727a66] mt-1">Track store identity, owner contact and verification workflow.</p>
 </div>
 
@@ -450,7 +450,7 @@ Reject
 <div id="rejectSellerModal" class="bn-modal-overlay hidden fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
 <div class="bn-modal-card max-w-3xl w-full bg-white rounded-3xl shadow-2xl overflow-hidden">
 <div class="grid lg:grid-cols-[1fr_1.1fr]">
-<div class="bg-[#3E5572] text-white p-8 flex flex-col justify-between">
+<div class="bg-[#1B5FCC] text-white p-8 flex flex-col justify-between">
 <div>
 <p class="text-[11px] uppercase tracking-[0.25em] font-bold text-white/70">Reject Seller</p>
 <h3 class="text-2xl font-bold mt-2">Provide a clear reason</h3>
@@ -465,7 +465,7 @@ Help the seller fix and resubmit.
 <div class="p-6 sm:p-8">
 <div class="mb-5">
 <p class="text-[11px] uppercase tracking-[0.25em] font-bold text-[#7b826f]">Seller Review</p>
-<h3 class="text-2xl font-bold text-[#2f3a22] mt-2">Add Rejection Reason</h3>
+<h3 class="text-2xl font-bold text-[#1B5FCC] mt-2">Add Rejection Reason</h3>
 <p id="rejectSellerName" class="text-sm text-[#7a816e] mt-2">Add a reason for rejection.</p>
 </div>
 

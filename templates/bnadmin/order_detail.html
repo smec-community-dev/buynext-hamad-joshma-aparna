@@ -8,15 +8,15 @@
         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
             <div>
                 <p class="text-[10px] uppercase tracking-[0.35em] font-bold text-[#7b826f]">Order Overview</p>
-                <h1 class="text-3xl md:text-4xl font-extrabold text-[#2f3a22] mt-2">Order {{ order.order_number }}</h1>
+                <h1 class="text-3xl md:text-4xl font-extrabold text-[#1B5FCC] mt-2">Order {{ order.order_number }}</h1>
                 <p class="text-sm text-[#727a66] mt-2">Placed on {{ order.ordered_at|date:"M d, Y H:i" }}</p>
             </div>
             <div class="flex flex-wrap gap-2">
-                <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest {% if order.order_status == 'DELIVERED' %}bg-emerald-50 text-emerald-700{% elif order.order_status == 'CANCELLED' %}bg-rose-50 text-rose-700{% else %}bg-primary/10 text-primary{% endif %}">
+                <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest {% if order.order_status == 'DELIVERED' %}bg-[#EAF1FE] text-[#1B5FCC]{% elif order.order_status == 'CANCELLED' %}bg-[#FFF0E6] text-[#F97316]{% else %}bg-primary/10 text-primary{% endif %}">
                     <span class="material-symbols-outlined text-[16px]">receipt_long</span>
                     {{ order.get_order_status_display }}
                 </span>
-                <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest {% if order.is_paid %}bg-emerald-50 text-emerald-700{% else %}bg-amber-50 text-amber-700{% endif %}">
+                <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest {% if order.is_paid %}bg-[#EAF1FE] text-[#1B5FCC]{% else %}bg-[#FFF0E6] text-[#F97316]{% endif %}">
                     <span class="material-symbols-outlined text-[16px]">payments</span>
                     {% if order.is_paid %}Paid{% else %}Pending{% endif %}
                 </span>
@@ -32,7 +32,7 @@
                     <span class="material-symbols-outlined text-[16px]">storefront</span>
                     {{ seller_count }} sellers
                 </span>
-                <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest bg-[#e7efda] text-[#3f5620]">
+                <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest bg-[#FFF0E6] text-[#F97316]">
                     <span class="material-symbols-outlined text-[16px]">savings</span>
                     Rs {{ order.final_amount }}
                 </span>
@@ -46,7 +46,7 @@
             <p class="text-xs uppercase tracking-widest text-slate-400 font-bold">Status</p>
             <p class="mt-2 text-lg font-semibold text-slate-800">{{ order.get_order_status_display }}</p>
             <p class="mt-4 text-xs uppercase tracking-widest text-slate-400 font-bold">Payment</p>
-            <p class="mt-2 text-lg font-semibold {% if order.is_paid %}text-emerald-600{% else %}text-amber-600{% endif %}">
+            <p class="mt-2 text-lg font-semibold {% if order.is_paid %}text-[#1B5FCC]{% else %}text-[#F97316]{% endif %}">
                 {% if order.is_paid %}Paid{% else %}Pending{% endif %}
             </p>
             <p class="mt-4 text-xs uppercase tracking-widest text-slate-400 font-bold">Updated</p>
@@ -58,7 +58,7 @@
                 {% if order.user.profile_image %}
                 <img src="{{ order.user.profile_image.url }}" alt="{{ order.user.get_full_name|default:order.user.username }}" class="h-12 w-12 rounded-full object-cover border border-slate-200">
                 {% else %}
-                <div class="h-12 w-12 rounded-full bg-[#e7efda] text-[#3f5620] font-extrabold flex items-center justify-center">
+                <div class="h-12 w-12 rounded-full bg-[#EAF1FE] text-[#1B5FCC] font-extrabold flex items-center justify-center">
                     {{ order.user.username|slice:":1"|upper }}
                 </div>
                 {% endif %}

@@ -8,9 +8,9 @@
 <!-- TOP CARDS (UNCHANGED) -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
 
-    <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
-        <p class="text-[10px] font-black text-slate-400 uppercase mb-2">Platform Fees</p>
-        <h3 class="text-3xl font-black text-slate-800">
+    <div class="bg-brand-orange p-8 rounded-[2.5rem] border border-brand-orange/70 shadow-sm">
+        <p class="text-[10px] font-black text-white/80 uppercase mb-2">Platform Fees</p>
+        <h3 class="text-3xl font-black text-white">
             ${{ total_commission|default:"0.00" }}
         </h3>
     </div>
@@ -22,16 +22,16 @@
         </h3>
     </div>
 
-    <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
-        <p class="text-[10px] font-black text-slate-400 uppercase mb-2">In Transit</p>
-        <h3 class="text-3xl font-black text-slate-800">
+    <div class="bg-brand-orange p-8 rounded-[2.5rem] border border-brand-orange/70 shadow-sm">
+        <p class="text-[10px] font-black text-white/80 uppercase mb-2">In Transit</p>
+        <h3 class="text-3xl font-black text-white">
             ${{ pending_settlement|default:"0.00" }}
         </h3>
     </div>
 
-    <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
-        <p class="text-[10px] font-black text-slate-400 uppercase mb-2">Paid to Bank</p>
-        <h3 class="text-3xl font-black text-slate-800">
+    <div class="bg-brand-blue p-8 rounded-[2.5rem] border border-brand-blue/70 shadow-sm">
+        <p class="text-[10px] font-black text-white/80 uppercase mb-2">Paid to Bank</p>
+        <h3 class="text-3xl font-black text-white">
             ${{ settled_amount|default:"0.00" }}
         </h3>
     </div>

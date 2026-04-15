@@ -5,36 +5,36 @@
 
 {% block content %}
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-    <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm">
+    <div class="bg-brand-orange p-6 rounded-[2rem] border border-brand-orange/70 shadow-sm">
         <div class="flex items-center gap-4">
-            <div class="w-12 h-12 bg-blue-50 text-brand-blue rounded-2xl flex items-center justify-center">
+            <div class="w-12 h-12 bg-white text-brand-blue rounded-2xl flex items-center justify-center">
                 <span class="material-icons-outlined">shopping_bag</span>
             </div>
             <div>
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Active Orders</p>
-                <h3 class="text-2xl font-black text-slate-800">{{ active_orders }}</h3>
+                <p class="text-[10px] font-black text-white/80 uppercase tracking-widest">Active Orders</p>
+                <h3 class="text-2xl font-black text-white">{{ active_orders }}</h3>
             </div>
         </div>
     </div>
-    <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm">
+    <div class="bg-brand-blue p-6 rounded-[2rem] border border-brand-blue/70 shadow-sm">
         <div class="flex items-center gap-4">
-            <div class="w-12 h-12 bg-orange-50 text-brand-orange rounded-2xl flex items-center justify-center">
+            <div class="w-12 h-12 bg-white text-brand-orange rounded-2xl flex items-center justify-center">
                 <span class="material-icons-outlined">assignment_return</span>
             </div>
             <div>
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Returns Pending</p>
-                <h3 class="text-2xl font-black text-slate-800">{{ returns_pending }}</h3>
+                <p class="text-[10px] font-black text-white/80 uppercase tracking-widest">Returns Pending</p>
+                <h3 class="text-2xl font-black text-white">{{ returns_pending }}</h3>
             </div>
         </div>
     </div>
-    <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm">
+    <div class="bg-brand-orange p-6 rounded-[2rem] border border-brand-orange/70 shadow-sm">
         <div class="flex items-center gap-4">
-            <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center">
+            <div class="w-12 h-12 bg-white text-brand-blue rounded-2xl flex items-center justify-center">
                 <span class="material-icons-outlined">payments</span>
             </div>
             <div>
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Revenue</p>
-                <h3 class="text-2xl font-black text-slate-800">INR {{ total_revenue }}</h3>
+                <p class="text-[10px] font-black text-white/80 uppercase tracking-widest">Total Revenue</p>
+                <h3 class="text-2xl font-black text-white">INR {{ total_revenue }}</h3>
             </div>
         </div>
     </div>

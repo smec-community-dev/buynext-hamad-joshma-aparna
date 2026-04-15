@@ -5,7 +5,7 @@
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>{% block title %}BuyNext Admin{% endblock %}</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23556B2F'/%3E%3Cpath d='M21 24h22l-2 23H23l-2-23Z' fill='white'/%3E%3Cpath d='M26 24a6 6 0 0 1 12 0' fill='none' stroke='white' stroke-width='4' stroke-linecap='round'/%3E%3Ccircle cx='45' cy='19' r='6' fill='%23F97316'/%3E%3C/svg%3E"/>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='white'/%3E%3Cpath d='M21 24h22l-2 23H23l-2-23Z' fill='none' stroke='%23F97316' stroke-width='4' stroke-linejoin='round'/%3E%3Cpath d='M26 24a6 6 0 0 1 12 0' fill='none' stroke='%23F97316' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E"/>
 
     <link href="https://fonts.googleapis.com" rel="preconnect"/>
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
@@ -85,6 +85,18 @@
                     radial-gradient(880px 240px at 96% -10%, rgba(197, 122, 52, 0.10), transparent 74%);
                 z-index: -1;
             }
+            body::after {
+                content: "";
+                position: fixed;
+                inset: 0;
+                border: 1px solid rgba(27, 95, 204, 0.34);
+                box-shadow:
+                    inset 0 0 0 1px rgba(249, 115, 22, 0.2),
+                    inset 0 22px 36px -34px rgba(27, 95, 204, 0.45),
+                    inset 0 -22px 36px -34px rgba(249, 115, 22, 0.4);
+                pointer-events: none;
+                z-index: 90;
+            }
             .material-symbols-outlined {
                 font-display: block;
                 white-space: nowrap;
@@ -136,8 +148,9 @@
         }
 
         #main-navbar {
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.8) 100%);
+            background: #ffffff;
             backdrop-filter: blur(10px);
+            box-shadow: 0 10px 26px -22px rgba(21, 58, 134, 0.45);
         }
 
         #main-content table thead tr {
@@ -333,6 +346,87 @@
             overflow-x: hidden;
         }
 
+        #main-sidebar .nav-link {
+            align-items: center;
+        }
+
+        #main-sidebar .nav-link .material-symbols-outlined {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            vertical-align: middle;
+        }
+
+        #main-sidebar .nav-link .sidebar-text {
+            display: inline-flex;
+            align-items: center;
+            line-height: 1.15;
+        }
+
+        #sidebar-brand-group .sidebar-text,
+        #navbar-logo .sidebar-text {
+            display: inline-flex;
+            align-items: center;
+            line-height: 1;
+        }
+
+        .bn-admin-profile-btn {
+            border: 1px solid rgba(27, 95, 204, 0.16);
+            background: linear-gradient(180deg, #ffffff 0%, #f5f9ff 100%);
+            border-radius: 999px;
+            padding: 0.28rem 0.36rem 0.28rem 0.7rem;
+            box-shadow: 0 12px 24px -20px rgba(21, 58, 134, 0.55);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .bn-admin-profile-btn:hover {
+            transform: translateY(-1px);
+            border-color: rgba(249, 115, 22, 0.4);
+            box-shadow: 0 14px 24px -18px rgba(21, 58, 134, 0.6);
+        }
+
+        .bn-admin-avatar {
+            width: 2.55rem;
+            height: 2.55rem;
+            border-radius: 999px;
+            position: relative;
+            display: grid;
+            place-items: center;
+            color: #ffffff;
+            font-weight: 900;
+            letter-spacing: 0.02em;
+            font-size: 0.95rem;
+            background: linear-gradient(145deg, #1B5FCC 0%, #2A6FE2 56%, #F97316 100%);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 10px 16px -10px rgba(15, 35, 90, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.62);
+        }
+
+        .bn-admin-avatar .material-symbols-outlined {
+            position: absolute;
+            right: -0.22rem;
+            bottom: -0.18rem;
+            width: 1rem;
+            height: 1rem;
+            border-radius: 999px;
+            display: grid;
+            place-items: center;
+            font-size: 0.7rem;
+            background: #ffffff;
+            color: #1B5FCC;
+            border: 1px solid rgba(27, 95, 204, 0.26);
+            box-shadow: 0 8px 16px -12px rgba(21, 58, 134, 0.65);
+        }
+
+        .bn-admin-meta-name {
+            color: #1a2f66;
+            letter-spacing: -0.01em;
+        }
+
+        .bn-admin-meta-role {
+            color: #F97316;
+        }
+
         body.sidebar-collapsed #sidebar-header,
         html.sidebar-collapsed #sidebar-header {
             justify-content: center;
@@ -448,14 +542,14 @@
 
 <div id="sidebar-overlay"></div>
 
-<aside id="main-sidebar" class="fixed top-0 left-0 z-50 h-screen border-r border-accent-tan/60 bg-background-cream text-text-main flex flex-col overflow-x-hidden -translate-x-full lg:translate-x-0">
+<aside id="main-sidebar" class="fixed top-0 left-0 z-50 h-screen border-r border-accent-tan/60 bg-white text-text-main flex flex-col overflow-x-hidden -translate-x-full lg:translate-x-0">
     <div class="flex flex-col h-full px-3 lg:px-4 space-y-2">
         <div class="h-20 flex items-center justify-between px-4 border-b border-accent-tan/60 shrink-0" id="sidebar-header">
-            <div id="sidebar-brand-group" class="flex items-center gap-3 shrink-0">
-                <div class="w-10 h-10 rounded-xl bg-white/95 shadow-md flex items-center justify-center shrink-0">
-                    <span class="material-symbols-outlined text-primary text-xl">shopping_bag</span>
+            <div id="sidebar-brand-group" class="flex items-center gap-3.5 shrink-0">
+                <div class="w-11 h-11 rounded-xl bg-white/95 shadow-md flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-brand-orange text-2xl">shopping_bag</span>
                 </div>
-                <span class="text-lg font-extrabold tracking-tight sidebar-text whitespace-nowrap">
+                <span class="text-xl font-extrabold tracking-tight sidebar-text whitespace-nowrap">
                     <span class="text-brand-blue">Buy</span><span class="text-brand-orange">Next</span>
                 </span>
             </div>
@@ -464,44 +558,44 @@
             </button>
         </div>
 
-        <nav class="flex-1 space-y-1 mt-4 overflow-y-auto custom-scrollbar">
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg {% if request.resolver_match.url_name == 'admin_dashboard' %}bg-[#F97316] text-white{% else %}text-text-muted hover:bg-[#F97316] hover:text-white{% endif %} font-medium transition-all shadow-sm nav-link leading-none"
+        <nav class="flex-1 space-y-4 mt-4 overflow-y-auto custom-scrollbar">
+            <a class="flex items-center gap-3 px-4 py-4 rounded-lg {% if request.resolver_match.url_name == 'admin_dashboard' %}bg-[#F97316] text-white{% else %}text-text-muted hover:bg-[#F97316] hover:text-white{% endif %} font-medium transition-all shadow-sm nav-link leading-none"
                href="{% url 'admin_dashboard' %}" title="Overview">
                 <span class="material-symbols-outlined text-2xl shrink-0">dashboard</span>
                 <span class="sidebar-text whitespace-nowrap">Overview</span>
             </a>
 
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg {% if request.resolver_match.url_name == 'usermanagement' or request.resolver_match.url_name == 'edit_user' or request.resolver_match.url_name == 'delete_user' or request.resolver_match.url_name == 'customer_orders' %}bg-[#F97316] text-white{% else %}text-text-muted hover:bg-[#F97316] hover:text-white{% endif %} font-medium transition-all nav-link leading-none"
+            <a class="flex items-center gap-3 px-4 py-4 rounded-lg {% if request.resolver_match.url_name == 'usermanagement' or request.resolver_match.url_name == 'edit_user' or request.resolver_match.url_name == 'delete_user' or request.resolver_match.url_name == 'customer_orders' %}bg-[#F97316] text-white{% else %}text-text-muted hover:bg-[#F97316] hover:text-white{% endif %} font-medium transition-all nav-link leading-none"
                href="{% url 'usermanagement' %}" title="Customers">
                 <span class="material-symbols-outlined text-2xl shrink-0">group</span>
                 <span class="sidebar-text whitespace-nowrap">Customers</span>
             </a>
 
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg {% if request.resolver_match.url_name == 'seller_management' or request.resolver_match.url_name == 'verify_seller' or request.resolver_match.url_name == 'reject_seller' or request.resolver_match.url_name == 'edit_seller' or request.resolver_match.url_name == 'delete_seller' or request.resolver_match.url_name == 'seller_product_report' %}bg-[#F97316] text-white{% else %}text-text-muted hover:bg-[#F97316] hover:text-white{% endif %} font-medium transition-all nav-link leading-none"
+            <a class="flex items-center gap-3 px-4 py-4 rounded-lg {% if request.resolver_match.url_name == 'seller_management' or request.resolver_match.url_name == 'verify_seller' or request.resolver_match.url_name == 'reject_seller' or request.resolver_match.url_name == 'edit_seller' or request.resolver_match.url_name == 'delete_seller' or request.resolver_match.url_name == 'seller_product_report' %}bg-[#F97316] text-white{% else %}text-text-muted hover:bg-[#F97316] hover:text-white{% endif %} font-medium transition-all nav-link leading-none"
                href="{% url 'seller_management' %}" title="Seller Management">
                 <span class="material-symbols-outlined text-2xl shrink-0">store</span>
                 <span class="sidebar-text whitespace-nowrap">Seller Management</span>
             </a>
 
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg {% if request.resolver_match.url_name == 'product_verification' or request.resolver_match.url_name == 'admin_product_preview' or request.resolver_match.url_name == 'edit_product_admin' or request.resolver_match.url_name == 'delete_product_admin' or request.resolver_match.url_name == 'approve_product' or request.resolver_match.url_name == 'reject_product' %}bg-[#F97316] text-white{% else %}text-text-muted hover:bg-[#F97316] hover:text-white{% endif %} font-medium transition-all nav-link leading-none"
+            <a class="flex items-center gap-3 px-4 py-4 rounded-lg {% if request.resolver_match.url_name == 'product_verification' or request.resolver_match.url_name == 'admin_product_preview' or request.resolver_match.url_name == 'edit_product_admin' or request.resolver_match.url_name == 'delete_product_admin' or request.resolver_match.url_name == 'approve_product' or request.resolver_match.url_name == 'reject_product' %}bg-[#F97316] text-white{% else %}text-text-muted hover:bg-[#F97316] hover:text-white{% endif %} font-medium transition-all nav-link leading-none"
                href="{% url 'product_verification' %}" title="Products">
                 <span class="material-symbols-outlined text-2xl shrink-0">inventory_2</span>
                 <span class="sidebar-text whitespace-nowrap">Products</span>
             </a>
 
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg {% if request.resolver_match.url_name == 'order_management' or request.resolver_match.url_name == 'order_detail' %}bg-[#F97316] text-white{% else %}text-text-muted hover:bg-[#F97316] hover:text-white{% endif %} font-medium transition-all nav-link leading-none"
+            <a class="flex items-center gap-3 px-4 py-4 rounded-lg {% if request.resolver_match.url_name == 'order_management' or request.resolver_match.url_name == 'order_detail' %}bg-[#F97316] text-white{% else %}text-text-muted hover:bg-[#F97316] hover:text-white{% endif %} font-medium transition-all nav-link leading-none"
                href="{% url 'order_management' %}" title="Orders">
                 <span class="material-symbols-outlined text-2xl shrink-0">receipt_long</span>
                 <span class="sidebar-text whitespace-nowrap">Orders</span>
             </a>
 
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg {% if request.resolver_match.url_name == 'catalogue_management' or request.resolver_match.url_name == 'add_category' or request.resolver_match.url_name == 'edit_category' or request.resolver_match.url_name == 'add_subcategory' or request.resolver_match.url_name == 'edit_subcategory' or request.resolver_match.url_name == 'add_attribute' or request.resolver_match.url_name == 'edit_attribute' or request.resolver_match.url_name == 'add_attributeoptions' %}bg-[#F97316] text-white{% else %}text-text-muted hover:bg-[#F97316] hover:text-white{% endif %} font-medium transition-all nav-link leading-none"
+            <a class="flex items-center gap-3 px-4 py-4 rounded-lg {% if request.resolver_match.url_name == 'catalogue_management' or request.resolver_match.url_name == 'add_category' or request.resolver_match.url_name == 'edit_category' or request.resolver_match.url_name == 'add_subcategory' or request.resolver_match.url_name == 'edit_subcategory' or request.resolver_match.url_name == 'add_attribute' or request.resolver_match.url_name == 'edit_attribute' or request.resolver_match.url_name == 'add_attributeoptions' %}bg-[#F97316] text-white{% else %}text-text-muted hover:bg-[#F97316] hover:text-white{% endif %} font-medium transition-all nav-link leading-none"
                href="{% url 'catalogue_management' %}" title="Catalogue">
                 <span class="material-symbols-outlined text-2xl shrink-0">category</span>
                 <span class="sidebar-text whitespace-nowrap">Catalogue</span>
             </a>
 
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-text-muted hover:bg-[#F97316] hover:text-white font-medium transition-all nav-link leading-none"
+            <a class="flex items-center gap-3 px-4 py-4 rounded-lg text-text-muted hover:bg-[#F97316] hover:text-white font-medium transition-all nav-link leading-none"
                href="{% url 'logout' %}" title="Logout">
                 <span class="material-symbols-outlined text-2xl shrink-0">logout</span>
                 <span class="sidebar-text whitespace-nowrap">Logout</span>
@@ -516,11 +610,11 @@
             <button id="open-mobile-menu" class="lg:hidden p-2 -ml-2 text-black/80 hover:text-black transition-colors" aria-label="Open sidebar">
                 <span class="material-symbols-outlined text-2xl" id="sidebar-toggle-icon">menu</span>
             </button>
-            <div id="navbar-logo" class="flex items-center gap-3 whitespace-nowrap">
-                <div class="w-10 h-10 rounded-xl bg-white shadow-sm border border-primary/20 flex items-center justify-center">
-                    <span class="material-symbols-outlined text-primary text-xl">shopping_bag</span>
+            <div id="navbar-logo" class="flex items-center gap-3.5 whitespace-nowrap">
+                <div class="w-11 h-11 rounded-xl bg-white shadow-sm border border-primary/20 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-brand-orange text-2xl">shopping_bag</span>
                 </div>
-                <span class="text-lg font-extrabold tracking-tight whitespace-nowrap">
+                <span class="text-xl font-extrabold tracking-tight sidebar-text whitespace-nowrap">
                     <span class="text-brand-blue">Buy</span><span class="text-brand-orange">Next</span>
                 </span>
             </div>
@@ -531,13 +625,14 @@
         </div>
 
         <div class="flex items-center gap-3 shrink-0">
-            <button class="flex items-center gap-3" type="button">
+            <button class="flex items-center gap-3 bn-admin-profile-btn" type="button">
                 <div class="text-right hidden sm:block">
-                    <p class="text-sm font-semibold">{{ user.get_full_name|default:user.username }}</p>
-                    <p class="text-xs text-black/70">{% if user.is_superuser %}Super Admin{% else %}Staff{% endif %}</p>
+                    <p class="text-sm font-semibold bn-admin-meta-name">{{ user.get_full_name|default:user.username }}</p>
+                    <p class="text-xs font-semibold uppercase tracking-wider bn-admin-meta-role">{% if user.is_superuser %}Super Admin{% else %}Staff Admin{% endif %}</p>
                 </div>
-                <div class="w-10 h-10 rounded-full bg-black/10 flex items-center justify-center overflow-hidden border border-black/20">
-                    <span class="material-symbols-outlined text-black">shield_person</span>
+                <div class="bn-admin-avatar" aria-label="Admin profile">
+                    <span>{{ user.get_full_name|default:user.username|slice:":1"|upper }}</span>
+                    <span class="material-symbols-outlined">shield_person</span>
                 </div>
             </button>
         </div>
@@ -552,6 +647,42 @@
 </main>
 
 <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const normalizeUrl = (value) => {
+            try {
+                return new URL(value, window.location.origin);
+            } catch (e) {
+                return null;
+            }
+        };
+
+        document.querySelectorAll('a[href]').forEach((anchor) => {
+            const href = anchor.getAttribute('href');
+            if (!href || href.startsWith('#') || href.startsWith('javascript:')) {
+                return;
+            }
+            const url = normalizeUrl(href);
+            if (!url) {
+                return;
+            }
+            if (url.origin === window.location.origin) {
+                anchor.target = '_self';
+                anchor.removeAttribute('rel');
+            }
+        });
+
+        document.querySelectorAll('form[action]').forEach((form) => {
+            const action = form.getAttribute('action');
+            const url = normalizeUrl(action || window.location.href);
+            if (!url) {
+                return;
+            }
+            if (url.origin === window.location.origin) {
+                form.target = '_self';
+            }
+        });
+    });
+
     const sidebar = document.getElementById('main-sidebar');
     const toggleBtn = document.getElementById('toggle-sidebar');
     const openMobileBtn = document.getElementById('open-mobile-menu');

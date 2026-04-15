@@ -5,6 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>BuyNext Seller Hub | {% block title %}Dashboard{% endblock %}</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='white'/%3E%3Cpath d='M21 24h22l-2 23H23l-2-23Z' fill='none' stroke='%23F97316' stroke-width='4' stroke-linejoin='round'/%3E%3Cpath d='M26 24a6 6 0 0 1 12 0' fill='none' stroke='%23F97316' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E"/>
 
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -18,20 +19,20 @@
                 extend: {
                     fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
                     colors: {
-                        "primary": "#2563EB",
-                        "primary-dark": "#1E4ED8",
-                        "brand-bg": "#F3F7FF",
-                        "brand-primary": "#2563EB",
-                        "brand-accent": "#DDE6F7",
-                        "brand-muted": "#EAF1FF",
-                        "text-main": "#1E293B",
-                        "brandBlue": "#2874F0",
+                        "primary": "#1B5FCC",
+                        "primary-dark": "#153A86",
+                        "brand-bg": "#FFFFFF",
+                        "brand-primary": "#1B5FCC",
+                        "brand-accent": "#E6E0D1",
+                        "brand-muted": "#EAF1FE",
+                        "text-main": "#2B2E25",
+                        "brandBlue": "#1B5FCC",
                         "brandOrange": "#F97316",
                         brand: {
-                            blue: "#2563eb",
+                            blue: "#1B5FCC",
                             orange: "#f97316",
-                            olive: "#2563eb",
-                            cream: "#F3F7FF",
+                            olive: "#1B5FCC",
+                            cream: "#FFFFFF",
                         }
                     }
                 }
@@ -125,6 +126,86 @@
                 margin-left: var(--seller-sidebar-width);
             }
         }
+
+        #seller-main {
+            --bn-blue: #1B5FCC;
+            --bn-orange: #F97316;
+        }
+
+        #seller-main .text-primary {
+            color: var(--bn-blue) !important;
+        }
+
+        #seller-main .bg-primary {
+            background-color: var(--bn-blue) !important;
+        }
+
+        #seller-main .border-primary {
+            border-color: var(--bn-blue) !important;
+        }
+
+        #seller-main .text-primary-dark {
+            color: var(--bn-orange) !important;
+        }
+
+        #seller-main .bg-primary-dark {
+            background-color: var(--bn-orange) !important;
+        }
+
+        #seller-main .border-primary-dark {
+            border-color: var(--bn-orange) !important;
+        }
+
+        #seller-main [class*="bg-[#556B2F]"],
+        #seller-main [class*="bg-[#4F5A2F]"],
+        #seller-main [class*="bg-[#43502A]"],
+        #seller-main [class*="bg-[#3f5620]"],
+        #seller-main [class*="bg-[#2f3a22]"],
+        #seller-main [class*="bg-[#5f7534]"],
+        #seller-main [class*="bg-[#7aa85c]"] {
+            background-color: var(--bn-blue) !important;
+        }
+
+        #seller-main [class*="text-[#556B2F]"],
+        #seller-main [class*="text-[#4F5A2F]"],
+        #seller-main [class*="text-[#43502A]"],
+        #seller-main [class*="text-[#3f5620]"],
+        #seller-main [class*="text-[#2f3a22]"],
+        #seller-main [class*="text-[#5f7534]"],
+        #seller-main [class*="text-[#7aa85c]"] {
+            color: var(--bn-blue) !important;
+        }
+
+        #seller-main [class*="border-[#556B2F]"],
+        #seller-main [class*="border-[#4F5A2F]"],
+        #seller-main [class*="border-[#43502A]"],
+        #seller-main [class*="border-[#3f5620]"],
+        #seller-main [class*="border-[#2f3a22]"],
+        #seller-main [class*="border-[#5f7534]"],
+        #seller-main [class*="border-[#7aa85c]"] {
+            border-color: var(--bn-blue) !important;
+        }
+
+        #seller-main [style*="#556B2F"],
+        #seller-main [style*="#4F5A2F"],
+        #seller-main [style*="#43502A"],
+        #seller-main [style*="#3f5620"],
+        #seller-main [style*="#2f3a22"],
+        #seller-main [style*="#5f7534"],
+        #seller-main [style*="#7aa85c"] {
+            color: var(--bn-blue) !important;
+            border-color: var(--bn-blue) !important;
+            background-color: var(--bn-blue) !important;
+        }
+
+        #seller-main table thead,
+        #seller-main table thead tr {
+            background: var(--bn-blue) !important;
+        }
+
+        #seller-main table thead th {
+            color: #ffffff !important;
+        }
     </style>
 </head>
 
@@ -168,7 +249,9 @@
         </div>
 
         <!-- Sidebar Navigation -->
-        <nav id="sidebarNav" class="flex-1 px-4 space-y-2 overflow-y-auto custom-scrollbar">
+        <nav id="sidebarNav" class="flex-1 px-4 pt-3 overflow-y-auto custom-scrollbar flex flex-col">
+
+            <div class="space-y-2">
 
             <a href="{% url 'seller_dashboard' %}"
                 class="flex items-center gap-4 px-4 py-3 rounded-2xl {% if request.resolver_match.url_name == 'seller_dashboard' %}active-link{% else %}text-slate-600 hover:bg-brandOrange hover:text-white{% endif %} font-semibold transition-all nav-link leading-none">
@@ -212,7 +295,9 @@
                 <span class="material-icons-outlined text-[22px] text-brand-primary shrink-0">payments</span> <span class="sidebar-text whitespace-nowrap">Earnings</span>
             </a>
 
-            <div class="pt-4 border-t border-brand-accent/70 mt-4">
+            </div>
+
+            <div class="pt-3 border-t border-brand-accent/70 mt-auto mb-2">
                 <a href="{% url 'seller_profile' %}"
                     class="flex items-center gap-4 px-4 py-3 rounded-2xl {% if request.resolver_match.url_name == 'seller_profile' %}active-link{% else %}text-slate-600 hover:bg-brandOrange hover:text-white{% endif %} font-semibold transition-all nav-link leading-none">
                     <span class="material-icons-outlined text-[22px] text-brand-primary shrink-0">storefront</span> <span class="sidebar-text whitespace-nowrap">Store Profile</span>

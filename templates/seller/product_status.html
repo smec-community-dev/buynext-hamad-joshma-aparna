@@ -7,31 +7,31 @@
 <div class="max-w-full mx-auto pb-10">
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center gap-4">
-            <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-500 flex items-center justify-center">
+        <div class="bg-brand-orange p-6 rounded-[2rem] border border-brand-orange/70 shadow-sm flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-white text-brand-blue flex items-center justify-center">
                 <span class="material-icons-outlined">pending_actions</span>
             </div>
             <div>
-                <p class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Pending Review</p>
-                <p class="text-xl font-black text-slate-800">{{ products_pending_count|default:"0" }}</p>
+                <p class="text-[10px] font-black uppercase text-white/80 tracking-wider">Pending Review</p>
+                <p class="text-xl font-black text-white">{{ products_pending_count|default:"0" }}</p>
             </div>
         </div>
-        <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center gap-4">
-            <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-500 flex items-center justify-center">
+        <div class="bg-brand-blue p-6 rounded-[2rem] border border-brand-blue/70 shadow-sm flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-white text-brand-orange flex items-center justify-center">
                 <span class="material-icons-outlined">check_circle</span>
             </div>
             <div>
-                <p class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Approved Items</p>
-                <p class="text-xl font-black text-slate-800">{{ products_approved_count|default:"0" }}</p>
+                <p class="text-[10px] font-black uppercase text-white/80 tracking-wider">Approved Items</p>
+                <p class="text-xl font-black text-white">{{ products_approved_count|default:"0" }}</p>
             </div>
         </div>
-        <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center gap-4">
-            <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-500 flex items-center justify-center">
+        <div class="bg-brand-orange p-6 rounded-[2rem] border border-brand-orange/70 shadow-sm flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-white text-brand-blue flex items-center justify-center">
                 <span class="material-icons-outlined">error_outline</span>
             </div>
             <div>
-                <p class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Rejected</p>
-                <p class="text-xl font-black text-slate-800">{{ products_rejected_count|default:"0" }}</p>
+                <p class="text-[10px] font-black uppercase text-white/80 tracking-wider">Rejected</p>
+                <p class="text-xl font-black text-white">{{ products_rejected_count|default:"0" }}</p>
             </div>
         </div>
     </div>

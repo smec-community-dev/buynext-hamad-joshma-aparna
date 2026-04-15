@@ -29,6 +29,10 @@ border:1px solid var(--bn-line);
 overflow:hidden;
 }
 
+#allProductsTable{
+overflow:visible;
+}
+
 .table-head{
 background:var(--bn-soft);
 color:var(--bn-muted);
@@ -60,6 +64,17 @@ background:#f6f4ec;
 background:#F97316;
 border-color:#F97316;
 color:#fff;
+}
+
+#verificationTab{
+background:#1B5FCC;
+border-color:#1B5FCC;
+color:#fff;
+}
+
+#verificationTab:hover{
+background:#153A86;
+border-color:#153A86;
 }
 
 .status-badge{
@@ -203,6 +218,7 @@ grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
 gap:1.5rem;
 padding:1.5rem;
 align-items:start;
+overflow:visible;
 }
 
 .bn-product-card{
@@ -215,7 +231,8 @@ background:#ffffff;
 overflow:hidden;
 box-shadow:0 26px 60px -36px rgba(39,49,29,0.42);
 transition:transform 0.2s ease, box-shadow 0.2s ease, height 0.25s ease;
-height:360px;
+min-height:360px;
+height:auto;
 }
 
 .bn-product-card::after{
@@ -228,7 +245,7 @@ radial-gradient(200px 100px at 90% 10%, rgba(249,115,22,0.08), transparent 60%);
 .bn-product-card:hover{
 transform:translateY(-4px);
 box-shadow:0 32px 70px -30px rgba(31,42,22,0.4);
-height:520px;
+height:auto;
 z-index:2;
 }
 
@@ -407,14 +424,7 @@ border-top:1px solid #efe9dc;
 
 .bn-product-card:hover .bn-product-details,
 .bn-product-card:focus-within .bn-product-details{
-max-height:320px;
-opacity:1;
-transform:translateY(0);
-}
-
-.bn-product-card:hover .bn-product-details,
-.bn-product-card:focus-within .bn-product-details{
-max-height:200px;
+max-height:520px;
 opacity:1;
 transform:translateY(0);
 }
@@ -506,11 +516,11 @@ color:#fff;
 
 <div class="mb-6">
 <p class="text-[11px] uppercase tracking-[0.2em] font-bold text-[#7b826f]">BuyNext Admin</p>
-<h1 class="text-3xl font-bold text-[#2f3a22]">Product Management</h1>
+<h1 class="text-3xl font-bold text-[#1B5FCC]">Product Management</h1>
 <p class="text-sm text-[#727a66] mt-1">Seller drafts stay with the seller. Only submitted products in pending review should be approved or rejected here.</p>
 </div>
 
-<div class="mb-5 rounded-2xl border border-[#e7dfcf] bg-[#f8f4ea] px-5 py-4 text-sm text-[#5f6357]">
+<div class="mb-5 rounded-2xl border border-[#1B5FCC] bg-[#1B5FCC] px-5 py-4 text-sm text-white">
 Products reach this admin workflow from the seller app with `approval_status = PENDING`. Approval actions are only shown in the verification queue.
 </div>
 

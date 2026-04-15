@@ -13,39 +13,39 @@
 
 {% block content %}
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+    <div class="bg-brand-blue p-6 rounded-2xl shadow-sm border border-brand-blue/70 flex items-center justify-between">
         <div>
-            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Active Offers</p>
-            <h3 class="text-2xl font-black text-slate-800">{{ active_offers_count|default:"12" }}</h3>
+            <p class="text-[10px] font-black text-white/80 uppercase tracking-widest mb-1">Active Offers</p>
+            <h3 class="text-2xl font-black text-white">{{ active_offers_count|default:"12" }}</h3>
         </div>
-        <div class="w-12 h-12 bg-orange-50 text-brand-orange rounded-xl flex items-center justify-center">
+        <div class="w-12 h-12 bg-white text-brand-orange rounded-xl flex items-center justify-center">
             <span class="material-icons-outlined">campaign</span>
         </div>
     </div>
-    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+    <div class="bg-brand-orange p-6 rounded-2xl shadow-sm border border-brand-orange/70 flex items-center justify-between">
         <div>
-            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Active Discounts</p>
-            <h3 class="text-2xl font-black text-slate-800">{{ active_discounts_count|default:"24" }}</h3>
+            <p class="text-[10px] font-black text-white/80 uppercase tracking-widest mb-1">Active Discounts</p>
+            <h3 class="text-2xl font-black text-white">{{ active_discounts_count|default:"24" }}</h3>
         </div>
-        <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
+        <div class="w-12 h-12 bg-white text-brand-blue rounded-xl flex items-center justify-center">
             <span class="material-icons-outlined">sell</span>
         </div>
     </div>
-    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+    <div class="bg-brand-blue p-6 rounded-2xl shadow-sm border border-brand-blue/70 flex items-center justify-between">
         <div>
-            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Active Coupons</p>
-            <h3 class="text-2xl font-black text-slate-800">{{ active_coupons_count|default:"05" }}</h3>
+            <p class="text-[10px] font-black text-white/80 uppercase tracking-widest mb-1">Active Coupons</p>
+            <h3 class="text-2xl font-black text-white">{{ active_coupons_count|default:"05" }}</h3>
         </div>
-        <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center">
+        <div class="w-12 h-12 bg-white text-brand-orange rounded-xl flex items-center justify-center">
             <span class="material-icons-outlined">confirmation_number</span>
         </div>
     </div>
-    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+    <div class="bg-brand-orange p-6 rounded-2xl shadow-sm border border-brand-orange/70 flex items-center justify-between">
         <div>
-            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Products Under Offer</p>
-            <h3 class="text-2xl font-black text-slate-800">{{ total_products_under_offer|default:"86" }}</h3>
+            <p class="text-[10px] font-black text-white/80 uppercase tracking-widest mb-1">Products Under Offer</p>
+            <h3 class="text-2xl font-black text-white">{{ total_products_under_offer|default:"86" }}</h3>
         </div>
-        <div class="w-12 h-12 bg-slate-50 text-slate-600 rounded-xl flex items-center justify-center">
+        <div class="w-12 h-12 bg-white text-brand-blue rounded-xl flex items-center justify-center">
             <span class="material-icons-outlined">inventory_2</span>
         </div>
     </div>
@@ -55,7 +55,7 @@
     <div class="p-8 border-b border-slate-50">
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
             <div class="flex p-1 bg-slate-100 rounded-2xl w-fit">
-                <button onclick="switchTab('offers')" id="tab-offers" class="tab-btn active px-8 py-3 rounded-xl text-sm font-bold transition-all bg-white text-slate-800 shadow-sm">Offers</button>
+                <button onclick="switchTab('offers')" id="tab-offers" class="tab-btn active px-8 py-3 rounded-xl text-sm font-bold transition-all bg-brand-orange text-white shadow-lg shadow-orange-100">Offers</button>
                 <button onclick="switchTab('discounts')" id="tab-discounts" class="tab-btn px-8 py-3 rounded-xl text-sm font-bold transition-all text-slate-500">Discounts</button>
                 <button onclick="switchTab('coupons')" id="tab-coupons" class="tab-btn px-8 py-3 rounded-xl text-sm font-bold transition-all text-slate-500">Coupons</button>
             </div>
@@ -238,11 +238,11 @@
 <script>
     function switchTab(tabId) {
         document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.classList.remove('active', 'bg-white', 'text-slate-800', 'shadow-sm');
+            btn.classList.remove('active', 'bg-brand-orange', 'text-white', 'shadow-lg', 'shadow-orange-100');
             btn.classList.add('text-slate-500');
         });
         const activeBtn = document.getElementById('tab-' + tabId);
-        activeBtn.classList.add('active', 'bg-white', 'text-slate-800', 'shadow-sm');
+        activeBtn.classList.add('active', 'bg-brand-orange', 'text-white', 'shadow-lg', 'shadow-orange-100');
         activeBtn.classList.remove('text-slate-500');
 
         document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));

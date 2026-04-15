@@ -1,4 +1,6 @@
+from django.conf import settings
 from django.contrib import messages
+from django.core.mail import send_mail
 from django.db import IntegrityError
 from django.db.models import Count, F, Q, Sum
 from django.db.models.functions import Coalesce
@@ -18,6 +20,18 @@ from seller.models import (
     ProductVariant,
     SellerProfile,
 )
+
+
+def _send_status_email(recipient_email, subject, body):
+    if not recipient_email:
+        return
+    send_mail(
+        subject,
+        body,
+        settings.EMAIL_HOST_USER,
+        [recipient_email],
+        fail_silently=True,
+    )
 
 
 def _seller_review_queue():
@@ -228,10 +242,21 @@ def delete_user(request, user_id):
     if user.is_active:
         user.is_active = False
         message = "Customer deactivated successfully"
+        status_text = "deactivated"
     else:
         user.is_active = True
         message = "Customer activated successfully"
+        status_text = "activated"
     user.save(update_fields=["is_active"])
+    _send_status_email(
+        user.email,
+        "BuyNext Account Status Update",
+        (
+            f"Hi {user.get_full_name() or user.username},\n\n"
+            f"Your customer account has been {status_text} by the BuyNext admin team.\n\n"
+            "If you believe this is a mistake, please contact support."
+        ),
+    )
     messages.success(request, message)
     return redirect("usermanagement")
 
@@ -315,6 +340,15 @@ def verify_seller(request, seller_id):
     SellerProfile.objects.filter(pk=seller.pk).update(verified_at=seller.updated_at)
     seller.user.is_verified = True
     seller.user.save(update_fields=["is_verified"])
+    _send_status_email(
+        seller.user.email,
+        "BuyNext Seller Verification Approved",
+        (
+            f"Hi {seller.user.get_full_name() or seller.user.username},\n\n"
+            "Your seller account has been approved by the BuyNext admin team.\n\n"
+            "You can now continue selling on BuyNext."
+        ),
+    )
     messages.success(request, "Seller verified successfully")
     return redirect("seller_management")
 
@@ -337,6 +371,15 @@ def reject_seller(request, seller_id):
     SellerProfile.objects.filter(pk=seller.pk).update(verified_at=seller.updated_at)
     seller.user.is_verified = False
     seller.user.save(update_fields=["is_verified"])
+    _send_status_email(
+        seller.user.email,
+        "BuyNext Seller Verification Rejected",
+        (
+            f"Hi {seller.user.get_full_name() or seller.user.username},\n\n"
+            "Your seller account verification has been rejected by the BuyNext admin team.\n\n"
+            f"Reason: {reason}"
+        ),
+    )
     messages.warning(request, "Seller rejected")
     return redirect("seller_management")
 
@@ -404,10 +447,21 @@ def delete_seller(request, seller_id):
     if seller.user.is_active:
         seller.user.is_active = False
         message = "Seller deactivated successfully"
+        status_text = "deactivated"
     else:
         seller.user.is_active = True
         message = "Seller activated successfully"
+        status_text = "activated"
     seller.user.save(update_fields=["is_active"])
+    _send_status_email(
+        seller.user.email,
+        "BuyNext Seller Account Status Update",
+        (
+            f"Hi {seller.user.get_full_name() or seller.user.username},\n\n"
+            f"Your seller account has been {status_text} by the BuyNext admin team.\n\n"
+            "If you believe this is a mistake, please contact support."
+        ),
+    )
     messages.success(request, message)
     return redirect("seller_management")
 
@@ -700,10 +754,21 @@ def delete_product_admin(request, product_id):
     if product.is_active:
         product.is_active = False
         message = "Product deactivated successfully"
+        status_text = "deactivated"
     else:
         product.is_active = True
         message = "Product activated successfully"
+        status_text = "activated"
     product.save(update_fields=["is_active"])
+    _send_status_email(
+        product.seller.user.email,
+        "BuyNext Product Status Update",
+        (
+            f"Hi {product.seller.user.get_full_name() or product.seller.user.username},\n\n"
+            f"Your product \"{product.name}\" has been {status_text} by the BuyNext admin team.\n\n"
+            "Please check your seller dashboard for details."
+        ),
+    )
     messages.success(request, message)
     return redirect("product_verification")
 
@@ -713,6 +778,14 @@ def approve_product(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     product.approval_status = "APPROVED"
     product.save()
+    _send_status_email(
+        product.seller.user.email,
+        "BuyNext Product Approval Update",
+        (
+            f"Hi {product.seller.user.get_full_name() or product.seller.user.username},\n\n"
+            f"Your product \"{product.name}\" has been approved by the BuyNext admin team."
+        ),
+    )
     messages.success(request, "Product approved successfully")
     return redirect("product_verification")
 
@@ -731,6 +804,15 @@ def reject_product(request, product_id):
 
     product.approval_status = "REJECTED"
     product.save()
+    _send_status_email(
+        product.seller.user.email,
+        "BuyNext Product Approval Update",
+        (
+            f"Hi {product.seller.user.get_full_name() or product.seller.user.username},\n\n"
+            f"Your product \"{product.name}\" has been rejected by the BuyNext admin team.\n\n"
+            f"Reason: {reason}"
+        ),
+    )
     ProductRejectionReason.objects.create(
         product=product,
         reason=reason,

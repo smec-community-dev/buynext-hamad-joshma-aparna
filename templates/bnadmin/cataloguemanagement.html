@@ -11,9 +11,16 @@
 
 <style>
     .bn-glass {
-        background: linear-gradient(135deg, rgba(255,255,255,0.92), rgba(248,250,252,0.85));
-        border: 1px solid rgba(226, 232, 240, 0.8);
-        box-shadow: 0 16px 40px -24px rgba(15, 23, 42, 0.25);
+        background: linear-gradient(135deg, #1B5FCC 0%, #2A6FE2 100%);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        box-shadow: 0 20px 48px -26px rgba(21, 58, 134, 0.55);
+    }
+    .bn-glass h3,
+    .bn-glass p {
+        color: #ffffff !important;
+    }
+    .bn-glass .text-slate-400 {
+        color: rgba(255, 255, 255, 0.75) !important;
     }
     .bn-chip {
         border: 1px solid rgba(226, 232, 240, 0.9);
@@ -43,7 +50,7 @@
             </div>
             <div class="flex flex-wrap items-center gap-3">
                 <a href="{% url 'add_category' %}"
-                    class="click-shrink flex items-center gap-2 bg-brand-blue text-white px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-primary/25">
+                    class="click-shrink flex items-center gap-2 bg-brand-orange text-white px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-brand-orange/30 hover:bg-[#EA580C]">
                     <span class="material-icons-outlined text-sm">add_circle</span>
                     Add Category
                 </a>
@@ -69,7 +76,7 @@
                 </select>
             </div>
             <div class="lg:col-span-2 flex flex-col sm:flex-row gap-2">
-                <button type="submit" class="w-full px-4 py-2.5 rounded-xl bg-brand-blue text-white font-black text-xs uppercase tracking-widest">Apply</button>
+                <button type="submit" class="w-full px-4 py-2.5 rounded-xl bg-brand-orange text-white font-black text-xs uppercase tracking-widest hover:bg-[#EA580C]">Apply</button>
                 <a href="{% url 'catalogue_management' %}" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-slate-500 font-black text-xs uppercase tracking-widest text-center bg-white">Clear</a>
             </div>
         </form>
