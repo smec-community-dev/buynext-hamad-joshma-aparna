@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Privacy Policy | BuyNext</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+                    colors: {
+                        brand: {
+                            olive: '#556B2F',
+                            cream: '#FAF9EE',
+                            sand: '#DCCFC0',
+                            orange: '#F97316',
+                            blue: '#2874F0',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-white font-sans antialiased text-gray-900">
+
+    <nav class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <a class="flex items-center gap-3" href="/">
+                  <div class="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-white shadow-md flex items-center justify-center">
+                    <span class="material-icons-outlined text-brand-primary text-lg md:text-xl">shopping_bag</span>
+                </div>
+                <span class="text-lg md:text-2xl font-extrabold tracking-tight">
+                    <span class="text-blue-600">Buy</span><span class="text-orange-500">Next
+                    </span>
+                </span>
+                
+            </a>
+          <div class="flex items-center gap-6">
+                <a href="{% url 'terms_conditions' %}" class="text-sm font-bold text-gray-400 hover:text-brand-blue transition-all">Terms and Conditions</a>
+                <a href="/" class="text-sm font-bold text-gray-900 flex items-center gap-2">
+                    <span class="material-icons-outlined text-base">close</span>
+                    Exit
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="pt-32 pb-24 px-6 bg-white">
+        <div class="max-w-4xl mx-auto">
+            <span class="text-xs font-bold text-gray-400 uppercase tracking-[0.2em]">Updated October 2026</span>
+            <h1 class="text-5xl lg:text-6xl font-extrabold text-gray-900 mt-6 mb-12">Privacy Policy</h1>
+            
+            <div class="space-y-12">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-4">1. Information We Collect</h2>
+                    <p class="text-gray-600 leading-relaxed mb-4">
+                        We collect information that you provide directly to us when you create an account, browse the marketplace, or make a purchase. This includes your name, email address, and payment information processed through our secure partners.
+                    </p>
+                    <p class="text-gray-600 leading-relaxed">
+                        Additionally, we automatically collect certain information when you visit BuyNext, such as your IP address, device type, and browsing patterns to help improve your experience.
+                    </p>
+                </div>
+                
+                <div class="p-10 bg-brand-cream rounded-[2.5rem] border border-brand-sand/30 relative overflow-hidden">
+                    <div class="relative z-10">
+                        <h3 class="text-xl font-bold text-gray-900 mb-3 flex items-center gap-2">
+                            <span class="material-icons-outlined text-brand-olive">verified_user</span>
+                            Our Data Promise
+                        </h3>
+                        <p class="text-gray-600 leading-relaxed">
+                            We never sell your personal data to third-party advertisers. We believe your privacy is not a product. Your trust is our most valuable asset, and we protect it with industry-standard encryption.
+                        </p>
+                    </div>
+                    <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-brand-olive/5 rounded-full blur-3xl"></div>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-4">2. How We Use Data</h2>
+                    <p class="text-gray-600 leading-relaxed mb-4">Your data is used strictly to personalize your shopping experience, fulfill orders, and prevent fraudulent activity on the platform. Specifically, we use it for:</p>
+                    <ul class="list-disc ml-6 space-y-3 text-gray-600">
+                        <li>Processing and delivering your orders.</li>
+                        <li>Sending service updates and security alerts.</li>
+                        <li>Personalizing product recommendations based on your taste.</li>
+                        <li>Complying with legal obligations.</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-4">3. Cookies and Tracking</h2>
+                    <p class="text-gray-600 leading-relaxed">
+                        We use cookies to keep you logged in and remember your preferences. You can manage your cookie settings through your browser at any time, though some features of BuyNext may not function correctly without them.
+                    </p>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-4">4. Your Rights</h2>
+                    <p class="text-gray-600 leading-relaxed">
+                        Depending on your location, you have the right to access, correct, or delete your personal information. If you wish to exercise these rights, please contact our privacy team at <a href="mailto:privacy@buynext.com" class="text-brand-blue font-bold hover:underline">privacy@buynext.com</a>.
+                    </p>
+                </div>
+            </div>
+
+            <div class="mt-20 pt-10 border-t border-gray-100">
+                <p class="text-gray-500 text-sm">
+                    Questions about our privacy practices? <br class="sm:hidden">
+                    <a href="{% url 'contactus' %}" class="text-brand-orange font-bold hover:underline">Contact our Compliance Team</a>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-12 bg-white border-t border-gray-50">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <p class="text-xs text-gray-400 font-bold uppercase tracking-widest">© 2026 BuyNext Marketplace. Built with Integrity.</p>
+        </div>
+    </footer>
+
+</body>
+
+</html>

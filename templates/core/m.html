@@ -275,7 +275,7 @@
     </main>
 
     {% load static %}
-<footer class="bg-[#111311] text-light pt-12 md:pt-20 pb-8 border-t-4 border-brand-primary mt-auto overflow-hidden relative">
+<footer class="bg-[#1A1C19] text-light pt-12 md:pt-20 pb-8 border-t-4 border-brand-primary mt-auto overflow-hidden relative">
         <div class="absolute inset-0 opacity-5 pointer-events-none">
             <div class="absolute top-0 right-0 w-96 h-96 bg-brand-primary rounded-full -translate-y-1/2 translate-x-1/2"></div>
         </div>
@@ -289,10 +289,7 @@
                             <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                                 <span class="material-icons-outlined text-brand-primary">shopping_bag</span>
                             </div>
-                           <span class="text-xl font-bold tracking-wide">
-                            <span class="text-blue-600">Buy</span><span class="text-orange-500">Next
-                    </span>
-                           </span>
+                            <span class="text-xl font-bold tracking-wide">BuyNext</span>
                         </a>
                     </div>
                     <p class="text-gray-400 text-sm leading-relaxed mb-6 font-medium">Elevating your lifestyle through curated collections. Quality is our standard, elegance is our soul.</p>
@@ -318,8 +315,8 @@
                     <ul class="space-y-3 text-gray-400 text-sm">
                         <li><a class="hover:text-white hover:translate-x-1 transition-all duration-300 inline-flex items-center gap-2 font-semibold" href="{% url 'all_products' %}"><span class="material-icons text-xs">chevron_right</span> Shop All</a></li>
                         <li><a class="hover:text-white hover:translate-x-1 transition-all duration-300 inline-flex items-center gap-2 font-semibold" href="{% url 'new_arrivals' %}"><span class="material-icons text-xs">chevron_right</span> New Arrivals</a></li>
-                        <li><a class="hover:text-white hover:translate-x-1 transition-all duration-300 inline-flex items-center gap-2 font-semibold" href="{% url 'our_story' %}"><span class="material-icons text-xs">chevron_right</span> Our Story</a></li>
-                        <li><a class="hover:text-white hover:translate-x-1 transition-all duration-300 inline-flex items-center gap-2 font-semibold" href="{% url 'blog' %}"><span class="material-icons text-xs">chevron_right</span> Blog</a></li>
+                        <li><a class="hover:text-white hover:translate-x-1 transition-all duration-300 inline-flex items-center gap-2 font-semibold" href="#"><span class="material-icons text-xs">chevron_right</span> Our Story</a></li>
+                        <li><a class="hover:text-white hover:translate-x-1 transition-all duration-300 inline-flex items-center gap-2 font-semibold" href="#"><span class="material-icons text-xs">chevron_right</span> Blog</a></li>
                     </ul>
                 </div>
 
@@ -329,10 +326,10 @@
                         Support
                     </h4>
                     <ul class="space-y-3 text-gray-400 text-sm">
-                        <li><a class="hover:text-white hover:translate-x-1 transition-all duration-300 inline-flex items-center gap-2 font-semibold" href="{% url 'contactus' %}"><span class="material-icons text-xs">chevron_right</span> Contact Us</a></li>
-                        <li><a class="hover:text-white hover:translate-x-1 transition-all duration-300 inline-flex items-center gap-2 font-semibold" href="{% url 'shipping_returns' %}"><span class="material-icons text-xs">chevron_right</span> Shipping Info</a></li>
-                        <li><a class="hover:text-white hover:translate-x-1 transition-all duration-300 inline-flex items-center gap-2 font-semibold" href="{% url 'return_Policy' %}"><span class="material-icons text-xs">chevron_right</span> Returns Policy</a></li>
-                        <li><a class="hover:text-white hover:translate-x-1 transition-all duration-300 inline-flex items-center gap-2 font-semibold" href="{% url 'faq' %}"><span class="material-icons text-xs">chevron_right</span> FAQ</a></li>
+                        <li><a class="hover:text-white hover:translate-x-1 transition-all duration-300 inline-flex items-center gap-2 font-semibold" href="#"><span class="material-icons text-xs">chevron_right</span> Contact Us</a></li>
+                        <li><a class="hover:text-white hover:translate-x-1 transition-all duration-300 inline-flex items-center gap-2 font-semibold" href="#"><span class="material-icons text-xs">chevron_right</span> Shipping Info</a></li>
+                        <li><a class="hover:text-white hover:translate-x-1 transition-all duration-300 inline-flex items-center gap-2 font-semibold" href="#"><span class="material-icons text-xs">chevron_right</span> Returns Policy</a></li>
+                        <li><a class="hover:text-white hover:translate-x-1 transition-all duration-300 inline-flex items-center gap-2 font-semibold" href="#"><span class="material-icons text-xs">chevron_right</span> FAQ</a></li>
                     </ul>
                 </div>
 
@@ -360,10 +357,15 @@
             <div class="flex flex-col md:flex-row justify-between items-center gap-6 text-gray-500 text-xs uppercase font-bold tracking-widest">
                 <p class="hover:text-white transition-colors">© 2026 BuyNext Marketplace. All rights reserved.</p>
                 <div class="flex gap-8 flex-wrap justify-center md:justify-end">
-                    <a class="hover:text-white transition-colors transform hover:translate-y-[-2px]" href="{% url 'privacy' %}">Privacy Policy</a>
-                    <a class="hover:text-white transition-colors transform hover:translate-y-[-2px]" href="{% url 'terms_conditions' %}">Terms & Conditions</a>
+                    <a class="hover:text-white transition-colors transform hover:translate-y-[-2px]" href="#">Privacy Policy</a>
+                    <a class="hover:text-white transition-colors transform hover:translate-y-[-2px]" href="#">Terms & Conditions</a>
+                    <a class="hover:text-white transition-colors transform hover:translate-y-[-2px]" href="#">Sitemap</a>
                 </div>
             </div>
+
+            <button id="back-to-top" class="hidden fixed bottom-8 right-8 w-12 h-12 bg-brand-primary text-white rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-300 shadow-2xl z-50 active:scale-95">
+                <span class="material-icons">expand_less</span>
+            </button>
         </div>
     </footer>
 

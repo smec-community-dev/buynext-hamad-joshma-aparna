@@ -213,32 +213,31 @@ class SubCategory(models.Model):
         super().save(*args, **kwargs)
 
 
+def default_end_date():
+       return timezone.now() + timedelta(days=7)
 class Banner(models.Model):
+    
 
-    BANNER_POSITIONS = (
-        ('HERO', 'Hero Banner'),
-        ('MIDDLE', 'Middle Banner'),
-        ('FOOTER', 'Footer Banner'),
-    )
-
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=255)
-    description = models.TextField(blank=True)
-    image = models.ImageField(upload_to='banners/')
-    redirect_url = models.URLField(blank=True, null=True, help_text="URL to redirect when banner is clicked")
-    position = models.CharField(max_length=20, choices=BANNER_POSITIONS, default='HERO')
-    display_order = models.IntegerField(default=0)
+    image_url = models.ImageField(upload_to='banner_images/', blank=True, null=True)
+    heading = models.CharField(max_length=255, blank=True, null=True)
+    sub_heading = models.TextField(blank=True, null=True)
+    button_text = models.CharField(max_length=100, default="Explore")
+    redirect_url = models.URLField(blank=True, null=True)
+    start_date = models.DateTimeField(default=timezone.now)
+    end_date =  models.DateTimeField(default=default_end_date)
     is_active = models.BooleanField(default=True)
-    start_date = models.DateTimeField(null=True, blank=True)
-    end_date = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
+    
     class Meta:
-        ordering = ['position', 'display_order', '-created_at']
+        verbose_name = "Banner"
+        verbose_name_plural = "Banners"
         indexes = [
-            models.Index(fields=['is_active', 'position', 'display_order']),
+            models.Index(fields=['is_active']),
+            models.Index(fields=['start_date', 'end_date']),
         ]
-
+        ordering = ['-created_at']
+    
     def __str__(self):
-        return f"{self.title} ({self.get_position_display()})"
+        return self.title

@@ -1,4 +1,5 @@
 from django.urls import path
+from django.views.generic import TemplateView
 from . import views
 urlpatterns = [
     path("login/",views.login_view,name="login"),
@@ -8,6 +9,9 @@ urlpatterns = [
     path("verify-email/",views.email_verification,name="email_verification"),
     path("verify-phone/",views.phone_verification,name="phone_verification"),
     path("verify-otp/",views.verify_otp,name="verify_otp"),
+    path("forgot-password/", views.forgot_password, name="forgot_password"),
+    path("verify-reset-otp/", views.verify_reset_otp, name="verify_reset_otp"),
+    path("reset-password/", views.reset_password, name="reset_password"),
     path("",views.home_view,name="home"),
     path("logout/",views.logout_view,name="logout"),
     path("products/", views.all_products, name="all_products"),
@@ -18,4 +22,12 @@ urlpatterns = [
     path("search-suggestions/", views.search_suggestions, name="search_suggestions"),
     path("new-arrivals/", views.new_arrivals, name="new_arrivals"),
     path("trending/", views.trending_products_page, name="trending"),
+    path('our-story/', TemplateView.as_view(template_name='core/dummy/our_story.html'), name='our_story'),
+    path('faq/', TemplateView.as_view(template_name='core/dummy/faq.html'), name='faq'),
+    path('contact/', TemplateView.as_view(template_name='core/dummy/contactus.html'), name='contactus'),
+    path('shipping-returns/', TemplateView.as_view(template_name='core/dummy/shipping_returns.html'), name='shipping_returns'),
+    path('privacy-policy/', TemplateView.as_view(template_name='core/dummy/legal.html'), name='privacy'),
+    path('blog/', TemplateView.as_view(template_name='core/dummy/blog.html'), name='blog'),
+    path('returns-policy/', TemplateView.as_view(template_name='core/dummy/returns_policy.html'), name='return_Policy'),
+    path('terms-conditions/', TemplateView.as_view(template_name='core/dummy/terms_conditions.html'), name='terms_conditions'),
     ]

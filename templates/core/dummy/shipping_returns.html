@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shipping & Returns | BuyNext</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+                    colors: {
+                        brand: {
+                            olive: '#556B2F',
+                            cream: '#FAF9EE',
+                            sand: '#DCCFC0',
+                            orange: '#F97316',
+                            blue: '#2874F0',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-brand-cream font-sans antialiased text-gray-900">
+
+    <nav class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-brand-olive/10">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <a class="flex items-center gap-3" href="/">
+                <div class="w-10 h-10 rounded-xl bg-white shadow-md flex items-center justify-center">
+                    <span class="material-icons-outlined text-brand-orange text-xl">local_shipping</span>
+                </div>
+                <span class="text-2xl font-extrabold tracking-tight">
+                    <span class="text-brand-blue">Buy</span><span class="text-brand-orange">Next</span>
+                </span>
+            </a>
+            <a href="/" class="px-6 py-2.5 bg-gray-900 text-white rounded-xl text-sm font-bold hover:bg-gray-800 transition-all">
+                Shop Now
+            </a>
+        </div>
+    </nav>
+
+    <section class="pt-24 pb-24 px-6">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-16">
+                <h1 class="text-4xl md:text-6xl font-extrabold text-gray-900 mb-6">Logistics & Peace of Mind</h1>
+                <p class="text-lg text-gray-500 max-w-2xl mx-auto">Transparent shipping rates and a return process designed around your convenience.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
+                <div class="bg-white p-10 rounded-[3rem] shadow-sm border border-brand-sand/30 hover:shadow-xl transition-shadow">
+                    <div class="w-14 h-14 bg-brand-olive/10 text-brand-olive rounded-2xl flex items-center justify-center mb-8">
+                        <span class="material-icons-outlined text-3xl">local_shipping</span>
+                    </div>
+                    <h2 class="text-2xl font-extrabold mb-6">Fast Global Shipping</h2>
+                    <ul class="space-y-6">
+                        <li class="flex items-center justify-between border-b border-gray-50 pb-4">
+                            <span class="text-gray-500 font-medium">Standard Delivery</span>
+                            <span class="text-gray-900 font-bold">5-7 Days (Free)</span>
+                        </li>
+                        <li class="flex items-center justify-between border-b border-gray-50 pb-4">
+                            <span class="text-gray-500 font-medium">Express Shipping</span>
+                            <span class="text-gray-900 font-bold">2-3 Days ($15.00)</span>
+                        </li>
+                        <li class="flex items-center justify-between">
+                            <span class="text-gray-500 font-medium">Overnight Priority</span>
+                            <span class="text-gray-900 font-bold">Next Day ($30.00)</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="bg-white p-10 rounded-[3rem] shadow-sm border border-brand-sand/30 hover:shadow-xl transition-shadow">
+                    <div class="w-14 h-14 bg-brand-orange/10 text-brand-orange rounded-2xl flex items-center justify-center mb-8">
+                        <span class="material-icons-outlined text-3xl">replay</span>
+                    </div>
+                    <h2 class="text-2xl font-extrabold mb-4">Hassle-Free Returns</h2>
+                    <p class="text-gray-600 leading-relaxed mb-8">
+                        Changed your mind? No problem. We offer a <b>30-day return window</b> for all unused items in their original packaging.
+                    </p>
+                    <div class="p-6 bg-brand-cream rounded-2xl mb-8">
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Pro Tip</p>
+                        <p class="text-sm text-gray-700 font-medium">Keep your original shipping box for faster processing!</p>
+                    </div>
+                    <a href="#" class="inline-flex items-center justify-center w-full py-4 bg-brand-orange text-white rounded-2xl font-bold hover:brightness-110 transition-all shadow-lg shadow-brand-orange/20">
+                        Start a Return Request
+                        <span class="material-icons-outlined ml-2 text-sm">arrow_forward</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-[3.5rem] p-12 lg:p-20 border border-gray-100 shadow-sm">
+                <h2 class="text-3xl font-extrabold text-center mb-16">The Return Journey</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
+                    <div class="text-center relative z-10">
+                        <div class="w-12 h-12 bg-brand-blue text-white rounded-full flex items-center justify-center font-bold text-lg mx-auto mb-6">1</div>
+                        <h3 class="font-bold text-lg mb-3">Request Online</h3>
+                        <p class="text-gray-500 text-sm leading-relaxed">Log in to your dashboard and select the item you wish to return.</p>
+                    </div>
+                    <div class="text-center relative z-10">
+                        <div class="w-12 h-12 bg-brand-blue text-white rounded-full flex items-center justify-center font-bold text-lg mx-auto mb-6">2</div>
+                        <h3 class="font-bold text-lg mb-3">Pack & Ship</h3>
+                        <p class="text-gray-500 text-sm leading-relaxed">Print your pre-paid label and drop the package at any local courier point.</p>
+                    </div>
+                    <div class="text-center relative z-10">
+                        <div class="w-12 h-12 bg-brand-blue text-white rounded-full flex items-center justify-center font-bold text-lg mx-auto mb-6">3</div>
+                        <h3 class="font-bold text-lg mb-3">Instant Refund</h3>
+                        <p class="text-gray-500 text-sm leading-relaxed">Once received, we process your refund to your original payment method within 48 hours.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-12 bg-white border-t border-brand-olive/5">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Standard Policy applies to all orders in 2026</p>
+            <p class="text-sm text-gray-500">Need more details? <a href="/contact" class="text-brand-blue font-bold">Contact Support</a></p>
+        </div>
+    </footer>
+
+</body>
+
+</html>

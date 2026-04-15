@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Verify OTP | BuyNext</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+                    colors: {
+                        brand: {
+                            olive: '#556B2F',
+                            cream: '#FAF9EE',
+                            sand: '#DCCFC0',
+                            orange: '#FF6A00',
+                            blue: '#2874F0',
+                        }
+                    },
+                    boxShadow: {
+                        'premium': '0 20px 50px -12px rgba(0, 0, 0, 0.08)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .otp-input:focus {
+            letter-spacing: 0.75rem;
+        }
+    </style>
+</head>
+
+<body class="bg-brand-cream font-sans antialiased min-h-screen flex items-center justify-center p-6">
+
+    <div class="w-full max-w-md bg-white rounded-[2.5rem] shadow-premium p-10 lg:p-14 relative overflow-hidden">
+        
+        <div class="absolute top-0 left-0 w-32 h-32 bg-brand-blue/5 rounded-full -ml-16 -mt-16 blur-2xl"></div>
+
+        <div class="mb-10 text-center">
+            <div class="w-16 h-16 bg-brand-blue/10 rounded-2xl flex items-center justify-center mb-6 mx-auto">
+                <span class="material-icons-outlined text-brand-blue text-3xl">verified_user</span>
+            </div>
+            <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight mb-3">Verify OTP.</h1>
+            <p class="text-gray-500 leading-relaxed">Enter the 6-digit code sent to your email to verify your identity.</p>
+        </div>
+
+        {% if messages %}
+        <div class="mb-8 space-y-3">
+            {% for message in messages %}
+            <div class="flex items-center gap-3 px-5 py-4 rounded-2xl text-sm font-bold border 
+                {% if message.tags == 'success' %} bg-green-50 border-green-100 text-green-600 
+                {% else %} bg-red-50 border-red-100 text-red-600 {% endif %}">
+                <span class="material-icons-outlined text-lg">
+                    {% if message.tags == 'success' %}check_circle{% else %}error_outline{% endif %}
+                </span>
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form action="" method="POST" class="space-y-8">
+            {% csrf_token %}
+            
+            <div class="space-y-4">
+                <label for="otp" class="text-xs font-extrabold text-gray-400 uppercase tracking-widest text-center block">Secure Verification Code</label>
+                <input type="text" name="otp" id="otp" maxlength="6" required
+                       class="otp-input block w-full text-center text-3xl font-bold tracking-[0.5rem] py-5 bg-gray-50 border border-transparent rounded-2xl text-brand-blue placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue focus:bg-white transition-all"
+                       placeholder="••••••"
+                       oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                
+                <div class="flex justify-center items-center gap-2 text-sm font-medium text-gray-400">
+                    <span class="material-icons-outlined text-sm">schedule</span>
+                    Code expires in: <span class="text-brand-orange font-bold">01:59</span>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <button type="submit" 
+                        class="w-full py-4 bg-brand-blue text-white rounded-2xl font-extrabold shadow-lg shadow-brand-blue/30 hover:bg-[#1A5DCB] hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-200">
+                    Verify OTP
+                </button>
+                
+                <div class="text-center">
+                    <p class="text-sm text-gray-400 font-medium">
+                        Didn't receive the code? 
+                        <a href="#" class="text-brand-orange font-bold hover:underline ml-1">Resend OTP</a>
+                    </p>
+                </div>
+            </div>
+        </form>
+
+        <div class="mt-12 pt-8 border-t border-gray-50 text-center">
+            <p class="text-[10px] font-bold text-gray-300 uppercase tracking-[0.4em]">BuyNext Security Protocol 2.0</p>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

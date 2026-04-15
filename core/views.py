@@ -7,8 +7,8 @@ from datetime import timedelta
 import random
 from .models import *
 from seller.models import *
+from seller.models import ProductVariant
 from customer.models import * 
-from customer.models import WishlistItem
 from django.db.models import Avg, Prefetch,Min,Max,Value,Count,Case,When,Q
 from django.db.models.functions import Coalesce
 from django.contrib.auth import authenticate,login,logout
@@ -295,21 +295,205 @@ def verify_otp(request):
     return render(request, "core/verify_otp.html")
 
 
+def forgot_password(request):
+    if request.method == "POST":
+        email = request.POST.get("email")
+
+        user = User.objects.filter(email=email).first()
+
+        if not user:
+            messages.error(request, "Email not registered")
+            return redirect("forgot_password")
+
+
+        request.session["reset_user"] = user.id
+
+        otp = str(random.randint(100000, 999999))
+
+        OTPVerification.objects.filter(user=user).delete()
+
+        OTPVerification.objects.create(
+            user=user,
+            otp=otp,
+            method="email"
+        )
+
+        send_mail(
+            "Password Reset OTP",
+            f"Your OTP is {otp}",
+            settings.EMAIL_HOST_USER,
+            [user.email]
+        )
+
+        return redirect("verify_reset_otp")
+
+    return render(request, "core/auth/forgot_password.html")
+
+
+def verify_reset_otp(request):
+    user_id = request.session.get("reset_user")
+
+    if not user_id:
+        return redirect("forgot_password")
+
+    user = User.objects.get(id=user_id)
+
+    if request.method == "POST":
+        otp = request.POST.get("otp")
+
+        record = OTPVerification.objects.filter(user=user, otp=otp).last()
+
+        if not record:
+            messages.error(request, "Invalid OTP")
+            return redirect("verify_reset_otp")
+
+        if record.is_expired():
+            record.delete()
+            messages.error(request, "OTP expired")
+            return redirect("forgot_password")
+
+        record.delete()
+
+        request.session["reset_verified"] = True
+
+        return redirect("reset_password")
+
+    return render(request, "core/auth/verify_reset_otp.html")
+
+def reset_password(request):
+    user_id = request.session.get("reset_user")
+    verified = request.session.get("reset_verified")
+
+    if not user_id or not verified:
+        return redirect("forgot_password")
+
+    user = User.objects.get(id=user_id)
+
+    if request.method == "POST":
+        password = request.POST.get("password")
+        confirm = request.POST.get("confirm_password")
+
+        if password != confirm:
+            messages.error(request, "Passwords do not match")
+            return redirect("reset_password")
+
+        user.set_password(password)
+        user.save()
+
+
+        request.session.pop("reset_user", None)
+        request.session.pop("reset_verified", None)
+
+        messages.success(request, "Password reset successful")
+        return redirect("login")
+
+    return render(request, "core/auth/reset_password.html")
 
 
 @admin_not_required
 def home_view(request):
     show_all = request.GET.get('show_all', False)
-    categories = Category.objects.filter(is_active=True).order_by('display_order', 'name')
+
+    categories = Category.objects.filter(
+        is_active=True
+    ).order_by('display_order', 'name')
 
     if not show_all:
-        categories = categories[:8]
+        categories = categories[:10]
 
-    return render(request,"core/home.html", {
+    from django.utils import timezone
+    now = timezone.now()
+
+    banners = Banner.objects.filter(
+        is_active=True,
+        start_date__lte=now,
+        end_date__gte=now
+    ).order_by('-created_at')[:5]
+
+    trending_product = None
+    trending_data = get_trending_products(days=30, limit=1)
+
+    if trending_data:
+        trending_product_id = trending_data[0]['variant__product']
+
+        trending_product = Product.objects.filter(
+            id=trending_product_id,
+            is_active=True,
+            approval_status='APPROVED'
+        ).select_related(
+            'seller', 'subcategory'
+        ).prefetch_related(
+            'gallery'
+        ).first()
+
+        if trending_product:
+            img = trending_product.gallery.filter(is_primary=True).first()
+            trending_product.primary_image = img.image.url if img else None
+
+            variant = ProductVariant.objects.filter(
+                product=trending_product,
+                is_active=True
+            ).first()
+
+            trending_product.variant_id = variant.id if variant else None
+            trending_product.min_price = variant.selling_price if variant else 0
+
+            if request.user.is_authenticated and variant:
+                trending_product.is_in_wishlist = WishlistItem.objects.filter(
+                    wishlist__user=request.user,
+                    variant=variant
+                ).exists()
+            else:
+                trending_product.is_in_wishlist = False
+
+    newest_products = Product.objects.filter(
+        is_active=True,
+        approval_status='APPROVED'
+    ).select_related(
+        'seller', 'subcategory', 'subcategory__category'
+    ).prefetch_related(
+        'gallery'
+    ).order_by('-created_at')[:5]
+
+    for product in newest_products:
+
+        img = product.gallery.filter(is_primary=True).first()
+        product.primary_image = img.image.url if img else None
+
+
+        variant = ProductVariant.objects.filter(
+            product=product,
+            is_active=True
+        ).first()
+
+        product.variant_id = variant.id if variant else None
+        product.min_price = variant.selling_price if variant else 0
+
+        product.category_name = (
+            product.subcategory.category.name
+            if product.subcategory and product.subcategory.category
+            else 'General'
+        )
+
+        if request.user.is_authenticated and variant:
+            product.is_in_wishlist = WishlistItem.objects.filter(
+                wishlist__user=request.user,
+                variant=variant
+            ).exists()
+        else:
+            product.is_in_wishlist = False
+
+
+    context = {
         'categories': categories,
         'show_all': show_all,
-        'total_categories': Category.objects.filter(is_active=True).count()
-    })
+        'total_categories': Category.objects.filter(is_active=True).count(),
+        'banners': banners,
+        'trending_product': trending_product,
+        'newest_products': newest_products,
+    }
+
+    return render(request, "core/home.html", context)
 @login_required
 def logout_view(request):
     logout(request)

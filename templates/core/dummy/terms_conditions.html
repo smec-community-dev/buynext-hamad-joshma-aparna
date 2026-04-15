@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Terms of Service | BuyNext</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+                    colors: {
+                        brand: {
+                            olive: '#556B2F',
+                            cream: '#FAF9EE',
+                            sand: '#DCCFC0',
+                            orange: '#F97316',
+                            blue: '#2874F0',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-white font-sans antialiased text-gray-900">
+
+    <nav class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <a class="flex items-center gap-3" href="/">
+                <div class="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-white shadow-md flex items-center justify-center">
+                    <span class="material-icons-outlined text-brand-primary text-lg md:text-xl">shopping_bag</span>
+                </div>
+                <span class="text-lg md:text-2xl font-extrabold tracking-tight">
+                    <span class="text-blue-600">Buy</span><span class="text-orange-500">Next
+                    </span>
+                </span>
+            </a>
+            <div class="flex items-center gap-6">
+                <a href="{% url 'privacy' %}" class="text-sm font-bold text-gray-400 hover:text-brand-blue transition-all">Privacy</a>
+                <a href="/" class="text-sm font-bold text-gray-900 flex items-center gap-2">
+                    <span class="material-icons-outlined text-base">close</span>
+                    Exit
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="pt-24 pb-32 px-6">
+        <div class="max-w-4xl mx-auto">
+            
+            <div class="mb-20">
+                <span class="text-xs font-bold text-gray-400 uppercase tracking-[0.3em] mb-4 block">Legal Framework</span>
+                <h1 class="text-5xl font-extrabold text-gray-900 mb-6 tracking-tight">Terms & <span class="text-brand-blue">Conditions.</span></h1>
+                <p class="text-lg text-gray-500 leading-relaxed max-w-2xl">
+                    These terms govern your use of the BuyNext marketplace. By accessing our platform, you agree to these rules. We've written them to be as clear as possible.
+                </p>
+                <div class="mt-8 flex items-center gap-4 text-sm text-gray-400">
+                    <span class="flex items-center gap-1.5 font-bold">
+                        <span class="material-icons-outlined text-sm text-brand-olive">event</span>
+                        Updated April 2026
+                    </span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-gray-200"></span>
+                    <span class="font-bold">Version 2.4</span>
+                </div>
+            </div>
+
+            <div class="space-y-16">
+                
+                <section class="group">
+                    <div class="flex gap-6">
+                        <div class="hidden sm:flex flex-col items-center">
+                            <div class="w-10 h-10 rounded-full bg-brand-cream border border-brand-sand/30 flex items-center justify-center font-bold text-brand-olive text-sm">01</div>
+                            <div class="w-px h-full bg-gray-100 mt-4"></div>
+                        </div>
+                        <div class="flex-1">
+                            <h2 class="text-2xl font-extrabold text-gray-900 mb-6 group-hover:text-brand-blue transition-colors">The BuyNext Service</h2>
+                            <div class="prose prose-slate text-gray-600 leading-relaxed space-y-4">
+                                <p>BuyNext provides a digital marketplace architecture connecting independent sellers with global buyers. We facilitate the transaction, but the legal contract for any sale is strictly between the buyer and the individual seller.</p>
+                                <p>We reserve the right to modify or terminate the service for any reason, without notice, at any time.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="group">
+                    <div class="flex gap-6">
+                        <div class="hidden sm:flex flex-col items-center">
+                            <div class="w-10 h-10 rounded-full bg-brand-cream border border-brand-sand/30 flex items-center justify-center font-bold text-brand-olive text-sm">02</div>
+                            <div class="w-px h-full bg-gray-100 mt-4"></div>
+                        </div>
+                        <div class="flex-1">
+                            <h2 class="text-2xl font-extrabold text-gray-900 mb-6 group-hover:text-brand-blue transition-colors">Account Integrity</h2>
+                            <div class="prose prose-slate text-gray-600 leading-relaxed space-y-4">
+                                <p>You must be at least 18 years old to use this service. You are responsible for maintaining the security of your account and password. BuyNext cannot be held liable for any loss resulting from unauthorized access to your account.</p>
+                                <div class="p-6 bg-brand-cream rounded-3xl border border-brand-sand/20 my-6">
+                                    <h4 class="font-bold text-gray-900 mb-2 flex items-center gap-2">
+                                        <span class="material-icons-outlined text-brand-orange text-sm">warning</span>
+                                        Prohibited Content
+                                    </h4>
+                                    <p class="text-sm text-gray-600 italic">Fraudulent listings, harassment, or attempts to circumvent our database security will lead to immediate account termination.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="group">
+                    <div class="flex gap-6">
+                        <div class="hidden sm:flex flex-col items-center">
+                            <div class="w-10 h-10 rounded-full bg-brand-cream border border-brand-sand/30 flex items-center justify-center font-bold text-brand-olive text-sm">03</div>
+                            <div class="w-px h-full bg-gray-100 mt-4"></div>
+                        </div>
+                        <div class="flex-1">
+                            <h2 class="text-2xl font-extrabold text-gray-900 mb-6 group-hover:text-brand-blue transition-colors">Payments & Fees</h2>
+                            <div class="prose prose-slate text-gray-600 leading-relaxed space-y-4">
+                                <p>All transactions are processed via our secure third-party payment partners. By making a purchase, you agree to provide valid payment information and authorize us to charge the full amount, including shipping and applicable taxes.</p>
+                                <ul class="list-disc pl-5 space-y-2 text-sm">
+                                    <li>Sellers are responsible for setting their own prices.</li>
+                                    <li>BuyNext collects a standard service fee per successful transaction.</li>
+                                    <li>Refunds are processed according to our <a href="/returns" class="text-brand-blue font-bold hover:underline">Return Policy</a>.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="group">
+                    <div class="flex gap-6">
+                        <div class="hidden sm:flex flex-col items-center">
+                            <div class="w-10 h-10 rounded-full bg-brand-cream border border-brand-sand/30 flex items-center justify-center font-bold text-brand-olive text-sm">04</div>
+                        </div>
+                        <div class="flex-1">
+                            <h2 class="text-2xl font-extrabold text-gray-900 mb-6 group-hover:text-brand-blue transition-colors">Liability Limits</h2>
+                            <div class="prose prose-slate text-gray-600 leading-relaxed space-y-4">
+                                <p>BuyNext is provided "as is" and "as available." We make no warranties regarding the accuracy of seller listings or the quality of goods received. Our total liability is limited to the amount of the service fee paid for the transaction in question.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+            <div class="mt-24 p-12 bg-gray-900 rounded-[3.5rem] text-center text-white relative overflow-hidden">
+                <div class="relative z-10">
+                    <h3 class="text-2xl font-bold mb-4">Questions about our terms?</h3>
+                    <p class="text-gray-400 mb-8 max-w-sm mx-auto text-sm leading-relaxed">Our legal team is here to help you understand your rights on our platform.</p>
+                    <a href="mailto:legal@buynext.com" class="inline-flex items-center gap-2 px-8 py-4 bg-brand-olive text-white rounded-2xl font-bold hover:brightness-110 transition-all">
+                        Contact Legal
+                        <span class="material-icons-outlined text-sm">arrow_forward</span>
+                    </a>
+                </div>
+                <div class="absolute -right-20 -bottom-20 w-64 h-64 bg-brand-blue/10 rounded-full blur-3xl"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="py-12 border-t border-gray-50 text-center">
+        <p class="text-xs font-bold text-gray-300 uppercase tracking-widest">© 2026 BuyNext Marketplace • Built with Integrity</p>
+    </footer>
+
+</body>
+
+</html>

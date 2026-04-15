@@ -276,20 +276,28 @@
             }
             return response.json();
         })
-        .then(data => {
-            if (!data) return;
-            if (data.status === "added") {
-                icon.textContent = 'favorite';
-                button.classList.add('text-red-500');
-                button.classList.remove('text-gray-400');
-                showWishlistToastSubcat("Added to Collection ❤️");
-            } else if (data.status === "removed") {
-                icon.textContent = 'favorite_border';
-                button.classList.remove('text-red-500');
-                button.classList.add('text-gray-400');
-                showWishlistToastSubcat("Removed from Collection");
-            }
-        })
+.then(data => {
+    if (!data) return;
+
+    // 🔥 LOGIN REQUIRED HANDLING
+    if (data.status === "login_required") {
+        window.location.href = data.redirect_url || "/login/";
+        return;
+    }
+
+    if (data.status === "added") {
+        icon.textContent = 'favorite';
+        button.classList.add('text-red-500');
+        button.classList.remove('text-gray-400');
+        showWishlistToastSubcat("Added to Collection ❤️");
+    } 
+    else if (data.status === "removed") {
+        icon.textContent = 'favorite_border';
+        button.classList.remove('text-red-500');
+        button.classList.add('text-gray-400');
+        showWishlistToastSubcat("Removed from Collection");
+    }
+})
         .catch(() => showWishlistToastSubcat("Connectivity Error"))
         .finally(() => button.disabled = false);
     }

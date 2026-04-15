@@ -8,7 +8,7 @@ def get_trending_products(days=7, limit=10):
 
     return (
         OrderItem.objects.filter(created_at__gte=timeframe)
-        .values('variant__product')   # ✅ product id
+        .values('variant__product') 
         .annotate(order_count=Count('id'))
         .order_by('-order_count')[:limit]
     )

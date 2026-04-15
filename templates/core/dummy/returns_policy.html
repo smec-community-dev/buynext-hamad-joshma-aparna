@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Returns Policy | BuyNext Support</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+                    colors: {
+                        brand: {
+                            olive: '#556B2F',
+                            cream: '#FAF9EE',
+                            sand: '#DCCFC0',
+                            orange: '#F97316',
+                            blue: '#2874F0',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-white font-sans antialiased text-gray-900">
+
+    <nav class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <a class="flex items-center gap-3" href="/">
+                <div class="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-white shadow-md flex items-center justify-center">
+                    <span class="material-icons-outlined text-brand-primary text-lg md:text-xl">shopping_bag</span>
+                </div>
+                <span class="text-lg md:text-2xl font-extrabold tracking-tight">
+                    <span class="text-blue-600">Buy</span><span class="text-orange-500">Next
+                    </span>
+                </span>
+            </a>
+            <a href="{% url 'contactus'  %}" class="text-sm font-bold text-gray-500 hover:text-brand-olive flex items-center gap-2">
+                <span class="material-icons-outlined text-base">arrow_back</span>
+                Help Center
+            </a>
+        </div>
+    </nav>
+
+    <header class="pt-24 pb-16 px-6 bg-brand-cream/50 border-b border-brand-sand/10">
+        <div class="max-w-4xl mx-auto">
+            <span class="inline-block px-4 py-1.5 rounded-full bg-brand-orange/10 text-brand-orange text-xs font-bold uppercase tracking-widest mb-6">Policy Center</span>
+            <h1 class="text-5xl lg:text-6xl font-extrabold text-gray-900 mb-6 tracking-tight leading-tight">Returns & <span class="text-brand-orange">Refunds.</span></h1>
+            <p class="text-xl text-gray-500 leading-relaxed max-w-2xl">We want you to love what you bought. If you don't, we've made the return process as simple as the purchase.</p>
+        </div>
+    </header>
+
+    <section class="py-24 px-6">
+        <div class="max-w-4xl mx-auto">
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
+                <div class="p-8 rounded-[2.5rem] bg-brand-cream border border-brand-sand/20">
+                    <h3 class="font-bold text-gray-900 mb-2">30-Day Window</h3>
+                    <p class="text-sm text-gray-600">Items must be returned within 30 days of the delivery date for a full refund.</p>
+                </div>
+                <div class="p-8 rounded-[2.5rem] bg-brand-cream border border-brand-sand/20">
+                    <h3 class="font-bold text-gray-900 mb-2">Original Condition</h3>
+                    <p class="text-sm text-gray-600">Products must be unused, unwashed, and in their original premium packaging.</p>
+                </div>
+            </div>
+
+            <div class="space-y-20">
+                
+                <div class="flex flex-col md:flex-row gap-12">
+                    <div class="md:w-1/3">
+                        <h2 class="text-2xl font-extrabold text-gray-900 mb-2">01. Initiate</h2>
+                        <p class="text-sm text-gray-400 font-bold uppercase tracking-widest">Online Portal</p>
+                    </div>
+                    <div class="md:w-2/3">
+                        <p class="text-gray-600 leading-relaxed mb-6">Log in to your <a href="#" class="text-brand-blue font-bold">BuyNext Dashboard</a>. Navigate to 'Order History', select the item you wish to return, and click 'Request Return'. You will receive a pre-paid shipping label immediately via email.</p>
+                    </div>
+                </div>
+
+                <div class="flex flex-col md:flex-row gap-12">
+                    <div class="md:w-1/3">
+                        <h2 class="text-2xl font-extrabold text-gray-900 mb-2">02. Pack</h2>
+                        <p class="text-sm text-gray-400 font-bold uppercase tracking-widest">Sustainability First</p>
+                    </div>
+                    <div class="md:w-2/3">
+                        <p class="text-gray-600 leading-relaxed mb-6">Place the item back in its original box. We encourage you to reuse the shipping mailer we provided to reduce environmental impact. Affix the printed label to the outside of the package.</p>
+                        <div class="flex gap-4 p-4 bg-gray-50 rounded-2xl border border-gray-100 italic text-sm text-gray-500">
+                            <span class="material-icons-outlined text-brand-blue">info</span>
+                            Ensure no old shipping labels are visible on the box.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col md:flex-row gap-12">
+                    <div class="md:w-1/3">
+                        <h2 class="text-2xl font-extrabold text-gray-900 mb-2">03. Refund</h2>
+                        <p class="text-sm text-gray-400 font-bold uppercase tracking-widest">The Payback</p>
+                    </div>
+                    <div class="md:w-2/3">
+                        <p class="text-gray-600 leading-relaxed mb-6">Once our artisan partners receive and inspect the item (usually within 48 hours of arrival), we will issue a refund to your original payment method. Depending on your bank, this may take 5-10 business days to appear.</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="mt-32 p-10 lg:p-14 bg-gray-900 rounded-[3.5rem] text-white relative overflow-hidden">
+                <div class="relative z-10">
+                    <h2 class="text-3xl font-extrabold mb-6">Non-Returnable Items</h2>
+                    <ul class="space-y-4 text-gray-400">
+                        <li class="flex gap-3"><span class="text-brand-orange font-bold">/</span> Custom-made or personalized jewelry</li>
+                        <li class="flex gap-3"><span class="text-brand-orange font-bold">/</span> Digital gift cards and downloadable software</li>
+                        <li class="flex gap-3"><span class="text-brand-orange font-bold">/</span> Intimate apparel or hygiene-sensitive items</li>
+                        <li class="flex gap-3"><span class="text-brand-orange font-bold">/</span> Final Sale items marked at 50% discount or higher</li>
+                    </ul>
+                </div>
+                <div class="absolute right-0 bottom-0 w-64 h-64 bg-brand-blue/10 rounded-full blur-3xl -mr-32 -mb-32"></div>
+            </div>
+
+            <div class="mt-20 text-center">
+                <p class="text-gray-500 mb-6 font-medium">Have a unique situation?</p>
+                <a href="/contact" class="px-10 py-5 bg-brand-olive text-white rounded-2xl font-bold hover:bg-brand-olive/90 transition-all inline-block shadow-xl shadow-brand-olive/20">Talk to our Returns Team</a>
+            </div>
+
+        </div>
+    </section>
+
+    <footer class="py-12 border-t border-gray-100">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <p class="text-xs font-bold text-gray-300 uppercase tracking-widest">© 2026 BuyNext Marketplace • Built for Quality</p>
+        </div>
+    </footer>
+
+</body>
+
+</html>

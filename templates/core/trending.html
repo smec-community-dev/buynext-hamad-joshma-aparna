@@ -190,24 +190,44 @@ function toggleWishlistTrending(button) {
             "X-Requested-With": "XMLHttpRequest"
         }
     })
-    .then(res => res.json())
+    .then(response => {
+        const contentType = response.headers.get("content-type");
+
+        // 🔥 NOT LOGGED IN (HTML RESPONSE)
+        if (!contentType || !contentType.includes("application/json")) {
+            window.location.href = "/login/";
+            return;
+        }
+
+        return response.json();
+    })
     .then(data => {
-      if (data.status === "added") {
-    icon.textContent = 'favorite';
+        if (!data) return;
 
-    button.classList.remove('text-gray-400');
-    button.classList.add('text-red-500', 'scale-110', 'shadow-lg', 'shadow-red-200');
+        // 🔥 BACKEND LOGIN RESPONSE
+        if (data.status === "login_required") {
+            window.location.href = data.redirect_url || "/login/";
+            return;
+        }
 
-    showToast("Added to Wishlist ❤️");
+        // ❤️ ADDED
+        if (data.status === "added") {
+            icon.textContent = 'favorite';
+            button.classList.remove('text-gray-400');
+            button.classList.add('text-red-500', 'scale-110', 'shadow-lg', 'shadow-red-200');
+            showToast("Added to Wishlist ❤️");
+        }
 
-} else if (data.status === "removed") {
-    icon.textContent = 'favorite_border';
-
-    button.classList.remove('text-red-500', 'scale-110', 'shadow-lg', 'shadow-red-200');
-    button.classList.add('text-gray-400');
-
-    showToast("Removed from Wishlist");
-}
+        // 💔 REMOVED
+        else if (data.status === "removed") {
+            icon.textContent = 'favorite_border';
+            button.classList.remove('text-red-500', 'scale-110', 'shadow-lg', 'shadow-red-200');
+            button.classList.add('text-gray-400');
+            showToast("Removed from Wishlist");
+        }
+    })
+    .catch(() => {
+        showToast("Something went wrong");
     });
 }
 

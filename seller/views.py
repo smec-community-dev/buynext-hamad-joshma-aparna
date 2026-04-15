@@ -728,7 +728,7 @@ def seller_profile(request):
 
         store_name = request.POST.get("store_name")
         description = request.POST.get("description")
-        email = request.POST.get("business_email")
+        email = request.POST.get("business_email").strip().lower()
         phone = request.POST.get("business_phone")
         if SellerProfile.objects.filter(store_name=store_name).exclude(user=request.user).exists():
             messages.error(request, "Store name already taken")
@@ -748,9 +748,10 @@ def seller_profile(request):
             profile.banner = request.FILES.get("banner")
 
         if email and email != request.user.email:
-            if User.objects.filter(email=email).exists():
+            if User.objects.filter(email=email).exclude(id=request.user.id).exists():
                 messages.error(request, "Email already in use")
                 return redirect("seller_profile")
+
 
             request.user.email = email
             request.user.is_email_verified = False 
@@ -758,7 +759,12 @@ def seller_profile(request):
 
             messages.warning(request, "Please verify your new email")
             profile.save()
+
         if phone and phone != request.user.phone_number:
+            if User.objects.filter(phone_number=phone).exclude(id=request.user.id).exists():
+                messages.error(request, "Phone number already in use")
+                return redirect("seller_profile")
+
             request.user.phone_number = phone
             request.user.is_phone_verified = False
             request.user.save()

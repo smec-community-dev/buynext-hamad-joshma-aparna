@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Journal | BuyNext Perspectives</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+                    colors: {
+                        brand: {
+                            olive: '#556B2F',
+                            cream: '#FAF9EE',
+                            sand: '#DCCFC0',
+                            orange: '#F97316',
+                            blue: '#2874F0',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-brand-cream font-sans antialiased text-gray-900">
+
+    <nav class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-brand-olive/10">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <a class="flex items-center gap-2 flex-shrink-0" href="/">
+                <div class="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-white shadow-md flex items-center justify-center">
+                    <span class="material-icons-outlined text-brand-primary text-lg md:text-xl">shopping_bag</span>
+                </div>
+                <span class="text-lg md:text-2xl font-extrabold tracking-tight">
+                    <span class="text-blue-600">Buy</span><span class="text-orange-500">Next
+                    </span>
+                </span>
+            </a>
+
+            <div class="flex items-center gap-4">
+                <a href="/" class="text-sm font-bold text-gray-500 hover:text-brand-olive transition-all">Back to Shop</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="pt-24 pb-20 px-6">
+        <div class="max-w-7xl mx-auto text-center">
+            <span class="inline-block px-4 py-1.5 rounded-full bg-brand-olive/10 text-brand-olive text-xs font-bold uppercase tracking-widest mb-6">Editorial</span>
+            <h1 class="text-5xl lg:text-7xl font-extrabold text-gray-900 mb-8 tracking-tighter">The <span class="text-brand-olive">Journal.</span></h1>
+            <p class="text-xl text-gray-500 max-w-2xl mx-auto leading-relaxed">Thoughts on modern craftsmanship, sustainable commerce, and the artisans shaping the future.</p>
+        </div>
+    </header>
+
+    <section class="px-6 mb-24">
+        <div class="max-w-7xl mx-auto">
+            <a href="#" class="group relative block overflow-hidden rounded-[3.5rem] bg-white shadow-sm border border-gray-100 transition-all hover:shadow-2xl">
+                <div class="grid grid-cols-1 lg:grid-cols-2 items-center">
+                    <div class="h-[450px] lg:h-[600px] overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1490114538077-0a7f8cb49891?auto=format&fit=crop&q=80&w=1200" 
+                             class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" alt="Featured Article">
+                    </div>
+                    <div class="p-12 lg:p-20">
+                        <span class="text-brand-orange font-bold text-sm uppercase tracking-widest mb-4 block">Featured Story</span>
+                        <h2 class="text-4xl lg:text-5xl font-extrabold text-gray-900 mb-6 leading-[1.1] group-hover:text-brand-blue transition-colors">The quiet revolution of minimalist design.</h2>
+                        <p class="text-gray-500 text-lg mb-10 leading-relaxed">Why the world's most successful creators are stripping back the noise and focusing on the essential.</p>
+                        <div class="flex items-center gap-4 pt-6 border-t border-gray-100">
+                            <div class="w-12 h-12 rounded-full bg-brand-sand/50 overflow-hidden">
+                                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=100&h=100&q=80" alt="Author">
+                            </div>
+                            <div>
+                                <p class="font-bold text-gray-900 leading-none mb-1">Marcus Thorne</p>
+                                <p class="text-sm text-gray-400">Design Director • 8 min read</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <section class="px-6 pb-32">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16">
+                
+                <article class="group cursor-pointer">
+                    <div class="relative aspect-[16/11] rounded-[2.5rem] overflow-hidden mb-8 shadow-sm">
+                        <img src="https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&q=80&w=800" 
+                             class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors"></div>
+                    </div>
+                    <span class="text-xs font-bold text-brand-olive uppercase tracking-widest mb-4 block">Craftsmanship</span>
+                    <h3 class="text-2xl font-extrabold text-gray-900 mb-4 group-hover:text-brand-blue transition-colors leading-snug">Sustainability in the digital age.</h3>
+                    <p class="text-gray-500 text-sm leading-relaxed mb-8">How local artisans are utilizing modern e-commerce platforms to scale traditional methods without losing their soul.</p>
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs font-bold text-gray-400">Apr 15, 2026</span>
+                        <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+                        <span class="text-xs font-bold text-gray-400">5 min read</span>
+                    </div>
+                </article>
+
+                <article class="group cursor-pointer">
+                    <div class="relative aspect-[16/11] rounded-[2.5rem] overflow-hidden mb-8 shadow-sm">
+                        <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&q=80&w=800" 
+                             class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors"></div>
+                    </div>
+                    <span class="text-xs font-bold text-brand-blue uppercase tracking-widest mb-4 block">Technology</span>
+                    <h3 class="text-2xl font-extrabold text-gray-900 mb-4 group-hover:text-brand-blue transition-colors leading-snug">Scaling your artisan business.</h3>
+                    <p class="text-gray-500 text-sm leading-relaxed mb-8">Expert advice for small sellers on mastering inventory logic and role-based management for high growth.</p>
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs font-bold text-gray-400">Apr 10, 2026</span>
+                        <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+                        <span class="text-xs font-bold text-gray-400">12 min read</span>
+                    </div>
+                </article>
+
+                <article class="group cursor-pointer">
+                    <div class="relative aspect-[16/11] rounded-[2.5rem] overflow-hidden mb-8 shadow-sm">
+                        <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&q=80&w=800" 
+                             class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors"></div>
+                    </div>
+                    <span class="text-xs font-bold text-brand-orange uppercase tracking-widest mb-4 block">Process</span>
+                    <h3 class="text-2xl font-extrabold text-gray-900 mb-4 group-hover:text-brand-blue transition-colors leading-snug">The anatomy of premium web design.</h3>
+                    <p class="text-gray-500 text-sm leading-relaxed mb-8">Exploring the benchmarks set by industry leaders like Stripe and Apple in modern web aesthetics.</p>
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs font-bold text-gray-400">Mar 28, 2026</span>
+                        <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+                        <span class="text-xs font-bold text-gray-400">6 min read</span>
+                    </div>
+                </article>
+
+            </div>
+
+            <div class="mt-24 flex justify-center">
+                <nav class="flex items-center gap-3 bg-white p-2.5 rounded-[1.5rem] shadow-sm border border-gray-100">
+                    <button class="w-12 h-12 flex items-center justify-center rounded-2xl hover:bg-brand-cream text-gray-400 transition-colors">
+                        <span class="material-icons-outlined">chevron_left</span>
+                    </button>
+                    <button class="w-12 h-12 flex items-center justify-center rounded-2xl bg-brand-olive text-white font-bold">1</button>
+                    <button class="w-12 h-12 flex items-center justify-center rounded-2xl hover:bg-brand-cream font-bold text-gray-600 transition-colors">2</button>
+                    <button class="w-12 h-12 flex items-center justify-center rounded-2xl hover:bg-brand-cream font-bold text-gray-600 transition-colors">3</button>
+                    <button class="w-12 h-12 flex items-center justify-center rounded-2xl hover:bg-brand-cream text-gray-400 transition-colors">
+                        <span class="material-icons-outlined">chevron_right</span>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-24 bg-gray-900 relative overflow-hidden">
+        <div class="max-w-4xl mx-auto px-6 text-center relative z-10">
+            <h2 class="text-4xl md:text-5xl font-extrabold text-white mb-6 tracking-tight">Stay ahead of the curve.</h2>
+            <p class="text-gray-400 mb-10 text-lg">Receive our weekly curation of stories on design, tech, and craft.</p>
+            <form class="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
+                <input type="email" placeholder="Enter your email" required
+                       class="flex-1 px-8 py-5 rounded-2xl bg-white/10 border border-white/20 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-blue/50 transition-all">
+                <button type="submit" class="px-10 py-5 bg-white text-gray-900 rounded-2xl font-bold hover:bg-brand-sand transition-all">Subscribe</button>
+            </form>
+        </div>
+        <div class="absolute top-0 left-0 w-96 h-96 bg-brand-blue/10 rounded-full blur-3xl -ml-48 -mt-48"></div>
+        <div class="absolute bottom-0 right-0 w-96 h-96 bg-brand-orange/10 rounded-full blur-3xl -mr-48 -mb-48"></div>
+    </section>
+
+    <footer class="py-12 bg-white border-t border-gray-50">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+            <p class="text-xs font-bold text-gray-300 uppercase tracking-widest">© 2026 BuyNext Marketplace Journal</p>
+            <div class="flex gap-8">
+                <a href="https://www.instagram.com/accounts/login" class="text-xs font-bold text-gray-400 hover:text-brand-blue uppercase transition-colors">Instagram</a>
+                <a href="https://x.com/login" class="text-xs font-bold text-gray-400 hover:text-brand-blue uppercase transition-colors">Twitter</a>
+                <a href="https://www.facebook.com/login" class="text-xs font-bold text-gray-400 hover:text-brand-blue uppercase transition-colors">Facebook</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+
+</html>

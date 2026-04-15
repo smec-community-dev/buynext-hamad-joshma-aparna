@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FAQ | BuyNext Help Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+                    colors: {
+                        brand: {
+                            olive: '#556B2F',
+                            cream: '#FAF9EE',
+                            sand: '#DCCFC0',
+                            orange: '#F97316',
+                            blue: '#2874F0',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom styling to hide the default arrow and animate the custom one */
+        details summary::-webkit-details-marker { display: none; }
+        details[open] .toggle-icon { transform: rotate(45deg); color: #F97316; }
+        details { transition: all 0.3s ease; }
+    </style>
+</head>
+
+<body class="bg-brand-cream font-sans antialiased">
+
+    <nav class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-brand-olive/10">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <a class="flex items-center gap-3" href="/">
+
+                  <div class="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-white shadow-md flex items-center justify-center">
+                    <span class="material-icons-outlined text-brand-primary text-lg md:text-xl">shopping_bag</span>
+                </div>
+                <span class="text-lg md:text-2xl font-extrabold tracking-tight">
+                    <span class="text-blue-600">Buy</span><span class="text-orange-500">Next
+                    </span>
+                </span>
+            </a>
+            <a href="/" class="text-sm font-bold text-gray-500 hover:text-brand-olive transition-colors">Back to Shop</a>
+        </div>
+    </nav>
+
+    <section class="pt-24 pb-32 px-6">
+        <div class="max-w-3xl mx-auto">
+            <div class="text-center mb-16">
+                <span class="inline-block px-4 py-1.5 rounded-full bg-brand-orange/10 text-brand-orange text-xs font-bold uppercase tracking-widest mb-6">
+                    Help Center
+                </span>
+                <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-6">Frequently Asked Questions</h1>
+                <p class="text-lg text-gray-500 max-w-xl mx-auto">
+                    Everything you need to know about the BuyNext experience. Can't find what you're looking for? 
+                    <a href="#" class="text-brand-blue font-bold hover:underline">Chat with us.</a>
+                </p>
+            </div>
+
+            <div class="space-y-4">
+                <details class="group bg-white border border-gray-100 rounded-[2rem] overflow-hidden transition-all hover:border-brand-sand/50 shadow-sm">
+                    <summary class="list-none p-8 flex items-center justify-between cursor-pointer select-none">
+                        <h3 class="font-bold text-gray-900 text-lg">How do I track my order?</h3>
+                        <div class="toggle-icon w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center transition-transform duration-300">
+                            <span class="material-icons-outlined text-gray-400">add</span>
+                        </div>
+                    </summary>
+                    <div class="px-8 pb-8 text-gray-500 leading-relaxed">
+                        Once your order is shipped, you will receive a confirmation email containing a tracking number and a link to our global logistics portal. You can also view your order status in real-time within your account dashboard under "Order History."
+                    </div>
+                </details>
+
+                <details class="group bg-white border border-gray-100 rounded-[2rem] overflow-hidden transition-all hover:border-brand-sand/50 shadow-sm" open>
+                    <summary class="list-none p-8 flex items-center justify-between cursor-pointer select-none">
+                        <h3 class="font-bold text-gray-900 text-lg">Are the products authentic?</h3>
+                        <div class="toggle-icon w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center transition-transform duration-300">
+                            <span class="material-icons-outlined text-gray-400">add</span>
+                        </div>
+                    </summary>
+                    <div class="px-8 pb-8 text-gray-500 leading-relaxed">
+                        Absolutely. Every seller on BuyNext undergoes a rigorous manual verification process. We verify business licenses, product origins, and quality standards. We offer a 100% Authenticity Guarantee; if an item is proven to be inauthentic, we provide a full refund plus shipping costs.
+                    </div>
+                </details>
+
+                <details class="group bg-white border border-gray-100 rounded-[2rem] overflow-hidden transition-all hover:border-brand-sand/50 shadow-sm">
+                    <summary class="list-none p-8 flex items-center justify-between cursor-pointer select-none">
+                        <h3 class="font-bold text-gray-900 text-lg">What is your return policy?</h3>
+                        <div class="toggle-icon w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center transition-transform duration-300">
+                            <span class="material-icons-outlined text-gray-400">add</span>
+                        </div>
+                    </summary>
+                    <div class="px-8 pb-8 text-gray-500 leading-relaxed">
+                        We offer a 30-day "no-questions-asked" return policy for items in their original condition and packaging. Simply visit our Returns Center, print your pre-paid shipping label, and drop it off at any authorized courier location.
+                    </div>
+                </details>
+
+                <details class="group bg-white border border-gray-100 rounded-[2rem] overflow-hidden transition-all hover:border-brand-sand/50 shadow-sm">
+                    <summary class="list-none p-8 flex items-center justify-between cursor-pointer select-none">
+                        <h3 class="font-bold text-gray-900 text-lg">Do you ship internationally?</h3>
+                        <div class="toggle-icon w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center transition-transform duration-300">
+                            <span class="material-icons-outlined text-gray-400">add</span>
+                        </div>
+                    </summary>
+                    <div class="px-8 pb-8 text-gray-500 leading-relaxed">
+                        Yes, BuyNext currently delivers to over 50 countries. International shipping rates and delivery times vary by location, but most orders arrive within 7-12 business days. Import duties are calculated at checkout so there are no hidden surprises upon delivery.
+                    </div>
+                </details>
+
+                <details class="group bg-white border border-gray-100 rounded-[2rem] overflow-hidden transition-all hover:border-brand-sand/50 shadow-sm">
+                    <summary class="list-none p-8 flex items-center justify-between cursor-pointer select-none">
+                        <h3 class="font-bold text-gray-900 text-lg">How can I contact a seller directly?</h3>
+                        <div class="toggle-icon w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center transition-transform duration-300">
+                            <span class="material-icons-outlined text-gray-400">add</span>
+                        </div>
+                    </summary>
+                    <div class="px-8 pb-8 text-gray-500 leading-relaxed">
+                        On every product page, there is a "Message Seller" button located just below the product description. This allows you to ask specific questions about sizing, materials, or custom orders directly to the artisan.
+                    </div>
+                </details>
+            </div>
+
+            <div class="mt-20 p-12 bg-brand-olive rounded-[3rem] text-center text-white relative overflow-hidden">
+                <div class="relative z-10">
+                    <h2 class="text-2xl font-bold mb-4">Still have questions?</h2>
+                    <p class="text-white/70 mb-8">Our dedicated support team is ready to assist you 24/7.</p>
+                    <a href="/contact" class="px-8 py-4 bg-white text-brand-olive rounded-2xl font-bold hover:bg-brand-sand transition-all inline-block">
+                        Contact Support
+                    </a>
+                </div>
+                <div class="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full -mr-20 -mt-20 blur-3xl"></div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-12 border-t border-brand-olive/10 bg-white">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <p class="text-sm text-gray-400 font-medium">© 2026 BuyNext Marketplace. All rights reserved.</p>
+        </div>
+    </footer>
+
+</body>
+
+</html>
