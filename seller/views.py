@@ -533,6 +533,7 @@ def adjust_inventory(request):
 
     return redirect("seller_inventory")
 
+
 @verified_seller_required
 def seller_order(request):
 
@@ -670,21 +671,21 @@ def seller_reviews(request):
 
     seller = request.user.seller_profile
 
-   
     reviews = Review.objects.filter(
         product__seller=seller,
         is_approved=True
     ).select_related("product", "user")
 
-    
-    avg_rating = Review.objects.filter(
-        product__seller=seller
-    ).aggregate(Avg("rating"))["rating__avg"]
+    # attach seller reply to each review
+    for review in reviews:
+        review.seller_reply_obj = ReviewReply.objects.filter(
+            review=review,
+            seller=seller
+        ).first()
 
-    
-    rating_counts = Review.objects.filter(
-        product__seller=seller
-    ).values("rating").annotate(count=Count("rating"))
+    avg_rating = reviews.aggregate(Avg("rating"))["rating__avg"]
+
+    rating_counts = reviews.values("rating").annotate(count=Count("rating"))
 
     context = {
         "reviews": reviews,
@@ -698,17 +699,40 @@ def seller_reviews(request):
 @verified_seller_required
 def reply_review(request, review_id):
 
-    review = Review.objects.get(id=review_id)
+    review = get_object_or_404(
+        Review,
+        id=review_id,
+        product__seller=request.user.seller_profile
+    )
 
     if request.method == "POST":
+        reply_text = request.POST.get("reply")
 
-        reply = request.POST.get("reply")
-
-        ReviewReply.objects.create(
+        ReviewReply.objects.update_or_create(
             review=review,
             seller=request.user.seller_profile,
-            reply=reply
+            defaults={"reply": reply_text}
         )
+
+    return redirect("seller_reviews")
+
+
+@verified_seller_required
+def delete_reply(request, review_id):
+
+    review = get_object_or_404(
+        Review,
+        id=review_id,
+        product__seller=request.user.seller_profile
+    )
+
+    reply = ReviewReply.objects.filter(
+        review=review,
+        seller=request.user.seller_profile
+    ).first()
+
+    if request.method == "POST" and reply:
+        reply.delete()
 
     return redirect("seller_reviews")
 
@@ -785,14 +809,14 @@ def seller_settings(request):
      return render(request,"seller/seller_settings.html")
 
 
+from django.core.mail import send_mail
+from django.conf import settings
+
 @verified_seller_required
-def update_order_status(request, order_id):
+def update_order_item_status(request, item_id):
 
     if request.method != "POST":
-        return JsonResponse({
-            "success": False,
-            "error": "Invalid request method"
-        })
+        return JsonResponse({"success": False, "error": "Invalid request method"})
 
     try:
         data = json.loads(request.body)
@@ -808,47 +832,150 @@ def update_order_status(request, order_id):
             "cancelled": "CANCELLED",
             "return_requested": "RETURN_REQUESTED",
             "returned": "RETURNED",
-            "refunded": "REFUNDED",
         }
 
         if status not in status_map:
-            return JsonResponse({
-                "success": False,
-                "error": "Invalid status"
-            })
+            return JsonResponse({"success": False, "error": "Invalid status"})
 
-    
-        order = get_object_or_404(CustomerOrder, order_number=order_id)
+        item = get_object_or_404(CustomerOrderItem, id=item_id)
 
-        seller = request.user.seller_profile
+        if item.variant.product.seller != request.user.seller_profile:
+            return JsonResponse({"success": False, "error": "Unauthorized"})
 
-     
-        has_items = CustomerOrderItem.objects.filter(
-            order=order,
-            variant__product__seller=seller
-        )
+        if item.item_status in ["CANCELLED", "RETURNED"]:
+            return JsonResponse({"success": False, "error": "Cannot update this item"})
 
-        if not has_items.exists():
-            return JsonResponse({
-                "success": False,
-                "error": "Not authorized for this order"
-            })
+        item.item_status = status_map[status]
+        item.save(update_fields=["item_status"])
 
-        has_items.update(item_status=status_map[status])
+        # ✅ Send email
+        send_status_email(item)
 
-        return JsonResponse({
-            "success": True,
-            "message": "Order status updated successfully"
-        })
-
-    except json.JSONDecodeError:
-        return JsonResponse({
-            "success": False,
-            "error": "Invalid JSON data"
-        })
+        return JsonResponse({"success": True, "message": "Item status updated"})
 
     except Exception as e:
-        return JsonResponse({
-            "success": False,
-            "error": str(e)
-        })
+        return JsonResponse({"success": False, "error": str(e)})
+from django.core.mail import send_mail
+from django.conf import settings
+
+def send_status_email(item):
+    order = item.order
+    user = order.user
+
+    readable_status = item.item_status.replace("_", " ").title()
+
+    subject = f"Order Update - {order.order_number}"
+
+    message = f"""
+Hi {user.username},
+
+Your order status has been updated.
+
+Product: {item.variant}
+Quantity: {item.quantity}
+
+Current Status: {readable_status}
+
+Thank you for shopping with us!
+
+- BuyNext Team
+"""
+
+    send_mail(
+        subject,
+        message,
+        settings.DEFAULT_FROM_EMAIL,
+        [user.email],
+        fail_silently=True,
+    )
+
+
+@verified_seller_required
+def handle_return(request, item_id):
+
+    if request.method != "POST":
+        return JsonResponse({"success": False, "error": "Invalid request method"})
+
+    action = (request.POST.get("action") or "").lower()
+
+    if action not in ["approve", "reject"]:
+        return JsonResponse({"success": False, "error": "Invalid action"})
+
+    item = get_object_or_404(CustomerOrderItem, id=item_id)
+
+    if item.variant.product.seller != request.user.seller_profile:
+        return JsonResponse({"success": False, "error": "Unauthorized"})
+
+    if item.item_status != "RETURN_REQUESTED":
+        return JsonResponse({"success": False, "error": "Invalid state"})
+
+    if action == "approve":
+        item.item_status = "RETURNED"
+    else:
+        item.item_status = "DELIVERED"
+
+    item.save(update_fields=["item_status"])
+
+    return JsonResponse({
+        "success": True,
+        "message": f"Return {action}d successfully"
+    })
+
+
+from django.http import HttpResponse
+
+@verified_seller_required
+def seller_order_detail(request, order_id):
+
+    seller = request.user.seller_profile
+
+    items = CustomerOrderItem.objects.filter(
+        order__order_number=order_id,
+        variant__product__seller=seller
+    ).select_related(
+        "order",
+        "order__user",
+        "variant",
+        "variant__product"
+    )
+
+    if not items.exists():
+        return HttpResponse("No items found", status=404)
+
+    order = items.first().order
+
+    return render(request, "seller/order_detail.html", {
+        "order": order,
+        "items": items
+    })
+
+@verified_seller_required
+def delete_reply(request, review_id):
+
+    review = get_object_or_404(Review, id=review_id)
+
+    reply = ReviewReply.objects.filter(
+        review=review,
+        seller=request.user.seller_profile
+    ).first()
+
+    if request.method == "POST" and reply:
+        reply.delete()
+
+    return redirect("seller_reviews")
+
+@verified_seller_required
+def reply_review(request, review_id):
+
+    review = get_object_or_404(Review, id=review_id)
+
+    if request.method == "POST":
+        reply_text = request.POST.get("reply")
+
+        ReviewReply.objects.update_or_create(
+            review=review,
+            seller=request.user.seller_profile,
+            defaults={"reply": reply_text}
+        )
+
+    return redirect("seller_reviews")

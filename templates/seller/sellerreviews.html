@@ -198,30 +198,69 @@ Detailed breakdown by product and customer
 
 <td class="px-8 py-6 text-center">
 
-<form method="POST" action="{% url 'reply_review' review.id %}">
-{% csrf_token %}
+{% if review.seller_reply_obj %}
 
-<div class="flex flex-col items-center gap-2">
+   
+    <div class="flex flex-col items-center gap-2">
 
-<textarea
-name="reply"
-class="border border-slate-200 rounded-lg p-2 text-xs w-32 h-16 resize-none"
-placeholder="Reply to customer..."
-required>
-</textarea>
+        <p class="text-xs text-slate-700 bg-slate-100 p-2 rounded-lg w-40">
+            {{ review.seller_reply_obj.reply }}
+        </p>
 
-<button
-type="submit"
-class="bg-blue-500 text-white text-xs px-3 py-1 rounded-md">
-Reply
-</button>
+        <!-- EDIT FORM -->
+        <form method="POST" action="{% url 'reply_review' review.id %}">
+            {% csrf_token %}
+            <textarea
+                name="reply"
+                class="border border-slate-200 rounded-lg p-2 text-xs w-32 h-16 resize-none"
+            >{{ review.seller_reply_obj.reply }}</textarea>
 
-</div>
+            <button
+                type="submit"
+                class="bg-blue-500 text-white text-xs px-3 py-1 rounded-md mt-1">
+                Edit
+            </button>
+        </form>
 
-</form>
+        <!-- DELETE BUTTON -->
+        <form method="POST" action="{% url 'delete_reply' review.id %}">
+            {% csrf_token %}
+            <button
+                type="submit"
+                class="bg-red-500 text-white text-xs px-3 py-1 rounded-md">
+                Delete
+            </button>
+        </form>
+
+    </div>
+
+{% else %}
+
+    <form method="POST" action="{% url 'reply_review' review.id %}">
+        {% csrf_token %}
+
+        <div class="flex flex-col items-center gap-2">
+
+            <textarea
+                name="reply"
+                class="border border-slate-200 rounded-lg p-2 text-xs w-32 h-16 resize-none"
+                placeholder="Reply to customer..."
+                required>
+            </textarea>
+
+            <button
+                type="submit"
+                class="bg-blue-500 text-white text-xs px-3 py-1 rounded-md">
+                Reply
+            </button>
+
+        </div>
+
+    </form>
+
+{% endif %}
 
 </td>
-
 </tr>
 
 {% endfor %}
